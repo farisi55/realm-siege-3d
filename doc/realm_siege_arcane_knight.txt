@@ -1,0 +1,25 @@
+Realm Siege 3D — Arcane Knight GLB test asset
+
+Coordinate system: Y-up
+Forward direction: -Z
+Approx character height: 1.84 m
+Root: ArcaneKnight_Root
+
+Animation clips:
+- Idle   (2.00s)
+- Walk   (1.00s)
+- Run    (0.72s)
+- Attack (0.82s)
+- Cast   (1.15s)
+- Hit    (0.42s)
+- Death  (1.25s)
+- Victory(1.45s)
+
+Sockets:
+- WeaponSocket
+- HeadSocket
+- ChestSocket
+- RootSocket
+
+Designed as an original low-poly stylized fantasy MOBA hero test asset.
+No external copyrighted character assets used.

@@ -1,0 +1,265 @@
+{
+  "pack": "Realm Siege 3D Character Pack v3",
+  "version": "3.0",
+  "characters": [
+    {
+      "character": "Arcane Knight",
+      "role": "Tank / Fighter",
+      "format": "GLB 2.0",
+      "mesh": "SkinnedMesh",
+      "skeleton": "Humanoid_18Bone",
+      "upAxis": "Y",
+      "forward": "-Z",
+      "heightMeters": 2.05,
+      "animations": [
+        {
+          "name": "Idle",
+          "durationSeconds": 2.0
+        },
+        {
+          "name": "Walk",
+          "durationSeconds": 1.0
+        },
+        {
+          "name": "Run",
+          "durationSeconds": 0.68
+        },
+        {
+          "name": "Attack",
+          "durationSeconds": 0.82
+        },
+        {
+          "name": "Cast",
+          "durationSeconds": 1.15
+        },
+        {
+          "name": "Hit",
+          "durationSeconds": 0.42
+        },
+        {
+          "name": "Death",
+          "durationSeconds": 1.25
+        },
+        {
+          "name": "Victory",
+          "durationSeconds": 1.45
+        }
+      ],
+      "sockets": [
+        "WeaponSocket",
+        "HeadSocket",
+        "ChestSocket",
+        "RootSocket"
+      ]
+    },
+    {
+      "character": "Shadow Huntress",
+      "role": "Agility / Assassin",
+      "format": "GLB 2.0",
+      "mesh": "SkinnedMesh",
+      "skeleton": "Humanoid_18Bone",
+      "upAxis": "Y",
+      "forward": "-Z",
+      "heightMeters": 2.05,
+      "animations": [
+        {
+          "name": "Idle",
+          "durationSeconds": 2.0
+        },
+        {
+          "name": "Walk",
+          "durationSeconds": 1.0
+        },
+        {
+          "name": "Run",
+          "durationSeconds": 0.68
+        },
+        {
+          "name": "Attack",
+          "durationSeconds": 0.72
+        },
+        {
+          "name": "Cast",
+          "durationSeconds": 1.15
+        },
+        {
+          "name": "Hit",
+          "durationSeconds": 0.42
+        },
+        {
+          "name": "Death",
+          "durationSeconds": 1.25
+        },
+        {
+          "name": "Victory",
+          "durationSeconds": 1.45
+        }
+      ],
+      "sockets": [
+        "WeaponSocket",
+        "HeadSocket",
+        "ChestSocket",
+        "RootSocket"
+      ]
+    },
+    {
+      "character": "Ember Mage",
+      "role": "Intelligence / Mage",
+      "format": "GLB 2.0",
+      "mesh": "SkinnedMesh",
+      "skeleton": "Humanoid_18Bone",
+      "upAxis": "Y",
+      "forward": "-Z",
+      "heightMeters": 2.05,
+      "animations": [
+        {
+          "name": "Idle",
+          "durationSeconds": 2.0
+        },
+        {
+          "name": "Walk",
+          "durationSeconds": 1.0
+        },
+        {
+          "name": "Run",
+          "durationSeconds": 0.68
+        },
+        {
+          "name": "Attack",
+          "durationSeconds": 0.78
+        },
+        {
+          "name": "Cast",
+          "durationSeconds": 1.15
+        },
+        {
+          "name": "Hit",
+          "durationSeconds": 0.42
+        },
+        {
+          "name": "Death",
+          "durationSeconds": 1.25
+        },
+        {
+          "name": "Victory",
+          "durationSeconds": 1.45
+        }
+      ],
+      "sockets": [
+        "WeaponSocket",
+        "HeadSocket",
+        "ChestSocket",
+        "RootSocket"
+      ]
+    },
+    {
+      "character": "Nature Guardian",
+      "role": "Support",
+      "format": "GLB 2.0",
+      "mesh": "SkinnedMesh",
+      "skeleton": "Humanoid_18Bone",
+      "upAxis": "Y",
+      "forward": "-Z",
+      "heightMeters": 2.05,
+      "animations": [
+        {
+          "name": "Idle",
+          "durationSeconds": 2.0
+        },
+        {
+          "name": "Walk",
+          "durationSeconds": 1.0
+        },
+        {
+          "name": "Run",
+          "durationSeconds": 0.68
+        },
+        {
+          "name": "Attack",
+          "durationSeconds": 0.86
+        },
+        {
+          "name": "Cast",
+          "durationSeconds": 1.15
+        },
+        {
+          "name": "Hit",
+          "durationSeconds": 0.42
+        },
+        {
+          "name": "Death",
+          "durationSeconds": 1.25
+        },
+        {
+          "name": "Victory",
+          "durationSeconds": 1.45
+        }
+      ],
+      "sockets": [
+        "WeaponSocket",
+        "HeadSocket",
+        "ChestSocket",
+        "RootSocket"
+      ]
+    },
+    {
+      "character": "Storm Warrior",
+      "role": "Fighter",
+      "format": "GLB 2.0",
+      "mesh": "SkinnedMesh",
+      "skeleton": "Humanoid_18Bone",
+      "upAxis": "Y",
+      "forward": "-Z",
+      "heightMeters": 2.05,
+      "animations": [
+        {
+          "name": "Idle",
+          "durationSeconds": 2.0
+        },
+        {
+          "name": "Walk",
+          "durationSeconds": 1.0
+        },
+        {
+          "name": "Run",
+          "durationSeconds": 0.68
+        },
+        {
+          "name": "Attack",
+          "durationSeconds": 0.92
+        },
+        {
+          "name": "Cast",
+          "durationSeconds": 1.15
+        },
+        {
+          "name": "Hit",
+          "durationSeconds": 0.42
+        },
+        {
+          "name": "Death",
+          "durationSeconds": 1.25
+        },
+        {
+          "name": "Victory",
+          "durationSeconds": 1.45
+        }
+      ],
+      "sockets": [
+        "WeaponSocket",
+        "HeadSocket",
+        "ChestSocket",
+        "RootSocket"
+      ]
+    }
+  ],
+  "integration": {
+    "format": "GLB 2.0",
+    "renderer": "Three.js",
+    "loader": "GLTFLoader",
+    "animation": "THREE.AnimationMixer",
+    "forwardAxis": "-Z",
+    "upAxis": "Y",
+    "unit": "1 unit = 1 meter"
+  }
+}

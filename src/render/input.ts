@@ -1,0 +1,22 @@
+import { rd } from './scene';
+import { MS, camHome, camRecenter, camRotate, camRotateStep, camZoom, wpt } from './camera';
+import { fxAim, fxPing } from './vfx';
+import { app } from '../game/state';
+import { dist } from '../game/util';
+import { cast } from '../game/sim/combat';
+import { ui } from '../ui/store';
+import { publishHud } from '../ui/hudData';
+import { setPause, toggleShop } from '../ui/commands';
+export const cv=rd.domElement;
+export const KD={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'};
+cv.addEventListener('contextmenu',e=>e.preventDefault());
+cv.addEventListener('pointerdown',e=>{MS.x=e.clientX;MS.y=e.clientY;if(app.mode!=='play'||!app.G||app.G.pause||app.G.over)return;if(e.button===1){MS.drag=1;e.preventDefault();return}if(app.me.dead||app.G.st!=='play')return;const w=wpt(e);
+ if(e.button===2){app.me.tgt=null;app.me.mv=w;fxPing(w.x,w.y);return}const t=app.all.find(u=>!u.dead&&u.team!==0&&dist(u,w)<u.r+30);if(t){app.me.tgt=t;app.me.mv=null;fxPing(t.x,t.y,'attack')}else{app.me.tgt=null;app.me.mv=w;fxPing(w.x,w.y)}});
+addEventListener('pointermove',e=>{if(MS.drag)camRotate(e.clientX-MS.x);MS.x=e.clientX;MS.y=e.clientY;MS.in=1});
+addEventListener('pointerup',()=>MS.drag=0);
+document.addEventListener('mouseleave',()=>MS.in=0);
+cv.addEventListener('wheel',e=>{camZoom(e.deltaY);e.preventDefault()},{passive:false});
+addEventListener('keydown',e=>{if(app.mode!=='play'||!app.G)return;const k=e.key,d=KD[k];if(d){app.keys[d].isDown=true;e.preventDefault();return}if(e.repeat)return;const u=k.toUpperCase(),i=k.length===1?'QWER'.indexOf(u):-1;
+ if(i>=0){if(app.G.st==='play'&&!app.G.pause&&!app.me.dead){const w=wpt({clientX:MS.x,clientY:MS.y});fxAim(w.x,w.y);cast(app.me,i,w.x,w.y)}return}
+ if(k===' '){camRecenter();e.preventDefault()}else if(k==='['){camRotateStep(-1)}else if(k===']'){camRotateStep(1)}else if(k==='Home'){camHome();e.preventDefault()}else if(k==='Tab'){ui.set({scoreboard:true});publishHud();e.preventDefault()}else if(u==='M')ui.set({minimapBig:!ui.get().minimapBig});else if(u==='B')toggleShop();else if(k==='Escape')setPause(!app.G.pause)});
+addEventListener('keyup',e=>{const d=KD[e.key];if(d)app.keys[d].isDown=false;if(e.key==='Tab')ui.set({scoreboard:false})});
