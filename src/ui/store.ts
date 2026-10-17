@@ -1,5 +1,7 @@
 import { useSyncExternalStore } from 'react';
 import { ST } from '../game/storage';
+import type { AudioPrefs } from '../audio/AudioManager';
+import { audioPrefs } from '../audio/audio';
 
 export interface FeedItem { id: number; msg: string; color: string }
 export interface ScoreRow { team: number; name: string; lv: number; kills: number; deaths: number; me: boolean }
@@ -13,12 +15,12 @@ export interface UiState {
   phase: 'loading' | 'menu' | 'play'; loading: { done: number; total: number };
   paused: boolean; result: 'victory' | 'defeat' | null; shop: boolean; scoreboard: boolean; minimapBig: boolean;
   sel: number; zoom: number; showFps: boolean; bloom: boolean; quality: string; fps: number;
-  feed: FeedItem[]; hud: HudSnap | null; rev: number;
+  feed: FeedItem[]; hud: HudSnap | null; rev: number; audio: AudioPrefs;
 }
 
 let state: UiState = {
   phase: 'loading', loading: { done: 0, total: 1 }, paused: false, result: null, shop: false, scoreboard: false, minimapBig: false,
-  sel: 0, zoom: ST.get('zoom', 1), showFps: ST.get('fps', false), bloom: ST.get('bloom', true), quality: String(ST.get('quality', 'auto')), fps: 60, feed: [], hud: null, rev: 0,
+  sel: 0, zoom: ST.get('zoom', 1), showFps: ST.get('fps', false), bloom: ST.get('bloom', true), quality: String(ST.get('quality', 'auto')), fps: 60, feed: [], hud: null, rev: 0, audio: audioPrefs(),
 };
 const subs = new Set<() => void>();
 

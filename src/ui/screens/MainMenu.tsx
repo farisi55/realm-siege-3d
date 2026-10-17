@@ -1,11 +1,11 @@
 import { HR } from '../../game/config';
 import { hex } from '../../game/util';
 import { useUi } from '../store';
-import { setGraphics, setSetting } from '../commands';
+import { setAudioMuted, setAudioVolume, setGraphics, setSetting } from '../commands';
 import { play, selectHero, resetAndShowMenu } from '../../flow';
 
 export function MainMenu() {
-  const sel = useUi(s => s.sel), zoom = useUi(s => s.zoom), showFps = useUi(s => s.showFps), bloom = useUi(s => s.bloom), quality = useUi(s => s.quality);
+  const sel = useUi(s => s.sel), zoom = useUi(s => s.zoom), showFps = useUi(s => s.showFps), bloom = useUi(s => s.bloom), quality = useUi(s => s.quality), audio = useUi(s => s.audio);
   return (
     <div id="menu" className="ov">
       <h1 style={{ fontSize: 46, color: 'var(--gd)' }}>Realm Siege 3D</h1>
@@ -37,6 +37,14 @@ export function MainMenu() {
             </select>
           </label>
           <button onClick={resetAndShowMenu}>Reset saved settings</button>
+        </div>
+        <div className="row" style={{ padding: '6px 0' }}>
+          <label>Volume <input type="range" min="0" max="1" step=".05" value={audio.master} onChange={e => setAudioVolume('master', +e.target.value)} /></label>
+          <label>SFX <input type="range" min="0" max="1" step=".05" value={audio.sfx} onChange={e => setAudioVolume('sfx', +e.target.value)} /></label>
+          <label>Music <input type="range" min="0" max="1" step=".05" value={audio.music} onChange={e => setAudioVolume('music', +e.target.value)} /></label>
+          <label>Ambient <input type="range" min="0" max="1" step=".05" value={audio.ambient} onChange={e => setAudioVolume('ambient', +e.target.value)} /></label>
+          <label>UI <input type="range" min="0" max="1" step=".05" value={audio.ui} onChange={e => setAudioVolume('ui', +e.target.value)} /></label>
+          <label><input type="checkbox" checked={audio.muted} onChange={e => setAudioMuted(e.target.checked)} /> Mute audio</label>
         </div>
       </details>
       <small style={{ color: 'var(--mu)' }}>Credits: original prototype built with Three.js and React. Models are procedural placeholders unless GLB files are provided.</small>

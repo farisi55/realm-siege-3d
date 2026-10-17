@@ -6,10 +6,16 @@ import { ui } from './store';
 import { publishHud } from './hudData';
 import { setQuality } from '../render/quality';
 import type { QualitySetting } from '../render/quality';
+import { audioPrefs, resetAudio, setMuted, setVolume } from '../audio/audio';
+import type { Bus } from '../audio/AudioManager';
 
 export function setPause(v: boolean): void { if (!app.G || app.G.over) return; app.G.pause = v; ui.set({ paused: v }); }
 export function toggleShop(): void { if (!app.G || app.G.over) return; ui.set({ shop: !ui.get().shop }); }
 export function finishMatch(winner: number): void { app.G.over = true; app.G.win = winner; ui.set({ result: winner === 0 ? 'victory' : 'defeat', shop: false }); }
+
+/** Audio settings (menu): the manager persists and applies the change; the store refresh keeps every control in sync. */
+export function setAudioVolume(bus: Bus, volume: number): void { setVolume(bus, volume); ui.set({ audio: audioPrefs() }); }
+export function setAudioMuted(muted: boolean): void { setMuted(muted); ui.set({ audio: audioPrefs() }); }
 
 const refresh = () => { publishHud(); ui.set({ rev: ui.get().rev + 1 }); };
 export function buy(n: number): void {
@@ -33,6 +39,7 @@ export function setGraphics(value: string): void {
   ui.set({ quality: String(mode) });
 }
 export function resetSettings(): void {
-  ['zoom', 'fps', 'hero', 'bloom', 'quality'].forEach(k => { try { localStorage.removeItem('rs_' + k); } catch { /* storage unavailable */ } });
-  app.bloom = true; setQuality('auto'); ui.set({ zoom: 1, showFps: false, bloom: true, quality: 'auto' });
+  ['zoom', 'fps', 'hero', 'bloom', 'quality', 'vol', 'vol_sfx', 'vol_music', 'vol_amb', 'vol_ui', 'mute'].forEach(k => { try { localStorage.removeItem('rs_' + k); } catch { /* storage unavailable */ } });
+  app.bloom = true; setQuality('auto'); resetAudio();
+  ui.set({ zoom: 1, showFps: false, bloom: true, quality: 'auto', audio: audioPrefs() });
 }

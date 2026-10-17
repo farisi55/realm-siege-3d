@@ -6,12 +6,13 @@ Original 5v5 fantasy MOBA prototype: Three.js + TypeScript + Vite. No external a
     npm run dev        # dev server
     npm run build      # tsc --noEmit + production build (dist/)
     npm run typecheck  # tsc --noEmit
-    npm test           # simulation, character system, GLB pipeline, VFX pools + Director, camera maths, the world (ground, scatter, painter, river, structures, plants), quality governor, post-processing chain, UI/3D scene (jsdom, stubbed WebGL)
+    npm test           # simulation, character system, GLB pipeline, VFX pools + Director, camera maths, the world (ground, scatter, painter, river, structures, plants), quality governor, post-processing chain, audio engine (stubbed WebAudio), UI/3D scene (jsdom, stubbed WebGL)
 
 ## Structure
 - `src/game/`  config (map, heroes, items), `state.ts` (shared state + hooks), `sim/` (units, combat, ai, world): pure simulation, no DOM/Three.js
 - `src/render/` Three.js only: scene and lighting (`scene.ts`, `lighting.ts`), the world (`environment.ts` + `env/`, below), `ground.ts` (render-only standing height, bridge decks), the character system (below), `readability.ts` (rim light, contact shadows), `models.ts` (siege engines, health bars), the effects system (`vfx.ts` + `fx/`, below), post-processing (`post.ts`), the quality governor (`governor.ts` pure, `quality.ts` applies it), the camera (`camrig.ts` maths + `camera.ts`, below), input, hero-select stage (`stage.ts`), `units.ts` (mirrors the simulation into render objects)
 - `src/assets/` AssetManager: GLB preload, cache, SkeletonUtils cloning, Draco
+- `src/audio/` Web Audio only (below): `AudioManager.ts` (context, five buses, voices, asset cache), `synth.ts` (the built-in sounds), `audio.ts` (the facade the game and UI import)
 - `src/ui/` React only: `store.ts` (external store + `useUi`), `hudData.ts` (HUD snapshot ~10x/s), `commands.ts` (buy, sell, pause, settings), `screens/` (MainMenu, Hud, Shop, Overlays), `minimap.ts` (canvas drawn imperatively)
 - `src/flow.ts` boot / play / menu flow and the per-frame entry point, `src/main.ts` browser loop. Open the page with `?debug` to get `window.__realm` for fast-forwarding.
 
@@ -82,6 +83,19 @@ If you change a radius, duration or colour in the simulation, update `onFx`; the
 **Blending and bloom.** Ground layers (decals, rings, pillars, domes) blend "screen" (`src * (1 - dst) + dst`; `emit()` in `shaders.ts` premultiplies the colour): on dark ground it equals additive, on lit ground it adds less. The frame is 8 bit and bloom keys on luminance, so stacking a few additive glow layers over lit terrain used to clip to a white disc that bloom then spread over the whole spell. Scorch marks use plain alpha blending. Both are states of the same material and program (uniform `uSoft`), so switching never recompiles.
 
 **Debug.** With `?debug`, `__realm.fx` is `{ kit, director, mesh, add, alp, rig, trails, stats(), quality(q) }`: `stats()` gives alive / peak / denied per pool and the Director counters (casts, resolved, cancelled, hits, deaths, unknown); `quality(1)` pins full detail for screenshots. To add an ability look: write its recipe in `abilities.ts` (keyed by hero name and slot), its colours in `style.ts`.
+
+## Sound
+The audio subsystem mirrors the effects one: `src/audio/audio.ts` is the one facade the rest of the game imports, `AudioManager.ts` owns the Web Audio graph and `synth.ts` holds the built-in sounds.
+
+    audio.ts          facade: initAudio (gesture unlock, tab suspend, pagehide stop, delegated UI click), playSFX / playUI / playMusic / playAmbient, setVolume / setMuted / stopAll / resetAudio, audioPrefs / audioStats
+      AudioManager.ts the engine: one AudioContext, five gain buses (master -> sfx / music / ambient / ui), voice registry with a cap, asset cache with `load` / `preload`, localStorage-backed volumes, never throws
+      synth.ts        the built-in sounds, synthesized with oscillators and one shared noise buffer (no external assets)
+
+- **Buses and volumes.** `master` feeds the speakers; `sfx` / `music` / `ambient` / `ui` feed `master` and each has its own volume (menu -> Settings -> the volume sliders, or mute). Volumes persist as `rs_vol*` / `rs_mute`; "Reset saved settings" clears them.
+- **Autoplay.** The context is created and resumed on the first pointer or key gesture; a hidden tab suspends it and `pagehide` stops every voice. Before a gesture nothing is built and `play()` reports false. No node is created for a click on a silent bus, inside a sound's `minGap` or beyond the voice cap.
+- **Sources.** Every sound is synthesized by default. To use a file instead, add `urls` to the sound in `SOUNDS`; `preload()` tries them at boot and the synth stays as the fallback whenever a file is missing or undecodable, so the game is never silent because an asset did not ship.
+- **Triggers so far.** `uiClick`: any button, form control or hero card (one delegated listener in `initAudio`, nothing per component). `matchStart`: `play()` in `flow.ts` starts a match. Combat, ability and structure mappings come later and follow the same rule as effects: no per-frame plays, distance and budget first.
+- **Debug.** With `?debug`, `__realm.audio` is the AudioManager: after one click anywhere, `audio.snapshot()`, `audio.play('sfx', 'notify')`, `audio.setVolume('music', .5)`, `audio.stopAll()`.
 
 ## Camera
 An isometric MOBA camera, not a third-person one: a fixed pitch (0.95 rad), a focus on the ground, a yaw and a distance. `camrig.ts` is the maths (no scene objects, unit-tested); `camera.ts` applies it to the Three camera and exposes the inputs. `app.cam` (`cy`, `cd`, `k`) stays the public state: the simulation reads `cy` for movement, the minimap and culling read `k` and `cd`; the rig adopts what other modules write (a match start) and publishes its smoothed values every frame.

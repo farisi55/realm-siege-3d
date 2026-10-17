@@ -9,6 +9,7 @@ import { cm, rd, sn } from './render/scene';
 import { environment } from './render/environment';
 import { governor, setQuality } from './render/quality';
 import { postInfo } from './render/post';
+import { snd } from './audio/audio';
 
 mount();
 boot().catch(console.error);
@@ -22,4 +23,4 @@ function loop(t: number): void {
 requestAnimationFrame(loop);
 
 // Debug hook for automated browser checks: open the page with ?debug to fast-forward the game from the console.
-if (new URLSearchParams(location.search).has('debug')) (window as any).__realm = { app, frame, step, assets, fx: fxDebug, rd, sn, cm, env: environment, gov: governor, setQuality, post: postInfo };
+if (new URLSearchParams(location.search).has('debug')) (window as any).__realm = { app, frame, step, assets, fx: fxDebug, rd, sn, cm, env: environment, gov: governor, setQuality, post: postInfo, audio: snd };
