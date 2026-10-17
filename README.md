@@ -6,7 +6,7 @@ Original 5v5 fantasy MOBA prototype: Three.js + TypeScript + Vite. No external a
     npm run dev        # dev server
     npm run build      # tsc --noEmit + production build (dist/)
     npm run typecheck  # tsc --noEmit
-    npm test           # simulation, character system, GLB pipeline, VFX pools + Director, camera maths, the world (ground, scatter, painter, river, structures, plants), quality governor, post-processing chain, audio engine + combat mix + world audio (stubbed WebAudio), UI/3D scene (jsdom, stubbed WebGL)
+    npm test           # simulation, character system, GLB pipeline, VFX pools + Director, camera maths, the world (ground, scatter, painter, river, structures, plants), quality governor, post-processing chain, audio engine + combat mix + world audio + polish/regression (stubbed WebAudio), UI/3D scene (jsdom, stubbed WebGL)
 
 ## Structure
 - `src/game/`  config (map, heroes, items), `state.ts` (shared state + hooks), `sim/` (units, combat, ai, world): pure simulation, no DOM/Three.js
@@ -88,7 +88,7 @@ If you change a radius, duration or colour in the simulation, update `onFx`; the
 The audio subsystem mirrors the effects one: `src/audio/audio.ts` is the one facade the rest of the game imports, `AudioManager.ts` owns the Web Audio graph and `synth.ts` holds the built-in sounds.
 
     audio.ts          facade: initAudio (gesture unlock, tab suspend, pagehide stop, delegated UI click + hover), playSFX / playUI / playMusic / playAmbient, setVolume / setMuted / stopAll / resetAudio, setListener / setDuck, audioPrefs / audioStats
-      AudioManager.ts the engine: one AudioContext, five gain buses (master -> sfx / music / ambient / ui), voice registry with a cap, spatial voices (pan + falloff per world point), pause duck, asset cache with `load` / `preload`, localStorage-backed volumes, never throws
+      AudioManager.ts the engine: one AudioContext, five gain buses (master -> sfx / music / ambient / ui) behind a fixed protection chain (30 Hz high-pass -> high-shelf -> soft limiter), voice registry with a cap (priority plays and the ui bus are exempt), spatial voices (pan + falloff per world point), pause duck, asset cache with `load` / `preload`, localStorage-backed volumes, never throws
       synth.ts        the built-in sounds, synthesized with oscillators and one shared noise buffer (no external assets)
       combat.ts       the combat mix: simulation events -> voice, distance, budget (below)
       abilities.ts    the phase-3 ability vocabulary: `ab` -> hero voice, and the Burning Zone loop lifecycle
@@ -165,6 +165,15 @@ The audio subsystem mirrors the effects one: `src/audio/audio.ts` is the one fac
 - **The mix.** Music beds sit at .8 / .62 on the music bus and ambience at .4–.5 on the ambient bus, well under the combat gains near 1, so the atmosphere never masks an ability cue; every phase-4 voice is an ordinary `SOUNDS` entry (add `urls` to swap in a local file — all current voices are original synthesis, no third-party recordings).
 - **Verified by** `tests/audio-world.test.ts` (footsteps from real movement, speed, surface, death/stun/teleport; one bed per scene and exactly one again after a restart; the right stinger and full world teardown on match end; pan against the camera yaw, distance attenuation, `maxDist` culling and emitters tracking the listener; distant blasts; pause ducking with the UI bus untouched; reward watching plus silent adoption of a fresh match; manifest completeness) and the control wiring in `tests/ui.test.tsx`.
 - **Debug.** With `?debug`, `__realm.audio.snapshot()` now reports `duck`, `listener` and the live voices; `audio.spatialVoices()` lists every positional voice with its pan and falloff gain, and `audio.attenuationAt(name, x, y)` shows the falloff at a world point.
+
+### Polish, mix protection and regression (phase 5)
+Phase 5 audited the whole subsystem instead of adding features; three real engine defects were found and fixed:
+
+- **Master protection chain.** `master` now runs through a 30 Hz high-pass (rumble below hearing is removed before it can eat headroom), a gentle high-shelf (-2.5 dB over 9 kHz: stacked lightning and magical sizzle stays readable instead of turning shrill) and a soft limiter (-2 dBFS, ratio 12) before the speakers. The chain is rebuilt and torn down with the context, and a context without `createDynamicsCompressor` degrades to a straight wire. `tests/audio-polish.test.ts` asserts the real graph order: master -> high-pass -> high-shelf -> limiter -> destination.
+- **The voice cap no longer swallows priority.** At 32 live voices, ordinary plays are dropped and counted — but `force` cues (player actions, ultimates, structure losses, the victory/defeat stingers) and the `ui` bus are exempt, so a saturated fight can never mute the feedback the player is acting on or a control click.
+- **Loaded files clean up after themselves.** A file-based voice now wires `onended` to the registry: a one-shot that finishes (or a stopped loop) leaves the voice *and* spatial registries instead of lingering as a phantom voice — the groundwork for the day `urls` files are added to `SOUNDS`.
+
+The audit also re-confirmed — and the polish suite pins — that every branch of the combat mapping and all twenty ability mappings names a voice that exists in the manifest, that a small blast beyond the camera becomes exactly one `ambDistant` rumble, that ducking scales the live graph without touching stored volumes or the `ui` bus, and that unknown sounds fail silently with the synth fallback intact. `tests/ui.test.tsx` adds the settings regression: the volume sliders and mute drive the real bus volumes and persist to `localStorage` (`rs_vol*` / `rs_mute`).
 
 ## Camera
 An isometric MOBA camera, not a third-person one: a fixed pitch (0.95 rad), a focus on the ground, a yaw and a distance. `camrig.ts` is the maths (no scene objects, unit-tested); `camera.ts` applies it to the Three camera and exposes the inputs. `app.cam` (`cy`, `cd`, `k`) stays the public state: the simulation reads `cy` for movement, the minimap and culling read `k` and `cd`; the rig adopts what other modules write (a match start) and publishes its smoothed values every frame.

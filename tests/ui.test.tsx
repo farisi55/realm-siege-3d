@@ -145,6 +145,23 @@ describe('React UI + 3D scene (jsdom, stubbed WebGL)', () => {
     fireEvent.click(screen.getByLabelText(/Bloom/)); expect(S.app.bloom).toBe(true); expect(localStorage.getItem('rs_bloom')).toBe('true');
     fireEvent.change(screen.getByLabelText(/Camera zoom/), { target: { value: '1.2' } }); expect(localStorage.getItem('rs_zoom')).toBe('1.2');
   });
+  it('phase 5: the Settings sliders and mute drive the real audio buses and persist', async () => {
+    const A = await import('../src/audio/audio');
+    const { DEFAULT_VOLUME } = await import('../src/audio/AudioManager');
+    const rows = [...document.querySelectorAll<HTMLLabelElement>('#menu label')];
+    const slider = (t: string) => rows.find(l => l.textContent!.startsWith(t))!.querySelector('input[type=range]')!;
+    fireEvent.change(slider('SFX'), { target: { value: '.3' } });
+    expect(A.audioPrefs().sfx).toBeCloseTo(.3);
+    expect(A.audioStats().buses.sfx).toBeCloseTo(.3); // the settings store and the engine agree
+    expect(localStorage.getItem('rs_vol_sfx')).toBe('0.3'); // and the change survives a reload
+    fireEvent.click(screen.getByLabelText(/Mute audio/));
+    expect(A.audioPrefs().muted).toBe(true);
+    expect(localStorage.getItem('rs_mute')).toBe('true');
+    fireEvent.click(screen.getByLabelText(/Mute audio/)); // leave the suite as it was found
+    fireEvent.change(slider('SFX'), { target: { value: String(DEFAULT_VOLUME.sfx) } });
+    expect(A.audioPrefs().muted).toBe(false);
+    expect(A.audioPrefs().sfx).toBeCloseTo(DEFAULT_VOLUME.sfx);
+  });
   it('phase 4: the controls reach the audio facade (select, hover, pause, shop open/buy/sell/close)', async () => {
     const A = await import('../src/audio/audio');
     const played: string[] = [];

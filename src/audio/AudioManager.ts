@@ -1,12 +1,15 @@
 import { ST } from '../game/storage';
 
 /**
- * The audio engine: one AudioContext, five gain buses (master feeds the speakers, `sfx` / `music` / `ambient` / `ui` feed
- * master), a small voice registry, an asset cache with a synthesized fallback and localStorage-backed volumes. It knows
- * nothing about the game, React or the DOM: gameplay and UI code reach it through the facade in `audio.ts`.
+ * The audio engine: one AudioContext, five gain buses (master feeds the speakers through a fixed protection chain — a
+ * 30 Hz high-pass, a gentle high-shelf and a soft limiter — while `sfx` / `music` / `ambient` / `ui` feed master), a
+ * small voice registry, an asset cache with a synthesized fallback and localStorage-backed volumes. It knows nothing
+ * about the game, React or the DOM: gameplay and UI code reach it through the facade in `audio.ts`.
  *
  * Rules (mirroring the VFX system):
- *  - No node is built for a sound that cannot be heard (before the first user gesture, while muted, on a silent bus, over the voice cap).
+ *  - No node is built for a sound that cannot be heard (before the first user gesture, while muted, on a silent bus,
+ *    over the voice cap — priority `force` plays and the `ui` bus are exempt, so a saturated fight never swallows the
+ *    player's own cues or a control click).
  *  - Playing never fetches: files are loaded once by `load()` / `preload()` and cached; everything else plays a synthesized voice.
  *  - Every entry point is safe: no Web Audio, a suspended context or a failed decode never throw into gameplay.
  */
@@ -107,6 +110,8 @@ export class AudioManager {
 
   private ctx: AudioContext | null = null;
   private buses = new Map<Bus, GainNode>();
+  /** Fixed nodes between master and the speakers (high-pass, high-shelf, limiter); torn down with the context. */
+  private chain: AudioNode[] = [];
   private voices = new Set<Voice>();
   private buffers = new Map<string, AudioBuffer>();
   private pending = new Map<string, Promise<AudioBuffer | null>>();
@@ -167,11 +172,40 @@ export class AudioManager {
     safely(() => ctx.resume());
   }
 
+  /**
+   * The fixed master protection chain, built right to left (high-pass -> high-shelf -> limiter -> speakers) and
+   * returned by its head. Missing node types (ancient or minimal contexts) are skipped, so the graph degrades to a
+   * straight wire instead of failing — playing must never depend on an optional node existing.
+   */
+  private masterChain(ctx: AudioContext): AudioNode {
+    let out: AudioNode = ctx.destination;
+    // Soft limiter: the last line before the speakers. A high threshold and a steep ratio mean only stacked peaks are
+    // held back — stacked ultimates, a collapsing core and a victory fanfare never clip the output.
+    if (typeof ctx.createDynamicsCompressor === 'function') {
+      const lim = ctx.createDynamicsCompressor();
+      lim.threshold.value = -2; lim.knee.value = 1; lim.ratio.value = 12; lim.attack.value = .002; lim.release.value = .25;
+      lim.connect(out); out = lim; this.chain.push(lim);
+    }
+    if (typeof ctx.createBiquadFilter === 'function') {
+      // Gentle high-shelf: stacked lightning and magical sizzle stays readable instead of turning shrill.
+      const shelf = ctx.createBiquadFilter();
+      shelf.type = 'highshelf'; shelf.frequency.value = 9000; shelf.gain.value = -2.5;
+      shelf.connect(out); out = shelf; this.chain.push(shelf);
+      // High-pass at 30 Hz: rumble below hearing is removed before it can eat the headroom the limiter holds back.
+      const hp = ctx.createBiquadFilter();
+      hp.type = 'highpass'; hp.frequency.value = 30; hp.Q.value = .5;
+      hp.connect(out); out = hp; this.chain.push(hp);
+    }
+    return out;
+  }
+
   private buildBuses(): void {
     const ctx = this.ctx!;
     this.buses.clear();
+    for (const n of this.chain) { try { n.disconnect(); } catch { /* already gone */ } }
+    this.chain = [];
     const master = ctx.createGain();
-    master.connect(ctx.destination);
+    master.connect(this.masterChain(ctx));
     this.buses.set('master', master);
     for (const b of BUSES) {
       if (b === 'master') continue;
@@ -329,8 +363,9 @@ export class AudioManager {
   /**
    * Plays `name` on `bus`. Returns false (never throws) when: the sound is unknown, no user gesture has been seen yet,
    * the master or the bus is silent, the sound is inside its minGap or over its per-sound `max`, the voice cap is
-   * reached, or Web Audio is unavailable. `force` marks a priority event (the player's own actions, structure losses):
-   * it bypasses the gap and per-sound caps. A loaded file wins; otherwise the synthesized voice is used.
+   * reached (priority `force` plays and the `ui` bus are exempt and may exceed it), or Web Audio is unavailable.
+   * `force` marks a priority event (the player's own actions, structure losses): it bypasses the gap and per-sound
+   * caps. A loaded file wins; otherwise the synthesized voice is used.
    */
   play(bus: Bus, name: string, opts: PlayOptions = {}): boolean {
     const def = this.sounds[name];
@@ -345,7 +380,7 @@ export class AudioManager {
       this.lastAt.set(name, now);
     }
     if (!opts.force && def.max !== undefined && this.count(name) >= def.max) { this.stats.dropped++; return false; }
-    if (this.voices.size >= this.maxVoices) { this.stats.dropped++; return false; }
+    if (this.voices.size >= this.maxVoices && !opts.force && bus !== 'ui') { this.stats.dropped++; return false; }
     const ctx = this.ensure();
     if (!ctx) { this.stats.failed++; return false; }
     if (ctx.state === 'suspended') this.resume(); // a gesture was seen: the queued voice starts on resume
@@ -362,7 +397,7 @@ export class AudioManager {
     let ended = false;
     const done = (): void => { ended = true; this.voices.delete(voice); if (voice.spat) this.spatial.delete(voice.spat); };
     try {
-      if (buffer) voice.stop = this.playBuffer(ctx, chain.dest, buffer, chain.gain, rate);
+      if (buffer) voice.stop = this.playBuffer(ctx, chain.dest, buffer, chain.gain, rate, false, done);
       else if (def.synth) {
         const io: SynthIo = { ctx, dest: chain.dest, t0: ctx.currentTime + .005, gain: chain.gain, rate, noise: this.noiseBuffer(ctx), done };
         voice.stop = def.synth(io) ?? voice.stop;
@@ -377,7 +412,8 @@ export class AudioManager {
 
   /**
    * Starts a sustained voice (`def.loop`) that lives until `handle.stop()` or its own internal fade. Same gates as
-   * `play()` (gesture, mute, silent bus, `max`, voice cap), minus the minGap — loops are long-lived, not bursts.
+   * `play()` (gesture, mute, silent bus, `max`, voice cap — priority `force` plays may exceed the cap), minus the
+   * minGap — loops are long-lived, not bursts.
    * Returns a handle, or null when nothing could start. Used by the ability layer for the Burning Zone fire bed.
    */
   startLoop(bus: Bus, name: string, opts: PlayOptions = {}): LoopHandle | null {
@@ -388,7 +424,7 @@ export class AudioManager {
     const sp = this.spatialFor(def, bus, opts.pos); // false: beyond the def's cutoff, culled before any node exists
     if (sp === false) { this.stats.dropped++; return null; }
     if (!opts.force && def.max !== undefined && this.count(name) >= def.max) { this.stats.dropped++; return null; }
-    if (this.voices.size >= this.maxVoices) { this.stats.dropped++; return null; }
+    if (this.voices.size >= this.maxVoices && !opts.force && bus !== 'ui') { this.stats.dropped++; return null; }
     const ctx = this.ensure();
     if (!ctx) { this.stats.failed++; return null; }
     if (ctx.state === 'suspended') this.resume();
@@ -401,7 +437,7 @@ export class AudioManager {
     const voice: Voice = { bus, name, stop: () => { /* replaced below */ } };
     const done = (): void => { this.voices.delete(voice); if (voice.spat) this.spatial.delete(voice.spat); };
     try {
-      if (buffer) voice.stop = this.playBuffer(ctx, chain.dest, buffer, chain.gain, rate, true);
+      if (buffer) voice.stop = this.playBuffer(ctx, chain.dest, buffer, chain.gain, rate, true, done);
       else if (def.synth) {
         const io: SynthIo = { ctx, dest: chain.dest, t0: ctx.currentTime + .005, gain: chain.gain, rate, noise: this.noiseBuffer(ctx), done };
         voice.stop = def.synth(io) ?? voice.stop;
@@ -432,14 +468,19 @@ export class AudioManager {
     return n;
   }
 
-  /** A decoded file on its own gain, straight into the bus. `loop` sustains it until `stop` (startLoop path). */
-  private playBuffer(ctx: AudioContext, dest: AudioNode, buffer: AudioBuffer, gain: number, rate: number, loop = false): StopFn {
+  /**
+   * A decoded file on its own gain, straight into the bus. `loop` sustains it until `stop` (startLoop path); `done`
+   * is wired to `onended`, so a file that finishes naturally (or is stopped) leaves the voice registry behind it —
+   * a loaded one-shot never stays registered as a phantom voice.
+   */
+  private playBuffer(ctx: AudioContext, dest: AudioNode, buffer: AudioBuffer, gain: number, rate: number, loop = false, done?: () => void): StopFn {
     const src = ctx.createBufferSource(), g = ctx.createGain();
     src.buffer = buffer;
     src.loop = loop;
     src.playbackRate.value = rate;
     g.gain.value = gain;
     src.connect(g); g.connect(dest);
+    src.onended = () => { try { src.disconnect(); g.disconnect(); } catch { /* already gone */ } done?.(); };
     src.start(ctx.currentTime + .005);
     return () => { try { src.stop(); } catch { /* not started */ } try { src.disconnect(); g.disconnect(); } catch { /* already gone */ } };
   }
@@ -505,7 +546,9 @@ export class AudioManager {
   dispose(): void {
     this.stopAll();
     for (const g of this.buses.values()) { try { g.disconnect(); } catch { /* already gone */ } }
+    for (const n of this.chain) { try { n.disconnect(); } catch { /* already gone */ } }
     this.buses.clear();
+    this.chain = [];
     const ctx = this.ctx;
     this.ctx = null;
     if (ctx && ctx.state !== 'closed') safely(() => ctx.close());
