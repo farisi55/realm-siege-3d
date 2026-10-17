@@ -18,16 +18,20 @@ export const app = {
 
 /** A combat sound event: the simulation reports one per meaningful moment (windup, release, impact, death, respawn). */
 export interface SndEv {
-  k: 'swing' | 'launch' | 'hit' | 'die' | 'respawn';
+  k: 'swing' | 'launch' | 'hit' | 'die' | 'respawn' | 'cast' | 'heal';
   x: number;
   y: number;
   team: number;
-  /** Characterizes the event: unit kind for swing/die, weapon for launch, impact source for hit. */
+  /** Characterizes the event: unit kind for swing/die, weapon for launch, impact source for hit, ability type for cast. */
   kind: string;
   /** The player's own hero is involved: the audio layer gives these priority. */
   player?: boolean;
   /** Structurally important (tower, core, boss): survives more throttling. */
   big?: boolean;
+  /** Ability identity when a hero ability caused the event: `hero index * 4 + slot` (hero order in `HR`). */
+  ab?: number;
+  /** The owning unit's id: lets the audio layer stop an ability loop when its owner dies. */
+  uid?: number;
 }
 
 /** The simulation never imports rendering/UI: it calls these hooks, which main.ts wires up. */

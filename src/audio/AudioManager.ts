@@ -39,6 +39,8 @@ export interface SynthIo {
 export type StopFn = () => void;
 /** A synthesized voice: builds its nodes, starts them, returns its stop function. */
 export type SynthFn = (io: SynthIo) => StopFn;
+/** Controls one sustained voice started by `startLoop`: `stop` is idempotent and never throws. */
+export interface LoopHandle { name: string; stop(): void }
 
 export interface SoundDef {
   /** Built-in fallback voice, used whenever no file has been loaded for this name. */
@@ -51,6 +53,8 @@ export interface SoundDef {
   minGap?: number;
   /** Concurrent-voice cap for this sound: keeps a swarm of identical impacts from stacking (default: global cap only). */
   max?: number;
+  /** Sustained voice: started with `startLoop`, lives until stopped (a loaded file loops; synth voices fade out on their own). */
+  loop?: boolean;
 }
 
 /** `rate` shifts pitch (clamped .5..2); `force` marks a priority event that bypasses `minGap` and `max`. */
@@ -227,7 +231,7 @@ export class AudioManager {
       if (!opts.force && last !== undefined && now - last < def.minGap) return false;
       this.lastAt.set(name, now);
     }
-    if (!opts.force && def.max !== undefined && this.countVoices(name) >= def.max) { this.stats.dropped++; return false; }
+    if (!opts.force && def.max !== undefined && this.count(name) >= def.max) { this.stats.dropped++; return false; }
     if (this.voices.size >= this.maxVoices) { this.stats.dropped++; return false; }
     const ctx = this.ensure();
     if (!ctx) { this.stats.failed++; return false; }
@@ -255,17 +259,56 @@ export class AudioManager {
     return true;
   }
 
-  /** How many voices of one sound are live right now (backs `SoundDef.max`). */
-  private countVoices(name: string): number {
+  /**
+   * Starts a sustained voice (`def.loop`) that lives until `handle.stop()` or its own internal fade. Same gates as
+   * `play()` (gesture, mute, silent bus, `max`, voice cap), minus the minGap — loops are long-lived, not bursts.
+   * Returns a handle, or null when nothing could start. Used by the ability layer for the Burning Zone fire bed.
+   */
+  startLoop(bus: Bus, name: string, opts: PlayOptions = {}): LoopHandle | null {
+    const def = this.sounds[name];
+    if (!def || (!def.synth && !def.urls?.length)) { this.stats.failed++; return null; }
+    if (!this.seen && !this.unlocked) { this.stats.dropped++; return null; }
+    if (this.mutedFlag || this.vols.master <= 0 || this.vols[bus] <= 0) return null;
+    if (!opts.force && def.max !== undefined && this.count(name) >= def.max) { this.stats.dropped++; return null; }
+    if (this.voices.size >= this.maxVoices) { this.stats.dropped++; return null; }
+    const ctx = this.ensure();
+    if (!ctx) { this.stats.failed++; return null; }
+    if (ctx.state === 'suspended') this.resume();
+    const dest = this.buses.get(bus) ?? this.buses.get('master');
+    if (!dest) { this.stats.failed++; return null; }
+    const gain = Math.max(0, (def.gain ?? 1) * (opts.gain ?? 1));
+    const rate = Math.min(2, Math.max(.5, opts.rate ?? 1));
+    const buffer = this.buffers.get(name);
+    const voice: Voice = { bus, name, stop: () => { /* replaced below */ } };
+    const done = (): void => { this.voices.delete(voice); };
+    try {
+      if (buffer) voice.stop = this.playBuffer(ctx, dest, buffer, gain, rate, true);
+      else if (def.synth) {
+        const io: SynthIo = { ctx, dest, t0: ctx.currentTime + .005, gain, rate, noise: this.noiseBuffer(ctx), done };
+        voice.stop = def.synth(io) ?? voice.stop;
+      } else { this.stats.failed++; return null; }
+    } catch { this.stats.failed++; return null; }
+    this.voices.add(voice);
+    this.stats.played++;
+    let live = true;
+    return {
+      name,
+      stop: (): void => { if (!live) return; live = false; this.voices.delete(voice); try { voice.stop(); } catch { /* already stopped */ } },
+    };
+  }
+
+  /** How many voices of one sound (or all, when called without a name) are live right now. Backs `SoundDef.max`. */
+  count(name?: string): number {
     let n = 0;
-    for (const v of this.voices) if (v.name === name) n++;
+    for (const v of this.voices) if (name === undefined || v.name === name) n++;
     return n;
   }
 
-  /** A decoded file on its own gain, straight into the bus. */
-  private playBuffer(ctx: AudioContext, dest: AudioNode, buffer: AudioBuffer, gain: number, rate: number): StopFn {
+  /** A decoded file on its own gain, straight into the bus. `loop` sustains it until `stop` (startLoop path). */
+  private playBuffer(ctx: AudioContext, dest: AudioNode, buffer: AudioBuffer, gain: number, rate: number, loop = false): StopFn {
     const src = ctx.createBufferSource(), g = ctx.createGain();
     src.buffer = buffer;
+    src.loop = loop;
     src.playbackRate.value = rate;
     g.gain.value = gain;
     src.connect(g); g.connect(dest);

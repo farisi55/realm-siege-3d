@@ -1,6 +1,7 @@
 import { app } from '../game/state';
 import type { SndEv } from '../game/state';
 import { snd } from './audio';
+import { abilityCue, startAbilityLoop, stopAbilityLoop, stopAbilityLoops } from './abilities';
 
 /**
  * Combat audio: the bridge between the simulation's `hooks.snd` events and the phase-1 engine.
@@ -18,7 +19,7 @@ import { snd } from './audio';
  */
 
 /** One voice choice: `s` is a name in `synth.ts`, `g` its gain, `spread` the random pitch range, `range` the world distance it stays audible to. */
-interface Cue { s: string; g: number; spread: number; range: number; force?: boolean }
+interface Cue { s: string; g: number; spread: number; range: number; force?: boolean; loop?: boolean }
 
 /** Rolling budget: at most `BUDGET` non-priority voices per `WINDOW` seconds of *simulation* time across the whole battle. */
 const WINDOW = .15;
@@ -39,6 +40,8 @@ function allow(priority: boolean): boolean {
 
 /** Which voice a simulation event reaches for; `null` means deliberately silent. */
 function cueOf(e: SndEv): Cue | null {
+  const ab = abilityCue(e); // hero-ability identity wins; `undefined` = not an ability moment
+  if (ab !== undefined) return ab;
   switch (e.k) {
     case 'swing':
       return { s: 'swing', g: .5, spread: .07, range: 1250 };
@@ -63,14 +66,16 @@ function cueOf(e: SndEv): Cue | null {
       return { s: 'dieCreep', g: .6, spread: .09, range: 1000 };
     case 'respawn':
       return { s: 'respawn', g: .7, spread: .05, range: 1e9, force: true };
+    case 'cast': case 'heal': return null; // an ability moment without an `ab` id never guesses a generic voice
   }
 }
 
-/** Resets the rolling budget: a fresh match starts with a clear window (also used by the tests). */
-export function resetCombatAudio(): void { windowAt = -1; windowN = 0; }
+/** Resets the rolling budget and stops ability loops: a fresh match starts with a clear window (also used by the tests). */
+export function resetCombatAudio(): void { windowAt = -1; windowN = 0; stopAbilityLoops(); }
 
 /** `hooks.snd`: called once by the simulation for every combat event; never from the render loop. */
 export function sndEvent(e: SndEv): void {
+  if (e.k === 'die' && e.uid !== undefined) stopAbilityLoop(e.uid); // a fallen hero takes its sustained abilities with it
   const cue = cueOf(e);
   if (!cue) return;
   const me = app.me;
@@ -84,5 +89,6 @@ export function sndEvent(e: SndEv): void {
   if (!allow(priority)) return;
   const gain = cue.g * (.2 + .8 * att) * (e.player ? 1.3 : 1) * (1 - Math.random() * .1);
   const rate = 1 + (Math.random() * 2 - 1) * cue.spread;
+  if (cue.loop) { startAbilityLoop(e.uid, cue.s, gain, rate); return; } // sustained: the ignition intro is inside the voice
   snd.play('sfx', cue.s, { gain, rate, force: priority });
 }

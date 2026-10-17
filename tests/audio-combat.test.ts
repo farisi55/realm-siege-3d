@@ -118,7 +118,7 @@ describe('combat audio: simulation events map to sounds through real gameplay', 
     expect(names()).toContain('hitArrow');
   });
 
-  it('ability bolt: a magic launch at cast, a magic impact on the first enemy it reaches', () => {
+  it("ability bolt: the hero's own launch voice at cast, its impact voice on the first enemy it reaches", () => {
     startPlay(0);
     clearArena();
     const me = app.me;
@@ -128,11 +128,12 @@ describe('combat audio: simulation events map to sounds through real gameplay', 
     foe.x = me.x + 260; foe.y = me.y;
     cast(me, 0, foe.x, foe.y); // Arcane Strike: ballistic bolt
     step(60);
+    expect(events.some(r => r.e.k === 'cast' && r.e.ab === 0)).toBe(true); // the committed cast is reported
     expect(events.some(r => r.e.k === 'launch' && r.e.kind === 'magic' && r.e.player)).toBe(true);
     expect(events.some(r => r.e.k === 'hit' && r.e.kind === 'magic')).toBe(true);
     expect(foe.hp).toBeLessThan(foe.max);
-    expect(names()).toContain('magicShot');
-    expect(names()).toContain('hitMagic');
+    expect(names()).toContain('akStrike'); // phase 3: the hero's bolt voice, not the generic `magicShot`
+    expect(names()).toContain('akStrikeHit');
   });
 
   it('towers: a heavy launch when the tower fires, a heavy impact when its bolt lands', () => {
@@ -215,7 +216,8 @@ describe('combat audio: simulation events map to sounds through real gameplay', 
     expect(blasts.length).toBe(1); // one boom per blast, no matter how many units it hits
     expect(victims.every(v => v.hp < v.max)).toBe(true); // the damage really went through the hurt() path
     expect(events.filter(r => r.t === blasts[0].t && r.e.k === 'hit' && r.e.kind !== 'blast').length).toBe(0);
-    expect(names()).toContain('boomBlast');
+    expect(names()).toContain('akSlamWind'); // phase 3: the wind-up at the cast…
+    expect(names()).toContain('akSlamImpact'); // …and the hero's slam (with its shockwave) on the blast
   });
 
   it('hero death and respawn: dieBig on the fall, one respawn chime when the timer ends', () => {
@@ -322,9 +324,11 @@ describe('combat audio: a full autonomous battle', () => {
     startPlay(0, true); // waves spawn from t = 0; both teams' AI heroes fight, towers return fire
     step(6000);
     const used = names();
-    // The names every measured battle produced reliably; seed-dependent ones (hitMelee, dieCreep, collapseTower near the
-    // idle player) are already pinned to real events by the controlled tests above.
-    for (const n of ['swing', 'bowShot', 'siegeShot', 'magicShot', 'hitArrow', 'hitMagic', 'hitStructure', 'hitHeavy', 'boomBlast', 'dieBig', 'respawn']) {
+    // The names every measured battle produced reliably; seed-dependent ones (hitMelee, dieCreep, magicShot, boomBlast,
+    // collapseTower near the idle player) are already pinned to real events by the controlled tests above. Phase 3 moved
+    // ability bolts and blasts onto hero voices, so the generic `magicShot` / `hitMagic` / `boomBlast` only ring for
+    // structures and boss novas now; the ability vocabulary is asserted in `audio-abilities.test.ts`.
+    for (const n of ['swing', 'bowShot', 'siegeShot', 'hitArrow', 'hitHeavy', 'hitStructure', 'dieBig', 'respawn']) {
       expect(used, `no ${n} over 100 s of battle`).toContain(n);
     }
     expect(events.length).toBeGreaterThan(300); // and the events were real: thousands of moments, not a mock

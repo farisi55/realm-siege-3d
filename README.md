@@ -91,21 +91,22 @@ The audio subsystem mirrors the effects one: `src/audio/audio.ts` is the one fac
       AudioManager.ts the engine: one AudioContext, five gain buses (master -> sfx / music / ambient / ui), voice registry with a cap, asset cache with `load` / `preload`, localStorage-backed volumes, never throws
       synth.ts        the built-in sounds, synthesized with oscillators and one shared noise buffer (no external assets)
       combat.ts       the combat mix: simulation events -> voice, distance, budget (below)
+      abilities.ts    the phase-3 ability vocabulary: `ab` -> hero voice, and the Burning Zone loop lifecycle
 
 - **Buses and volumes.** `master` feeds the speakers; `sfx` / `music` / `ambient` / `ui` feed `master` and each has its own volume (menu -> Settings -> the volume sliders, or mute). Volumes persist as `rs_vol*` / `rs_mute`; "Reset saved settings" clears them.
 - **Autoplay.** The context is created and resumed on the first pointer or key gesture; a hidden tab suspends it and `pagehide` stops every voice. Before a gesture nothing is built and `play()` reports false. No node is created for a click on a silent bus, inside a sound's `minGap` or beyond the voice cap.
 - **Sources.** Every sound is synthesized by default. To use a file instead, add `urls` to the sound in `SOUNDS`; `preload()` tries them at boot and the synth stays as the fallback whenever a file is missing or undecodable, so the game is never silent because an asset did not ship.
 - **Triggers so far.** `uiClick`: any button, form control or hero card (one delegated listener in `initAudio`, nothing per component). `matchStart`: `play()` in `flow.ts` starts a match (and stops whatever the previous one left sounding).
-- **Combat.** The simulation never imports audio, exactly like effects: it pushes one typed, read-only event through a no-op `hooks.snd` at each real moment — a melee windup (`swing`), a projectile, bolt or tower shot leaving the weapon (`launch`), damage actually landing (`hit`, inside `hurt` and `blast`), a death (`die`) and a respawn (`respawn`). `flow.ts` wires the hook to `combat.ts`, which picks the voice; nothing is ever triggered from the render loop.
+- **Combat.** The simulation never imports audio, exactly like effects: it pushes one typed, read-only event through a no-op `hooks.snd` at each real moment — a melee windup (`swing`), a projectile, bolt or tower shot leaving the weapon (`launch`), damage actually landing (`hit`, inside `hurt` and `blast`), a death (`die`) and a respawn (`respawn`). Phase 3 adds `cast` (a committed ability cast, carrying `ab = hero * 4 + slot` and the owner's `uid`) and `heal` (one per ally that really gained health); every ability-caused event carries the same `ab`, and `die` carries the fallen unit's `uid`, so a sustained sound can stop with its owner. `flow.ts` wires the hook to `combat.ts`, which picks the voice; nothing is ever triggered from the render loop.
 
 | simulation event | sound | when |
 |---|---|---|
 | melee windup | `swing` | at `atk`, melee reach (the blade swings even when the blow misses) |
 | arrow release | `bowShot` | at `atk`, ranged creeps and the Huntress |
 | siege or tower shot | `siegeShot` | a tower or siege engine fires |
-| magic release | `magicShot` | a hero bolt is pushed, or the core shoots |
+| magic release | `magicShot` | the core shoots (a hero's bolt uses its hero voice — see below) |
 | arrow / heavy impact | `hitArrow` / `hitHeavy` | the projectile reaches the unit it was tracking |
-| bolt / blast impact | `hitMagic` / `boomBlast` | a ballistic bolt connects / one voice for a blast, however many victims |
+| bolt / blast impact | `hitMagic` / `boomBlast` | a core bolt connects / a boss nova, however many victims (ability bolts and blasts use hero voices) |
 | melee impact | `hitMelee` | damage lands from a melee blow |
 | structure / core damage | `hitStructure` / `hitCore` | `hurt` on a tower / on the core (core is global) |
 | creep death | `dieCreep` | any minion or siege engine falls |
@@ -114,6 +115,37 @@ The audio subsystem mirrors the effects one: `src/audio/audio.ts` is the one fac
 | hero respawn | `respawn` | `hup`, when the respawn timer ends |
 
 - **The mix.** The listener is the player's hero: a cue fades with distance and goes silent past its range (short around a creep skirmish, global for structures and the cores), so nearby play always beats distant play. A rolling budget (five non-priority voices per 0.15 s of game time) spreads a swarm, while player events and structure losses are priority and force past it. Melee, arrow, magic, siege, structure and core events each own a distinct voice, and every play takes a small random pitch and gain nudge so no two impacts sound stamped.
+### Hero and ability sounds (phase 3)
+`audio/abilities.ts` maps the same simulation events onto a per-hero vocabulary through the same one facade and the same mix layer — no second audio system. Ability identity travels on the event as `ab = hero index * 4 + slot` (`HR` order; slots are Q/W/E/R). Wind-ups exist for the abilities that need one (`null` cues stay deliberately silent rather than falling back to a generic sound), releases sit at the real +250 ms execution, and impacts live wherever the effect truly resolves.
+
+| ability (`ab`) | type | event -> voice |
+|---|---|---|
+| Arcane Knight Q Arcane Strike (0:0) | bolt | cast `akStrikeCharge` · release `akStrike` · hit `akStrikeHit` |
+| Arcane Knight W Shield Wall (0:1) | heal | cast `akShield` · per healed ally `healPulse` |
+| Arcane Knight E Ground Slam (0:2) | aoe | cast `akSlamWind` · blast `akSlamImpact` (shockwave layered behind the hit) |
+| Arcane Knight R Meteor Prison (0:3) | tgt | cast `akMeteorBuild` · blast `akMeteorImpact` (prison chime) |
+| Shadow Huntress Q Shadow Dash (1:0) | dash | landing `shDash` (whoosh into a quick cut, one voice) |
+| Shadow Huntress W Poison Arrow (1:1) | bolt | release `shPoison` · hit `shPoisonHit` |
+| Shadow Huntress E Smoke Veil (1:2) | buff | cast `shVeil` |
+| Shadow Huntress R Death Mark (1:3) | tgt | cast `shMark` (minor-second sting) · detonation `shMarkBurst` |
+| Ember Mage Q Fire Bolt (2:0) | bolt | cast `emFireCharge` · release `emFireCast` · hit `emFireHit` |
+| Ember Mage W Flame Wave (2:1) | aoe | blast `emWave` |
+| Ember Mage E Burning Zone (2:2) | tgt | cast `emZone` (flint strike) · ignition + fire bed `emZoneFire` (the one loop) |
+| Ember Mage R Inferno Storm (2:3) | tgt | cast `emStormBuild` · blast `emStormImpact` (fire layers cascading) |
+| Nature Guardian Q Healing Seed (3:0) | heal | cast `ngSeed` · per healed ally `healPulse` |
+| Nature Guardian W Root Trap (3:1) | tgt | blast `ngRoot` (wood and soil) |
+| Nature Guardian E Nature Barrier (3:2) | heal | cast `ngBarrier` · per healed ally `healPulse` |
+| Nature Guardian R Forest Rebirth (3:3) | heal | cast `ngRebirthBuild` · one wave `ngRebirthPulse` (deduped across the cast) |
+| Storm Warrior Q Lightning Punch (4:0) | bolt | release `swPunch` · hit `swPunchHit` |
+| Storm Warrior W Static Field (4:1) | aoe | blast `swField` (three staggered zaps) |
+| Storm Warrior E Thunder Charge (4:2) | dash | cast `swCharge` · landing `swChargeHit` |
+| Storm Warrior R Storm Rage (4:3) | buff | activation `swRage` (three electrical accents layered inside) |
+
+- **Impact honesty.** Cast sounds only exist when `cast()` commits (mana spent, cooldown started); blast and release voices play inside the deferred execution, bolt impacts inside `hurt`, heal confirmations only for allies whose health really increased. So a cast that fails (mana, cooldown, level), is cancelled by the caster dying during its 250 ms wind-up, a bolt that flies out its lifetime, a heal at full health and a blast landing on nobody all stay silent — no false impacts. Structures keep `hitStructure` / `hitCore` even when an ability dealt the damage.
+- **The one loop.** Burning Zone starts a sustained `emZoneFire` bed whose attack is the ignition whoomph itself. It is a `loop` def started with `startLoop` (new engine call, same gates as `play`), fades out on its own after ~3 s, is replaced if the same hero re-ignites, stops early when its owner dies (the `die` event's `uid`), and is torn down by `resetCombatAudio()` / `stopAll()` — exactly the pair `flow.play()` runs before every fresh match. No other voice in the game loops.
+- **Richer ultimates, readable basics.** Ultimates layer a build-up into a big impact (the Rebirth wave, the Rage accents); ordinary abilities stay one to three short cues. The phase-2 policy still rules: player events and ultimates are priority and force past the budget, everything else fades with distance and is throttled by the rolling budget plus each sound's `minGap` / `max`.
+- **Replaceable assets.** Every voice above is an ordinary `SOUNDS` entry: add `urls` to swap in a local file and the synth stays as the fallback — no simulation or mapping code changes. All current voices are original synthesis; no third-party recordings.
+- **Verified by** `tests/audio-abilities.test.ts`: all twenty Q/W/E/R abilities fired through the real cast path with their expected voice sets, cast/impact timing measured against the sim clock, failed/cancelled casts silent, heal-vs-damage separation (and confirmation only on real healing), the fire bed ending with its caster and on restart, sfx volume gating, and a 100 s AI battle exercising the whole vocabulary.
 - **Debug.** With `?debug`, `__realm.audio` is the AudioManager: after one click anywhere, `audio.snapshot()`, `audio.play('sfx', 'notify')`, `audio.setVolume('music', .5)`, `audio.stopAll()`.
 
 ## Camera
