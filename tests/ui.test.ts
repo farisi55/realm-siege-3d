@@ -106,3 +106,80 @@ describe('UI + 3D scene (jsdom, stubbed WebGL)', () => {
     expect(S.app.mode).toBe('menu'); expect(U.R.size).toBe(0); expect(document.getElementById('menu')).toBeTruthy();
   });
 });
+
+// The mobile pass: Q W E R must be real touch targets that reuse cast() and never leak orders to the world.
+/** Matches the per-slot tap window in input.ts, so the guard has certainly expired between gestures. */
+const settle = (ms = 220): Promise<void> => new Promise(r => setTimeout(r, ms));
+
+describe('touch skill buttons and input routing (jsdom cannot hit-test; events are dispatched at the element a browser would pick)', () => {
+  const absB = () => $$('#abs .ab') as HTMLButtonElement[];
+  const tap = (target: Element) => target.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, cancelable: true, button: 0 }));
+  const reset = (mana = true) => { const me = S.app.me; me.dead = false; me.hp = me.max; me.mp = mana ? me.mmax : 0; me.acd = [0, 0, 0, 0]; me.mv = null; me.tgt = null; };
+  beforeAll(async () => { button('Play').click(); await flush(); frames(340); }); // skip the 10 s prep so casts and orders are live
+
+  it('renders four real skill buttons that mirror the hero kit', () => {
+    const b = absB();
+    expect(b).toHaveLength(4);
+    expect(b.map(x => x.tagName)).toEqual(['BUTTON', 'BUTTON', 'BUTTON', 'BUTTON']);
+    expect(b[0].textContent).toContain('Q'); expect(b[3].textContent).toContain('R');
+  });
+  it('tapping Q, W and E casts that slot exactly once and never moves the hero', async () => {
+    const me = S.app.me;
+    for (const i of [0, 1, 2]) {
+      reset(); await settle();
+      const before = me.mp;
+      tap(absB()[i]);
+      expect(me.acd[i]).toBeGreaterThan(0);
+      expect(me.mp).toBeLessThan(before);
+      expect(me.mv).toBeNull(); expect(me.tgt).toBeNull(); // no battlefield order leaked through the tap
+    }
+  });
+  it('R stays locked by level and then casts like the keyboard', async () => {
+    const me = S.app.me;
+    reset(); me.lv = 1; await settle(); tap(absB()[3]); expect(me.acd[3]).toBe(0);
+    me.mp = me.mmax; me.acd = [0, 0, 0, 0]; me.lv = 3; await settle(); tap(absB()[3]); expect(me.acd[3]).toBeGreaterThan(0);
+    me.lv = 1;
+  });
+  it('a tap without mana casts nothing (rules kept)', async () => {
+    const me = S.app.me; reset(false); await settle(); tap(absB()[1]); expect(me.acd[1]).toBe(0);
+  });
+  it('a quick double tap on one skill never casts twice', async () => {
+    const me = S.app.me; reset(); await settle();
+    const before = me.mp;
+    tap(absB()[0]); const once = me.mp; tap(absB()[0]);
+    expect(once).toBeLessThan(before); expect(me.mp).toBe(once);
+  });
+  it('tapping the battlefield still issues its move or attack order', () => {
+    const cvEl = document.querySelector('#g canvas')!, me = S.app.me;
+    me.mv = null; me.tgt = null;
+    cvEl.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, clientX: innerWidth / 2, clientY: innerHeight * .4 }));
+    expect(me.mv || me.tgt).toBeTruthy();
+  });
+  it('tapping the minimap or an inventory slot casts and orders nothing', () => {
+    const me = S.app.me; me.mv = null; me.tgt = null; me.acd = [0, 0, 0, 0];
+    tap(el('mm')); tap($$('#its .sl')[0]);
+    expect(me.mv).toBeNull(); expect(me.tgt).toBeNull(); expect(me.acd[0]).toBe(0);
+  });
+  it('the attack button selects the nearest enemy', () => {
+    const me = S.app.me, enemy = S.app.all.find((u: any) => u.k === 'hero' && u.team === 1 && !u.dead);
+    S.app.all.forEach((u: any) => { if (u.team !== 0 && u !== enemy) { u.x = 3800; u.y = 3800; } });
+    enemy.x = me.x + 60; enemy.y = me.y; enemy.dead = false;
+    me.tgt = null; me.mv = null;
+    tap(el('atk'));
+    expect(me.tgt).toBe(enemy);
+  });
+  it('pause blocks casting and dead heroes cannot cast, then both resume', async () => {
+    const me = S.app.me;
+    el('pause').click(); await flush(); expect(S.app.G.pause).toBe(true);
+    reset(); await settle(); tap(absB()[0]); expect(me.acd[0]).toBe(0);
+    button('Resume').click(); await flush();
+    reset(); me.dead = true; await settle(); tap(absB()[0]); expect(me.acd[0]).toBe(0);
+    reset(); await settle(); tap(absB()[0]); expect(me.acd[0]).toBeGreaterThan(0);
+  });
+  it('HUD state classes expose ready, no-mana and cooldown locks', async () => {
+    const me = S.app.me;
+    reset(); frames(12); await flush(); expect(absB()[0].className).toContain('ready');
+    me.mp = 0; frames(12); await flush(); expect(absB()[0].className).toContain('nomana');
+    me.acd = [9, 0, 0, 0]; me.mp = me.mmax; frames(12); await flush(); expect(absB()[0].className).toContain('cd');
+  });
+});

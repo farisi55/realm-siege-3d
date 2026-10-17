@@ -1,38 +1,121 @@
 :root{--bg:#090b13;--pn:#121827ee;--ln:#2b3652;--tx:#e2e8ff;--mu:#8d99bb;--gd:#ffd04a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
 html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font:13px system-ui,sans-serif;overflow:hidden;user-select:none}
+@supports (height:100dvh){html,body{height:100dvh}}
 #g{position:absolute;inset:0}
 h1,h2,h3,.t{font-family:Cinzel,Georgia,serif;margin:0}
-.ov{position:absolute;inset:0;z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:radial-gradient(#1a2242,#06070d);text-align:center;padding:10px;overflow:auto}
+.ov{position:absolute;inset:0;z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:radial-gradient(#1a2242,#06070d);text-align:center;padding:calc(10px + env(safe-area-inset-top,0px)) 10px calc(10px + env(safe-area-inset-bottom,0px));overflow:auto;overscroll-behavior:contain}
 .hid{display:none!important}
 /* The end screen waits for the core's finale (about 2.5 s of explosions) and then fades in; it takes no clicks while it is still see-through. */
 #end{animation:endin 1.1s ease 2.8s both}
 @keyframes endin{from{opacity:0;pointer-events:none}to{opacity:1;pointer-events:auto}}
 @media (prefers-reduced-motion:reduce){#end{animation-delay:1.2s}}
-button{background:#1d2742;color:var(--tx);border:1px solid var(--ln);border-radius:6px;padding:7px 14px;cursor:pointer;font:inherit}
+button{background:#1d2742;color:var(--tx);border:1px solid var(--ln);border-radius:6px;padding:7px 14px;cursor:pointer;font:inherit;touch-action:manipulation}
 button:hover{border-color:#3b9cff}button.p{background:#2a5db8;font-weight:700}
+@media (hover:none){button:hover{border-color:var(--ln)}}
 .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;align-items:center}
 .hc{width:158px;padding:8px;border:2px solid var(--ln);border-radius:8px;background:var(--pn);cursor:pointer;font-size:12px;line-height:1.4}
 .hc.s{border-color:var(--gd)}.hc i{display:block;width:44px;height:44px;border-radius:50%;margin:0 auto 4px}
+.hc:active{transform:scale(.97)}
 details{max-width:640px;color:var(--mu);text-align:left}
 #hud{position:absolute;inset:0;pointer-events:none;z-index:4}#hud>*{position:absolute;pointer-events:none}#hud button{pointer-events:auto}
+#hud button:active{filter:brightness(1.25)}
 #top{top:6px;left:50%;transform:translateX(-50%);display:flex;gap:18px;align-items:center;padding:4px 16px;background:var(--pn);border:1px solid var(--ln);border-radius:8px;font-size:15px}
 #sb{color:var(--gd);font-size:19px}
+#pause{display:none;padding:2px 9px;font-size:10px;color:var(--mu);line-height:1.4}
 #cd{top:28%;left:0;right:0;text-align:center;font-size:34px;text-shadow:0 2px 8px #000}
 #mm{left:8px;bottom:8px;width:180px;height:180px;border:2px solid var(--ln);border-radius:6px;background:#000}#mm.big{width:300px;height:300px}
 #bot{left:200px;right:8px;bottom:8px;display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;padding:8px;background:var(--pn);border:1px solid var(--ln);border-radius:10px}
 #pic{width:54px;height:54px;border-radius:50%;border:3px solid var(--gd)}
+#hshop{display:flex;flex-direction:column;align-items:flex-start;gap:3px}
 .b{position:relative;height:16px;width:220px;background:#000a;border-radius:3px;margin-top:3px;overflow:hidden}.b.s{height:6px}
 .b i{position:absolute;inset:0 auto 0 0;width:50%}.b u{position:relative;text-decoration:none;font-size:11px;padding-left:6px}
 #abs,#its{display:flex;gap:6px}
-.ab,.sl{position:relative;width:46px;height:46px;border:2px solid var(--ln);border-radius:8px;background:#0c1020;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.ab,.sl{position:relative;width:46px;height:46px;padding:0;border:2px solid var(--ln);border-radius:8px;background:#0c1020;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.ab{transition:transform .07s ease,filter .15s ease;cursor:pointer}
+.ab.cd{border-color:#26344f}
+.ab.nomana{border-color:#3a5a9a;filter:brightness(.82)}.ab.nomana span{color:#8fb6ff}
+.ab.locked{filter:grayscale(.85) brightness(.68)}
+.ab.dead{filter:grayscale(1) brightness(.6);opacity:.75}
+/* Press feedback for every pointer type; hover alone is never the only cue. Kept above the generic press rule so state tinting is replaced only while the finger is down. */
+#hud .ab:active{transform:scale(.92);filter:brightness(1.35)}
 .ab b{position:absolute;top:1px;left:4px;color:var(--gd)}.ab span{font-size:9px;text-align:center;line-height:1;padding-top:8px;font-weight:400}
-.ab u{position:absolute;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:18px}.ab u:empty{display:none}
+.ab u{position:absolute;inset:0;background:#000b;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:18px;border-radius:6px;animation:cdin .16s ease}
+.ab u:empty{display:none}
+@keyframes cdin{from{opacity:.35}to{opacity:1}}
+/* Decoration never eats the tap: only the button surface is a hit area, its label and cooldown overlay never are. */
+.ab b,.ab span,.ab u{pointer-events:none}
+#atk{display:none}
+#rot{display:none;position:absolute;top:calc(34px + env(safe-area-inset-top,0px));right:calc(6px + env(safe-area-inset-right,0px));align-items:center;gap:6px;padding:4px 6px 4px 10px;background:var(--pn);border:1px solid var(--ln);border-radius:20px;font-size:11px;color:var(--mu);pointer-events:auto;max-width:70vw}
+#rot button{padding:1px 7px;font-size:11px;border-radius:12px}
 #feed{top:50px;right:8px;text-align:right;font-size:13px;text-shadow:0 1px 3px #000}#fps{top:6px;right:8px}
 #score{top:80px;left:50%;transform:translateX(-50%);background:var(--pn);padding:10px;border-radius:8px;min-width:300px}#score td{padding:2px 10px;text-align:left}
-#shop{position:absolute;z-index:8;left:50%;top:50%;transform:translate(-50%,-50%);width:min(760px,96vw);max-height:84vh;overflow:auto;background:#0f1424f4;border:1px solid var(--ln);border-radius:10px;padding:12px;box-sizing:border-box}
+#shop{position:absolute;z-index:8;left:50%;top:50%;transform:translate(-50%,-50%);width:min(760px,96vw);max-height:84vh;overflow:auto;background:#0f1424f4;border:1px solid var(--ln);border-radius:10px;padding:12px;box-sizing:border-box;overscroll-behavior:contain}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin:8px 0}.card{border:1px solid var(--ln);border-radius:8px;padding:8px;background:#151c32;line-height:1.5}
-.ft{position:absolute;left:0;top:0;display:none;font:700 15px Cinzel,Georgia,serif;text-shadow:0 0 3px #000,0 1px 2px #000;pointer-events:none;z-index:3}#g canvas{display:block}
+.ft{position:absolute;left:0;top:0;display:none;font:700 15px Cinzel,Georgia,serif;text-shadow:0 0 3px #000,0 1px 2px #000;pointer-events:none;z-index:3}
+/* The battlefield owns gestures; menus keep normal scrolling because only this canvas opts out. */
+#g canvas{display:block;touch-action:none}
 #menu{justify-content:flex-start;padding-top:min(5vh,44px);background:linear-gradient(90deg,#06070df5 0%,#06070dd6 52%,#06070d00 100%);align-items:flex-start;text-align:left;padding-left:4vw}#menu .row{justify-content:flex-start}#heroes{max-width:56vw}#hd,details{max-width:50vw}
 .pbar{width:min(320px,80vw);height:10px;background:#0008;border-radius:5px;overflow:hidden}.pbar i{display:block;height:100%;width:0;background:var(--gd);transition:width .15s}
 #root{display:contents}#ftl{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:4}
+
+/* ---------- touch devices: larger hit areas, press feedback, no sticky hover ---------- */
+@media (pointer:coarse){
+  #pause{display:block}
+  #atk{display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid #8a3a4a;background:#2a1520;color:#ffb3c0;font-size:19px;line-height:1;padding:0}
+  .ab.ready{box-shadow:0 0 7px -2px #3b9cff55}
+  #shop button,#hshop button,.ov button{min-height:40px}
+}
+@media (orientation:portrait) and (pointer:coarse){#rot{display:flex}}
+
+/* ---------- compact HUD: narrow screens and short landscape phones keep the battlefield visible ---------- */
+@media (max-width:960px),(pointer:coarse) and (max-height:520px){
+  #top{gap:10px;padding:3px 10px;font-size:12px;max-width:calc(100vw - 12px)}
+  #sb{font-size:14px}
+  #cd{font-size:clamp(20px,5vw,30px)}
+  #top,#bot,#mm{pointer-events:auto}
+  #mm{left:calc(6px + env(safe-area-inset-left,0px));top:calc(6px + env(safe-area-inset-top,0px));bottom:auto;width:clamp(84px,20vh,124px);height:auto;aspect-ratio:1;touch-action:none}
+  #mm.big{width:clamp(140px,32vh,220px)}
+  #feed{top:calc(38px + env(safe-area-inset-top,0px));right:calc(6px + env(safe-area-inset-right,0px));font-size:11px;max-width:44vw}
+  #score{top:calc(70px + env(safe-area-inset-top,0px));min-width:0;width:min(300px,86vw);font-size:12px}
+  #bot{left:calc(6px + env(safe-area-inset-left,0px));right:calc(6px + env(safe-area-inset-right,0px));bottom:calc(6px + env(safe-area-inset-bottom,0px));padding:6px 8px;gap:8px;align-items:center;flex-wrap:nowrap;border-radius:12px}
+  #pic{width:40px;height:40px;border-width:2px}
+  #hstats{min-width:84px;flex:1 1 auto;max-width:230px}
+  .b{width:100%;height:12px}.b.s{height:5px}
+  #its{gap:3px}
+  .sl{width:26px;height:26px;font-size:9px;border-width:1px;border-radius:5px}
+  #abs{gap:6px}
+  .ab{width:clamp(42px,11vw,52px);height:auto;aspect-ratio:1;font-size:10px;border-radius:10px}
+  .ab span{font-size:8px}
+  .ab u{font-size:13px}
+  #atk{width:clamp(42px,11vw,52px);height:auto;aspect-ratio:1}
+  #hshop{align-items:center}
+  #gd{font-size:11px;white-space:nowrap}
+  #shopb{font-size:11px;padding:5px 9px}
+  /* thumb order: hero stats left, then inventory, shop, abilities and attack at the lower-right */
+  #pic{order:1}#hstats{order:2}#its{order:3}#hshop{order:4}#abs{order:5}#atk{order:6}
+}
+@media (max-width:700px) and (orientation:landscape){
+  #its{display:none}
+  #ob{display:none}
+}
+
+/* ---------- portrait phones: two-row bar, no feed, minimap tucked under the score bar ---------- */
+@media (orientation:portrait) and (max-width:620px){
+  #feed{display:none}
+  #top{gap:8px;font-size:11px;padding:2px 8px}
+  #sb{font-size:13px}
+  #mm{top:calc(38px + env(safe-area-inset-top,0px));width:clamp(72px,22vw,104px)}
+  #bot{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"pic stats shop" "its abs atk";align-items:center;row-gap:6px;column-gap:8px}
+  #pic{grid-area:pic}
+  #hstats{grid-area:stats;min-width:0}
+  #hshop{grid-area:shop;align-items:flex-end}
+  #its{grid-area:its;display:grid;grid-template-columns:repeat(3,auto);gap:3px;justify-content:start}
+  #abs{grid-area:abs;justify-self:end;gap:5px}
+  #atk{grid-area:atk;justify-self:end}
+  .sl{width:24px;height:24px}
+  .ab,#atk{width:clamp(38px,11.5vw,50px)}
+  #menu{padding-left:14px;padding-right:14px}
+  #heroes,#hd,details{max-width:100%}
+}
+@media (orientation:portrait) and (max-width:360px){#its{display:none}}

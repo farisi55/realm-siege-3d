@@ -9,8 +9,8 @@ import { terrainY } from './env/height';
 import { CamRig, impactAttenuation } from './camrig';
 import type { CamSink } from './fx/kit';
 
-/** Pointer state shared with input.ts: position, whether it is inside the window and whether the middle button is rotating the view. */
-export const MS = { x: 0, y: 0, in: 0, drag: 0 };
+/** Pointer state shared with input.ts: position, whether it is inside the window, whether the middle button is rotating the view, and whether the last battlefield pointer was a touch (edge scroll stays off for touch, or the camera would crawl away from the last tap). */
+export const MS = { x: 0, y: 0, in: 0, drag: 0, touch: 0 };
 
 /** The MOBA camera: an isometric view that glides (see camrig.ts for the maths). `app.cam` stays the public state the simulation reads. */
 export const rig = new CamRig(W, K);
@@ -47,7 +47,7 @@ export const camReset = (): void => rig.reset();
 /** Runs every frame of a match: edge scrolling, the rig, then the pose of the real camera, the picking camera, the sun and the minimap view. */
 export function camUpd(dt: number): void {
   const m = app.me, c = app.cam;
-  if (MS.in && !MS.drag && dt) {
+  if (MS.in && !MS.drag && !MS.touch && dt) {
     const e = 36, ax = (MS.x > innerWidth - e ? 1 : 0) - (MS.x < e ? 1 : 0), ay = (MS.y > innerHeight - e ? 1 : 0) - (MS.y < e ? 1 : 0);
     c.o.x += (ax * Math.cos(c.cy) + ay * Math.sin(c.cy)) * 900 * dt;
     c.o.y += (-ax * Math.sin(c.cy) + ay * Math.cos(c.cy)) * 900 * dt;

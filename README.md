@@ -1,4 +1,4 @@
-# Realm Siege 3D
+# Moba DOTA
 
 Original 5v5 fantasy MOBA prototype: Three.js + TypeScript + Vite. No external assets: models, effects and terrain are procedural.
 
@@ -245,3 +245,15 @@ Drop GLB files into `public/assets/`. Any file that is missing keeps the procedu
 - Draco-compressed GLBs work: the decoder already lives in `public/draco/`.
 - `src/assets/AssetManager.ts` preloads everything behind the loading screen (`loadModel`, `getModel`, `preload`); `CharacterVisual` chooses the GLB or the procedural rig, so gameplay code never changes.
 - Bloom and the rest of the post-processing chain: see "Look: light, haze, post-processing". Toggle bloom under Settings; the chain falls back to direct rendering if post-processing is unsupported.
+
+## Testing
+
+Simulated tests run in jsdom with a_stubbed WebGL renderer. No external assets are required.
+
+```
+npm test            # 471 tests across 17 files (simulation, audio, UI, camera, CSS contracts)
+npm run typecheck   # TypeScript compile check only
+```
+
+**Mobile checklist** is verified by `tests/mobile.test.ts` (23 tests).  
+Items that rely on browser layout or touch gestures (HUD coverage, portrait/landscape sync on device screens, iOS `:active` pseudo-class, low-end performance) must be checked manually on a real device. The CSS-contract tests (item 9–10) parse the source stylesheet and assert that responsive rules, clamps and hit-area routing exist correctly.

@@ -8,7 +8,7 @@ export function MainMenu() {
   const sel = useUi(s => s.sel), zoom = useUi(s => s.zoom), showFps = useUi(s => s.showFps), bloom = useUi(s => s.bloom), quality = useUi(s => s.quality), audio = useUi(s => s.audio);
   return (
     <div id="menu" className="ov">
-      <h1 style={{ fontSize: 46, color: 'var(--gd)' }}>Realm Siege 3D</h1>
+      <h1 style={{ fontSize: 46, color: 'var(--gd)' }}>Moba DOTA</h1>
       <div className="t" style={{ color: 'var(--mu)' }}>Choose your hero, then destroy the enemy core</div>
       <div id="heroes" className="row">
         {HR.map((h, i) => (
@@ -23,7 +23,7 @@ export function MainMenu() {
       <button className="p" style={{ fontSize: 18, padding: '10px 40px' }} onClick={play}>Play</button>
       <details>
         <summary>Instructions</summary>
-        Arrow keys or right click: move. Left click: attack an enemy or move. Q W E R: abilities (R unlocks at level 3). Space: center camera. B: shop. Tab: scoreboard. M: minimap size. Esc: pause. Mouse wheel: zoom. Middle-mouse drag: rotate camera. Screen edge: scroll camera. Destroy towers with your creeps, then the enemy core.
+        Arrow keys or right click: move. Left click: attack an enemy or move. Q W E R: abilities (R unlocks at level 3). Space: center camera. B: shop. Tab: scoreboard. M: minimap size. Esc: pause. Mouse wheel: zoom. Middle-mouse drag: rotate camera. Screen edge: scroll camera. Touch: tap the battlefield to move or attack, tap Q W E R to cast, use the Attack button for the nearest enemy, two fingers rotate and pinch-zoom. Destroy towers with your creeps, then the enemy core.
       </details>
       <details>
         <summary>Settings</summary>

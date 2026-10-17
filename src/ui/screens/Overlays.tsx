@@ -6,7 +6,7 @@ export function Loading() {
   const { done, total } = useUi(s => s.loading);
   return (
     <div id="loading" className="ov">
-      <h2 className="t">Realm Siege 3D</h2>
+      <h2 className="t">Moba DOTA</h2>
       <div className="pbar"><i style={{ width: `${(100 * done) / total}%` }} /></div>
       <small style={{ color: 'var(--mu)' }}>Loading models and world {done}/{total}</small>
     </div>
