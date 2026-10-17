@@ -12,6 +12,7 @@ export class FakeParam {
 }
 export class FakeNode { connect(_n: unknown) { return _n; } disconnect() {} }
 export class FakeGain extends FakeNode { gain = new FakeParam(); }
+export class FakePanner extends FakeNode { pan = new FakeParam(); }
 export class FakeFilter extends FakeNode { type = 'lowpass'; frequency = new FakeParam(); Q = new FakeParam(); }
 export class FakeOsc extends FakeNode { type = 'sine'; frequency = new FakeParam(); detune = new FakeParam(); onended: (() => void) | null = null; start() {} stop() {} }
 export class FakeSource extends FakeNode { buffer: unknown = null; loop = false; playbackRate = new FakeParam(); onended: (() => void) | null = null; start() {} stop() {} }
@@ -23,6 +24,7 @@ export class FakeCtx {
   createOscillator() { return new FakeOsc(); }
   createBiquadFilter() { return new FakeFilter(); }
   createBufferSource() { return new FakeSource(); }
+  createStereoPanner() { return new FakePanner(); }
   createBuffer(_c: number, len: number, rate: number) { return new FakeBuffer(len, rate); }
   decodeAudioData(_d: ArrayBuffer) { return Promise.resolve(new FakeBuffer(64)); }
   resume() { this.state = 'running'; return Promise.resolve(); }

@@ -34,6 +34,11 @@ export function initAudio(): void {
     const el = e.target as HTMLElement | null;
     if (el?.closest?.('button, input, select, .hc')) snd.play('ui', 'uiClick');
   }, true);
+  // Hover feedback where it means something (hero cards, settings rows) — never on every element of the page.
+  document.addEventListener('pointerover', e => {
+    const el = e.target as HTMLElement | null;
+    if (el?.closest?.('.hc, summary')) snd.play('ui', 'uiHover');
+  }, true);
 }
 
 /** True when the context is running: sounds may play (the first user gesture got us here). */
@@ -47,6 +52,10 @@ export function playAmbient(name: string, opts?: PlayOptions): boolean { return 
 export function setVolume(bus: Bus, volume: number): void { snd.setVolume(bus, volume); }
 export function setMuted(muted: boolean): void { snd.setMuted(muted); }
 export function stopAll(bus?: Bus): void { snd.stopAll(bus); }
+/** Moves the audio listener: the world layer pushes the camera focus and yaw every frame (`audio/world.ts`). */
+export function setListener(x: number, y: number, yaw: number): void { snd.setListener(x, y, yaw); }
+/** Ducks or restores the gameplay buses (music, sfx, ambient); the UI bus is never touched. */
+export function setDuck(scale: number): void { snd.setDuck(scale); }
 /** Clears every bus back to its default in memory (the caller removes the stored keys first). */
 export function resetAudio(): void { snd.reset(); }
 export function preloadAudio(): Promise<number> { return snd.preload(); }

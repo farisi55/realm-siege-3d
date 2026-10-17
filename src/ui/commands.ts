@@ -6,11 +6,16 @@ import { ui } from './store';
 import { publishHud } from './hudData';
 import { setQuality } from '../render/quality';
 import type { QualitySetting } from '../render/quality';
-import { audioPrefs, resetAudio, setMuted, setVolume } from '../audio/audio';
+import { audioPrefs, playUI, resetAudio, setMuted, setVolume } from '../audio/audio';
 import type { Bus } from '../audio/AudioManager';
 
-export function setPause(v: boolean): void { if (!app.G || app.G.over) return; app.G.pause = v; ui.set({ paused: v }); }
-export function toggleShop(): void { if (!app.G || app.G.over) return; ui.set({ shop: !ui.get().shop }); }
+export function setPause(v: boolean): void { if (!app.G || app.G.over) return; app.G.pause = v; ui.set({ paused: v }); playUI(v ? 'uiPause' : 'uiResume'); }
+export function toggleShop(): void {
+  if (!app.G || app.G.over) return;
+  const open = !ui.get().shop;
+  ui.set({ shop: open });
+  playUI(open ? 'shopOpen' : 'shopClose');
+}
 export function finishMatch(winner: number): void { app.G.over = true; app.G.win = winner; ui.set({ result: winner === 0 ? 'victory' : 'defeat', shop: false }); }
 
 /** Audio settings (menu): the manager persists and applies the change; the store refresh keeps every control in sync. */
@@ -22,10 +27,11 @@ export function buy(n: number): void {
   const it = IT[n], me = app.me;
   if (me.g < it[1] || me.it.length >= 6) { hooks.ft(me.x, me.y - 40, me.it.length >= 6 ? 'Inventory full' : 'Not enough gold', '#ffe066'); return; }
   me.g -= it[1]; me.it.push({ n: it[0], c: it[1], b: it[2] }); rc(me); refresh();
+  playUI('shopBuy');
 }
 export function sell(n: number): void {
   const it = app.me.it.splice(n, 1)[0];
-  if (it) { app.me.g += Math.floor(it.c * .6); rc(app.me); refresh(); }
+  if (it) { app.me.g += Math.floor(it.c * .6); rc(app.me); refresh(); playUI('shopSell'); }
 }
 
 export function setSetting(key: 'zoom' | 'showFps' | 'bloom', value: number | boolean): void {

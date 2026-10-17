@@ -2,6 +2,7 @@ import { app } from '../game/state';
 import type { SndEv } from '../game/state';
 import { snd } from './audio';
 import { abilityCue, startAbilityLoop, stopAbilityLoop, stopAbilityLoops } from './abilities';
+import { distantBattle } from './ambience';
 
 /**
  * Combat audio: the bridge between the simulation's `hooks.snd` events and the phase-1 engine.
@@ -10,6 +11,8 @@ import { abilityCue, startAbilityLoop, stopAbilityLoop, stopAbilityLoops } from 
  * respawn — and this layer decides which voice it gets, how loud, how varied and whether it may play at all:
  *
  *  - Distance attenuation around the player's hero: nearby combat is loud, distant skirmishes fade out entirely.
+ *  - Every play carries its world position, so the engine pans it against the camera yaw (phase 4); heavy blasts beyond
+ *    the view become a single restrained distant rumble instead of a full voice.
  *  - A rolling budget (a few non-priority voices per short window) plus the engine's per-sound `minGap`/`max`
  *    keep thirty creeps trading blows from turning into a wall of noise.
  *  - Player events and structure losses are priority: they bypass the budget and play with a small gain lift.
@@ -76,6 +79,12 @@ export function resetCombatAudio(): void { windowAt = -1; windowN = 0; stopAbili
 /** `hooks.snd`: called once by the simulation for every combat event; never from the render loop. */
 export function sndEvent(e: SndEv): void {
   if (e.k === 'die' && e.uid !== undefined) stopAbilityLoop(e.uid); // a fallen hero takes its sustained abilities with it
+  // Phase 4: a heavy blast far outside the view becomes a restrained distant rumble instead of a full voice.
+  if (e.k === 'hit' && e.kind === 'blast' && !e.player && !e.big) {
+    const cam = app.cam;
+    const d = Math.hypot(e.x - cam.k.x, e.y - cam.k.y);
+    if (d > 2000) distantBattle(e.x, e.y, d / 4200);
+  }
   const cue = cueOf(e);
   if (!cue) return;
   const me = app.me;
@@ -89,6 +98,7 @@ export function sndEvent(e: SndEv): void {
   if (!allow(priority)) return;
   const gain = cue.g * (.2 + .8 * att) * (e.player ? 1.3 : 1) * (1 - Math.random() * .1);
   const rate = 1 + (Math.random() * 2 - 1) * cue.spread;
-  if (cue.loop) { startAbilityLoop(e.uid, cue.s, gain, rate); return; } // sustained: the ignition intro is inside the voice
-  snd.play('sfx', cue.s, { gain, rate, force: priority });
+  const pos = { x: e.x, y: e.y }; // plays panned by the engine: gameplay is heard where it happens
+  if (cue.loop) { startAbilityLoop(e.uid, cue.s, gain, rate, pos); return; } // sustained: the ignition intro is inside the voice
+  snd.play('sfx', cue.s, { gain, rate, force: priority, pos });
 }

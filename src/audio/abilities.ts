@@ -90,11 +90,12 @@ const loops = new Map<number, LoopHandle>();
 /** When a Rebirth wave last fired (per ability, sim time): all its heal events arrive in the same tick. */
 let rebirthAt = -1;
 
-/** The mix layer calls this for a `loop` cue: one sustained fire bed per owner, replaced if the same hero re-ignites. */
-export function startAbilityLoop(uid: number | undefined, name: string, gain: number, rate: number): void {
+/** The mix layer calls this for a `loop` cue: one sustained fire bed per owner, replaced if the same hero re-ignites.
+ *  The bed keeps its world position, so the engine pans it as the camera moves (phase 4). */
+export function startAbilityLoop(uid: number | undefined, name: string, gain: number, rate: number, pos?: { x: number; y: number }): void {
   if (uid === undefined) return;
   stopAbilityLoop(uid);
-  const h = snd.startLoop('sfx', name, { gain, rate });
+  const h = snd.startLoop('sfx', name, pos ? { gain, rate, pos } : { gain, rate });
   if (h) loops.set(uid, h);
 }
 

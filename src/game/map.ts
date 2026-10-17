@@ -7,3 +7,6 @@ export const OB=[];
   if(dl(x,y)>150+r&&Math.hypot(x-1600,y-1600)>r+60&&BASE.every(b=>Math.hypot(x-b[0],y-b[1])>450)&&[...CAMP,[1000,1000],[2200,2200]].every(c=>Math.hypot(x-c[0],y-c[1])>190+r)&&OB.every(o=>Math.hypot(x-o.x,y-o.y)>o.r+r+30))OB.push({x,y,r},{x:W-x,y:W-y,r})}})();
 export const laneD=(x,y)=>{let m=1e9;for(const l of LN)for(let i=0;i<2;i++){const a=l[i],b=l[i+1],dx=b[0]-a[0],dy=b[1]-a[1],t=clamp(((x-a[0])*dx+(y-a[1])*dy)/(dx*dx+dy*dy),0,1);m=Math.min(m,Math.hypot(x-a[0]-t*dx,y-a[1]-t*dy))}return m};
 export const H=(x,y)=>{const f=clamp((laneD(x,y)-90)/220,0,1)*clamp((Math.min(Math.hypot(x-360,y-2840),Math.hypot(x-2840,y-360))-380)/260,0,1),rv=1-clamp(Math.abs(x-y)/1.414/150,0,1);return f*(Math.sin(x*.004)*Math.cos(y*.0035)*1.8+Math.sin(x*.011+y*.007)*.6+.8)-rv*.9};
+/** The ground a footstep lands on: the river cuts the map along the `x = y` diagonal (the `rv` term of `H`). */
+export const RIVER_HALF=212;
+export const surfaceAt=(x:number,y:number):'water'|'grass'=>Math.abs(x-y)<RIVER_HALF?'water':'grass';

@@ -145,4 +145,29 @@ describe('React UI + 3D scene (jsdom, stubbed WebGL)', () => {
     fireEvent.click(screen.getByLabelText(/Bloom/)); expect(S.app.bloom).toBe(true); expect(localStorage.getItem('rs_bloom')).toBe('true');
     fireEvent.change(screen.getByLabelText(/Camera zoom/), { target: { value: '1.2' } }); expect(localStorage.getItem('rs_zoom')).toBe('1.2');
   });
+  it('phase 4: the controls reach the audio facade (select, hover, pause, shop open/buy/sell/close)', async () => {
+    const A = await import('../src/audio/audio');
+    const played: string[] = [];
+    const spy = vi.spyOn(A.snd, 'play').mockImplementation((_bus: any, name: any) => { played.push(name); return true; }); // jsdom has no Web Audio: record the attempts
+    try {
+      fireEvent.click(screen.getByText('Ember Mage')); // hero card in the menu
+      expect(played).toContain('uiSelect');
+      act(() => { document.querySelector('#heroes .hc')!.dispatchEvent(new Event('pointerover', { bubbles: true })); });
+      expect(played).toContain('uiHover');
+      fireEvent.click(screen.getByText('Play'));
+      key('keydown', 'Escape');
+      expect(played).toContain('uiPause');
+      fireEvent.click(screen.getByText('Resume'));
+      expect(played).toContain('uiResume');
+      S.app.me.g = 5000;
+      fireEvent.click(screen.getByText('Shop (B)'));
+      expect(played).toContain('shopOpen');
+      fireEvent.click(document.querySelectorAll('#shop .card button')[0]);
+      expect(played).toContain('shopBuy');
+      fireEvent.click(screen.getByText(/^Sell/));
+      expect(played).toContain('shopSell');
+      fireEvent.click(screen.getByText('Close (B)'));
+      expect(played).toContain('shopClose');
+    } finally { spy.mockRestore(); }
+  });
 });

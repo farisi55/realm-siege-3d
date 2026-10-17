@@ -39,8 +39,12 @@ export interface SynthIo {
 export type StopFn = () => void;
 /** A synthesized voice: builds its nodes, starts them, returns its stop function. */
 export type SynthFn = (io: SynthIo) => StopFn;
-/** Controls one sustained voice started by `startLoop`: `stop` is idempotent and never throws. */
-export interface LoopHandle { name: string; stop(): void }
+/**
+ * Controls one sustained voice started by `startLoop`: `stop` is idempotent and never throws, `live` reports whether
+ * the voice is still sounding — the world layers watch it to restart a bed that faded out or to replace one that a
+ * `stopAll` took down.
+ */
+export interface LoopHandle { name: string; readonly live: boolean; stop(): void }
 
 export interface SoundDef {
   /** Built-in fallback voice, used whenever no file has been loaded for this name. */
@@ -55,20 +59,31 @@ export interface SoundDef {
   max?: number;
   /** Sustained voice: started with `startLoop`, lives until stopped (a loaded file loops; synth voices fade out on their own). */
   loop?: boolean;
+  /**
+   * Spatial falloff reference distance in world units: a `pos`-carrying play is full volume within it and falls off as
+   * ~1/(1+(d/ref)^2) beyond. Only defs that want engine attenuation set it (music, ambience, footsteps); the combat
+   * mix keeps its own gain and uses `pos` for panning only.
+   */
+  ref?: number;
+  /** Spatial cutoff in world units: a `pos`-carrying play farther than this from the listener is dropped before any node is built. */
+  maxDist?: number;
 }
 
-/** `rate` shifts pitch (clamped .5..2); `force` marks a priority event that bypasses `minGap` and `max`. */
-export interface PlayOptions { gain?: number; rate?: number; force?: boolean }
+/** `rate` shifts pitch (clamped .5..2); `force` marks a priority event that bypasses `minGap` and `max`; `pos` places the voice in the world (see `setListener`). */
+export interface PlayOptions { gain?: number; rate?: number; force?: boolean; pos?: { x: number; y: number } }
 
 export interface AudioPrefs { master: number; sfx: number; music: number; ambient: number; ui: number; muted: boolean }
 
 export interface AudioSnapshot {
   played: number; dropped: number; failed: number; active: number;
   state: AudioContextState | 'none'; unlocked: boolean; gesture: boolean;
-  buses: Record<Bus, number>; levels: Record<Bus, number>; muted: boolean;
+  buses: Record<Bus, number>; levels: Record<Bus, number>; muted: boolean; duck: number; listener: boolean;
 }
 
-interface Voice { bus: Bus; name: string; stop: StopFn }
+interface Voice { bus: Bus; name: string; stop: StopFn; spat?: SpatialVoice }
+
+/** One live positional voice: its world point and the nodes the listener moves (null when that node was not needed or cannot be built). */
+interface SpatialVoice { name: string; x: number; y: number; pan: StereoPannerNode | null; vg: GainNode | null }
 
 const nowMs = (): number => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
 const clamp01 = (v: number): number => Math.min(1, Math.max(0, v));
@@ -101,6 +116,12 @@ export class AudioManager {
   private mutedFlag: boolean;
   /** True once a real user gesture has been seen: the only state in which a voice may be started. */
   private seen = false;
+  /** The listening point the world layers push every frame (camera focus + yaw); null until a game sets one. */
+  private lis: { x: number; y: number; rx: number; ry: number } | null = null;
+  /** Live positional voices, re-placed whenever the listener moves (ambience beds, footsteps, panned one-shots). */
+  private spatial = new Set<SpatialVoice>();
+  /** Temporary gain scale for the gameplay buses (pause ducks the world, never the UI). */
+  private duckScale = 1;
 
   constructor(private readonly sounds: Record<string, SoundDef> = {}) {
     this.vols = {
@@ -161,7 +182,11 @@ export class AudioManager {
     this.applyVolumes();
   }
 
-  private busGain(b: Bus): number { return b === 'master' ? (this.mutedFlag ? 0 : this.vols.master) : this.vols[b]; }
+  private busGain(b: Bus): number {
+    if (b === 'master') return this.mutedFlag ? 0 : this.vols.master;
+    if (b === 'ui') return this.vols.ui; // controls stay at their set level: a duck never muffles the menus
+    return this.vols[b] * this.duckScale;
+  }
 
   private applyVolumes(): void {
     for (const b of BUSES) this.setParam(this.buses.get(b)?.gain, this.busGain(b));
@@ -213,6 +238,92 @@ export class AudioManager {
     return o;
   }
 
+  // -------------------------------------------------------------------------------------------------------------- spatial
+
+  /**
+   * Moves the listener: the world layers call this once per frame with the camera focus and yaw. Voices carrying a
+   * `pos` pan by the source direction against the camera's right vector and follow the listener as it moves. The
+   * derived `rx`/`ry` is the ground direction that appears rightward on screen for that yaw (see `render/camrig.ts`).
+   */
+  setListener(x: number, y: number, yaw: number): void {
+    this.lis = { x, y, rx: Math.cos(yaw), ry: -Math.sin(yaw) };
+    this.applySpatial();
+  }
+
+  /** True once a listener has been placed (debug/tests). */
+  hasListener(): boolean { return !!this.lis; }
+
+  /** How much a def's spatial falloff would attenuate one world point right now (1 without a listener or a `ref`). */
+  attenuationAt(name: string, x: number, y: number): number {
+    const def = this.sounds[name];
+    if (!def?.ref || !this.lis) return 1;
+    const d = Math.hypot(x - this.lis.x, y - this.lis.y);
+    return 1 / (1 + (d / def.ref) ** 2);
+  }
+
+  /** The live positional voices with their current pan and falloff gain (debug/tests). */
+  spatialVoices(): { name: string; x: number; y: number; pan: number; gain: number }[] {
+    return [...this.spatial].map(s => ({ name: s.name, x: s.x, y: s.y, pan: s.pan ? s.pan.pan.value : 0, gain: s.vg ? s.vg.gain.value : 1 }));
+  }
+
+  /**
+   * Temporary gain scale applied to `sfx` / `music` / `ambient` — never `ui` and never the stored volumes: pausing
+   * ducks the world to a whisper while the menus stay crisp; `1` restores it. Persisting nothing keeps settings honest.
+   */
+  setDuck(scale: number): void {
+    const v = clamp01(scale);
+    if (v === this.duckScale) return;
+    this.duckScale = v;
+    this.applyVolumes();
+  }
+  get duck(): number { return this.duckScale; }
+
+  /** Where a `pos`-carrying voice sits relative to the listener. Null when nothing positional applies (no listener,
+   * no position, or the UI bus — controls stay centered); false when the def's cutoff culls the play outright. */
+  private spatialFor(def: SoundDef, bus: Bus, pos?: { x: number; y: number }): { att: number; pan: number } | null | false {
+    const L = this.lis;
+    if (!pos || !L || bus === 'ui') return null;
+    const dx = pos.x - L.x, dy = pos.y - L.y, d = Math.hypot(dx, dy);
+    if (def.maxDist !== undefined && d > def.maxDist) return false;
+    const pan = d > 1 ? Math.max(-1, Math.min(1, (dx * L.rx + dy * L.ry) / d)) : 0;
+    if (def.ref === undefined && pan === 0) return null; // nothing to move: play it as a normal, centered voice
+    return { att: def.ref === undefined ? 1 : 1 / (1 + (d / def.ref) ** 2), pan };
+  }
+
+  /** Builds the output chain of a positional voice: bus ← panner? ← falloff gain?, and the gain the synth should use. */
+  private buildSpatial(ctx: AudioContext, busDest: AudioNode, sp: { att: number; pan: number }, def: SoundDef, base: number): { dest: AudioNode; pan: StereoPannerNode | null; vg: GainNode | null; gain: number } {
+    let dest = busDest, pan: StereoPannerNode | null = null, vg: GainNode | null = null, gain = base * sp.att;
+    if (typeof ctx.createStereoPanner === 'function') {
+      // Always give a positional voice a panner — even one that starts dead ahead — so the listener can pan it later.
+      pan = ctx.createStereoPanner();
+      pan.pan.value = sp.pan;
+      pan.connect(dest);
+      dest = pan;
+    }
+    if (def.ref !== undefined) {
+      vg = ctx.createGain();
+      gain = base; // the falloff lives on its own node so the listener can keep moving the voice
+      vg.gain.value = sp.att;
+      vg.connect(dest);
+      dest = vg;
+    }
+    return { dest, pan, vg, gain };
+  }
+
+  /** Re-places every live positional voice after the listener moved: pan first, then the falloff gain for `ref` defs. */
+  private applySpatial(): void {
+    const L = this.lis;
+    if (!L) return;
+    for (const s of this.spatial) {
+      const dx = s.x - L.x, dy = s.y - L.y, d = Math.hypot(dx, dy);
+      if (s.pan) this.setParam(s.pan.pan, d > 1 ? Math.max(-1, Math.min(1, (dx * L.rx + dy * L.ry) / d)) : 0);
+      if (s.vg) {
+        const ref = this.sounds[s.name]?.ref;
+        this.setParam(s.vg.gain, ref ? 1 / (1 + (d / ref) ** 2) : 1);
+      }
+    }
+  }
+
   // -------------------------------------------------------------------------------------------------------------- playing
 
   /**
@@ -226,6 +337,8 @@ export class AudioManager {
     if (!def || (!def.synth && !def.urls?.length)) { this.stats.failed++; return false; }
     if (!this.seen && !this.unlocked) { this.stats.dropped++; return false; } // autoplay: nothing is audible before the first gesture
     if (this.mutedFlag || this.vols.master <= 0 || this.vols[bus] <= 0) return false; // inaudible: do not build nodes
+    const sp = this.spatialFor(def, bus, opts.pos); // false: beyond the def's cutoff, culled before any node exists
+    if (sp === false) { this.stats.dropped++; return false; }
     if (def.minGap) {
       const now = nowMs(), last = this.lastAt.get(name);
       if (!opts.force && last !== undefined && now - last < def.minGap) return false;
@@ -236,24 +349,27 @@ export class AudioManager {
     const ctx = this.ensure();
     if (!ctx) { this.stats.failed++; return false; }
     if (ctx.state === 'suspended') this.resume(); // a gesture was seen: the queued voice starts on resume
-    const dest = this.buses.get(bus) ?? this.buses.get('master');
-    if (!dest) { this.stats.failed++; return false; }
-    const gain = Math.max(0, (def.gain ?? 1) * (opts.gain ?? 1));
+    const busDest = this.buses.get(bus) ?? this.buses.get('master');
+    if (!busDest) { this.stats.failed++; return false; }
+    const base = Math.max(0, (def.gain ?? 1) * (opts.gain ?? 1));
     const rate = Math.min(2, Math.max(.5, opts.rate ?? 1)); // pitch variation, in tune-safe bounds
     const buffer = this.buffers.get(name);
+    // Positional voices get a pan node (when the engine can pan) and, for `ref` defs, a gain node the listener can move.
+    const chain = sp ? this.buildSpatial(ctx, busDest, sp, def, base) : { dest: busDest, pan: null, vg: null, gain: base };
 
     // The voice object exists before the nodes do: a synth wires `io.done` to it so the registry never leaks.
     const voice: Voice = { bus, name, stop: () => { /* replaced below */ } };
     let ended = false;
-    const done = (): void => { ended = true; this.voices.delete(voice); };
+    const done = (): void => { ended = true; this.voices.delete(voice); if (voice.spat) this.spatial.delete(voice.spat); };
     try {
-      if (buffer) voice.stop = this.playBuffer(ctx, dest, buffer, gain, rate);
+      if (buffer) voice.stop = this.playBuffer(ctx, chain.dest, buffer, chain.gain, rate);
       else if (def.synth) {
-        const io: SynthIo = { ctx, dest, t0: ctx.currentTime + .005, gain, rate, noise: this.noiseBuffer(ctx), done };
+        const io: SynthIo = { ctx, dest: chain.dest, t0: ctx.currentTime + .005, gain: chain.gain, rate, noise: this.noiseBuffer(ctx), done };
         voice.stop = def.synth(io) ?? voice.stop;
       } else { this.stats.failed++; return false; }
     } catch { this.stats.failed++; return false; }
     if (ended) return false; // the voice finished while being built (degenerate): nothing left to track
+    if (sp) { voice.spat = { name, x: opts.pos!.x, y: opts.pos!.y, pan: chain.pan, vg: chain.vg }; this.spatial.add(voice.spat); }
     this.voices.add(voice);
     this.stats.played++;
     return true;
@@ -269,31 +385,43 @@ export class AudioManager {
     if (!def || (!def.synth && !def.urls?.length)) { this.stats.failed++; return null; }
     if (!this.seen && !this.unlocked) { this.stats.dropped++; return null; }
     if (this.mutedFlag || this.vols.master <= 0 || this.vols[bus] <= 0) return null;
+    const sp = this.spatialFor(def, bus, opts.pos); // false: beyond the def's cutoff, culled before any node exists
+    if (sp === false) { this.stats.dropped++; return null; }
     if (!opts.force && def.max !== undefined && this.count(name) >= def.max) { this.stats.dropped++; return null; }
     if (this.voices.size >= this.maxVoices) { this.stats.dropped++; return null; }
     const ctx = this.ensure();
     if (!ctx) { this.stats.failed++; return null; }
     if (ctx.state === 'suspended') this.resume();
-    const dest = this.buses.get(bus) ?? this.buses.get('master');
-    if (!dest) { this.stats.failed++; return null; }
-    const gain = Math.max(0, (def.gain ?? 1) * (opts.gain ?? 1));
+    const busDest = this.buses.get(bus) ?? this.buses.get('master');
+    if (!busDest) { this.stats.failed++; return null; }
+    const base = Math.max(0, (def.gain ?? 1) * (opts.gain ?? 1));
     const rate = Math.min(2, Math.max(.5, opts.rate ?? 1));
     const buffer = this.buffers.get(name);
+    const chain = sp ? this.buildSpatial(ctx, busDest, sp, def, base) : { dest: busDest, pan: null, vg: null, gain: base };
     const voice: Voice = { bus, name, stop: () => { /* replaced below */ } };
-    const done = (): void => { this.voices.delete(voice); };
+    const done = (): void => { this.voices.delete(voice); if (voice.spat) this.spatial.delete(voice.spat); };
     try {
-      if (buffer) voice.stop = this.playBuffer(ctx, dest, buffer, gain, rate, true);
+      if (buffer) voice.stop = this.playBuffer(ctx, chain.dest, buffer, chain.gain, rate, true);
       else if (def.synth) {
-        const io: SynthIo = { ctx, dest, t0: ctx.currentTime + .005, gain, rate, noise: this.noiseBuffer(ctx), done };
+        const io: SynthIo = { ctx, dest: chain.dest, t0: ctx.currentTime + .005, gain: chain.gain, rate, noise: this.noiseBuffer(ctx), done };
         voice.stop = def.synth(io) ?? voice.stop;
       } else { this.stats.failed++; return null; }
     } catch { this.stats.failed++; return null; }
     this.voices.add(voice);
+    if (sp) { voice.spat = { name, x: opts.pos!.x, y: opts.pos!.y, pan: chain.pan, vg: chain.vg }; this.spatial.add(voice.spat); }
     this.stats.played++;
+    const owner = this;
     let live = true;
     return {
       name,
-      stop: (): void => { if (!live) return; live = false; this.voices.delete(voice); try { voice.stop(); } catch { /* already stopped */ } },
+      get live() { return live && owner.voices.has(voice); },
+      stop: (): void => {
+        if (!live) return;
+        live = false;
+        this.voices.delete(voice);
+        if (voice.spat) this.spatial.delete(voice.spat);
+        try { voice.stop(); } catch { /* already stopped */ }
+      },
     };
   }
 
@@ -326,11 +454,12 @@ export class AudioManager {
     return this.noise;
   }
 
-  /** Stops every voice (`bus` limits it to one bus) and clears the registry. */
+  /** Stops every voice (`bus` limits it to one bus) and clears the registry, including the spatial placements. */
   stopAll(bus?: Bus): void {
     for (const v of [...this.voices]) {
       if (bus && v.bus !== bus) continue;
       this.voices.delete(v);
+      if (v.spat) this.spatial.delete(v.spat);
       try { v.stop(); } catch { /* already stopped */ }
     }
   }
@@ -382,12 +511,13 @@ export class AudioManager {
     if (ctx && ctx.state !== 'closed') safely(() => ctx.close());
     this.buffers.clear(); this.pending.clear(); this.lastAt.clear();
     this.noise = null; this.seen = false;
+    this.lis = null; this.spatial.clear(); this.duckScale = 1;
   }
 
   snapshot(): AudioSnapshot {
     return {
       ...this.stats, active: this.voices.size, state: this.ctx ? this.ctx.state : 'none', unlocked: this.unlocked, gesture: this.seen,
-      buses: { ...this.vols }, levels: this.levels(), muted: this.mutedFlag,
+      buses: { ...this.vols }, levels: this.levels(), muted: this.mutedFlag, duck: this.duckScale, listener: !!this.lis,
     };
   }
 }

@@ -13,8 +13,9 @@ import type { QualitySetting } from './render/quality';
 import { ui, pushFeed } from './ui/store';
 import { publishHud } from './ui/hudData';
 import { finishMatch, resetSettings } from './ui/commands';
-import { initAudio, playSFX, preloadAudio, stopAll } from './audio/audio';
+import { initAudio, playSFX, playUI, preloadAudio, stopAll } from './audio/audio';
 import { resetCombatAudio, sndEvent } from './audio/combat';
+import { worldAudioTick } from './audio/world';
 
 /** Wires the simulation to the renderer and the React UI, preloads models, then opens the menu. */
 export async function boot(): Promise<void> {
@@ -34,7 +35,7 @@ export async function boot(): Promise<void> {
   } finally { ui.set({ phase: 'menu' }); }
   pvShow();
 }
-export function selectHero(i: number): void { app.sel = i; ST.set('hero', i); ui.set({ sel: i }); pvShow(); }
+export function selectHero(i: number): void { app.sel = i; ST.set('hero', i); ui.set({ sel: i }); pvShow(); playUI('uiSelect'); }
 export function resetAndShowMenu(): void { resetSettings(); app.sel = 0; ui.set({ sel: 0 }); pvShow(); }
 export function play(): void {
   ST.set('hero', app.sel); startMatch();
@@ -55,5 +56,6 @@ export function frame(dt: number): void {
   if (app.mode === 'play' && app.G) step(dt); else prev(dt);
   updateEnvironment(dt);
   tickQuality(dt);
+  worldAudioTick(dt); // phase 4: listener, music scene, ambience, footsteps, rewards (all idempotent)
   renderFrame();
 }

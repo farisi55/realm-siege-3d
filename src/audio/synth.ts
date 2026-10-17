@@ -114,13 +114,16 @@ function fireBed(io: SynthIo, dur = 3): StopFn {
  * The built-in set. Phase 1: the UI voices (`uiClick` is wired to the delegated click in `initAudio`, `matchStart` to
  * `flow.play`). Phase 2: the combat voices — swings, launches, material impacts, deaths and structure losses — played
  * by `audio/combat.ts` from the simulation's `hooks.snd` events. Phase 3: the hero and ability voices — one family per
- * hero (`audio/abilities.ts` maps them to the same event stream, never a second audio system). Every voice layers
- * original oscillators and filtered noise; a `minGap` swallows duplicate events, a `max` caps how many copies may ring
- * at once, and no third-party samples are used anywhere.
+ * hero (`audio/abilities.ts` maps them to the same event stream, never a second audio system). Phase 4: the world —
+ * music beds and stingers, ambience, footsteps and the menu voices (`audio/music.ts`, `audio/ambience.ts`,
+ * `audio/footsteps.ts`). Every voice layers original oscillators and filtered noise; a `minGap` swallows duplicate
+ * events, a `max` caps how many copies may ring at once, and no third-party samples are used anywhere.
  *
  * This table is the sound manifest: gameplay only ever names a voice, so any entry may gain `urls` later (replacing
- * the synthesized fallback with a local file) without touching a line of simulation or cue-mapping code. `emZoneFire`
- * is the one sustained voice: a `loop` def started by `startLoop` and stopped on owner death or match restart.
+ * the synthesized fallback with a local file) without touching a line of simulation or cue-mapping code. Sustained
+ * voices carry `loop: true` — the Burning Zone fire bed and everything phase 4 keeps sounding (music, ambience) —
+ * and are started through `startLoop`, never `play`. Defs with `ref`/`maxDist` opt into engine spatialization: the
+ * engine pans them by the listener yaw and attenuates by distance when the caller passes a `pos`.
  */
 export const SOUNDS: Record<string, SoundDef> = {
   /** A short, dry click for buttons, hero cards and sliders. */
@@ -636,6 +639,211 @@ export const SOUNDS: Record<string, SoundDef> = {
       noiseSwell(io, { a: .002, d: .06, at: .3, cut: 3800, cut1: 1500, type: 'highpass', peak: .36 }),
       tone(io, { f: 1800, f1: 400, type: 'square', d: .06, at: .45, peak: .26, filter: 3600 }),
       noiseSwell(io, { a: .002, d: .06, at: .45, cut: 4000, cut1: 1600, type: 'highpass', peak: .32 }),
+    ),
+  },
+
+  // ---- Phase 4: world, music, ambience and UI ---------------------------------------------------------------------
+  // Original beds synthesized in place: slow minor drones with sparse motifs. Menu music is the fullest; the match bed
+  // is thinner, darker and lower so combat always sits on top of it. Every layer of a bed is tuned to end at the same
+  // moment, so the voice registry reports the bed as over exactly when it has finished — `music.ts`/`ambience.ts`
+  // restart a bed that faded, stop one on a scene change, and never run two copies of the same scene.
+
+  /** Menu: a slow A-minor drone with a sparse bell motif, fading out at the end of the bed (~8.7 s). */
+  musicMenu: {
+    gain: .8, loop: true,
+    synth: io => mix(
+      tone(io, { f: 55, d: 7.9, a: .8, peak: .32, type: 'sawtooth', filter: 240 }),
+      tone(io, { f: 82.41, d: 7.4, a: 1.2, at: .1, peak: .22, filter: 320 }),
+      tone(io, { f: 110, d: 6.8, a: 1.6, at: .3, peak: .16, filter: 420 }),
+      tone(io, { f: 220, d: 7.48, a: .02, at: 1.2, peak: .2, filter: 1600 }),
+      tone(io, { f: 261.63, d: 6.08, a: .02, at: 2.6, peak: .18, filter: 1800 }),
+      tone(io, { f: 329.63, d: 4.58, a: .02, at: 4.1, peak: .16, filter: 2000 }),
+      tone(io, { f: 196, d: 2.48, a: .02, at: 6.2, peak: .15, filter: 1500 }),
+      noiseSwell(io, { a: 2.5, d: 6.2, cut: 220, cut1: 140, peak: .12 }),
+    ),
+  },
+  /** Match: a subdued pulse bed — a low drone with slow heartbeat tones, quiet by design so ability cues stay clear (~7.8 s). */
+  musicMatch: {
+    gain: .62, loop: true,
+    synth: io => mix(
+      tone(io, { f: 49, d: 6.8, a: 1, peak: .3, type: 'triangle', filter: 200 }),
+      tone(io, { f: 73.42, d: 6.2, a: 1.4, at: .2, peak: .18, filter: 260 }),
+      tone(io, { f: 146.83, f1: 138, d: 7.36, a: .04, at: .4, peak: .12, filter: 900 }),
+      tone(io, { f: 146.83, f1: 138, d: 5.56, a: .04, at: 2.2, peak: .1, filter: 900 }),
+      tone(io, { f: 174.61, f1: 165, d: 3.56, a: .04, at: 4.2, peak: .1, filter: 950 }),
+      noiseSwell(io, { a: 2, d: 5.8, cut: 160, peak: .08 }),
+    ),
+  },
+  /** Victory: a rising major fanfare blooming into a sustained chord with a bright shimmer on top. */
+  musicVictory: {
+    gain: .9, minGap: 400,
+    synth: io => mix(
+      tone(io, { f: 220, d: 1.745, peak: .3, filter: 2400 }),
+      tone(io, { f: 277.18, d: 1.585, at: .16, peak: .3, filter: 2400 }),
+      tone(io, { f: 329.63, d: 1.425, at: .32, peak: .3, filter: 2600 }),
+      tone(io, { f: 440, d: 1.265, at: .48, peak: .38, filter: 3000 }),
+      tone(io, { f: 554.37, d: 1.265, at: .48, peak: .22, filter: 3000 }),
+      tone(io, { f: 659.25, d: 1.265, at: .48, peak: .22, filter: 3200 }),
+      noiseSwell(io, { a: .4, d: .95, at: .4, cut: 800, cut1: 2400, type: 'highpass', peak: .16 }),
+    ),
+  },
+  /** Defeat: a slow minor-second toll that sinks a fifth and goes quiet. */
+  musicDefeat: {
+    gain: .9, minGap: 400,
+    synth: io => mix(
+      tone(io, { f: 196, d: 3.095, peak: .34, filter: 1400 }),
+      tone(io, { f: 185, d: 3.075, at: .02, peak: .2, filter: 1200 }),
+      tone(io, { f: 146.83, d: 2.545, at: .55, peak: .3, filter: 1000 }),
+      tone(io, { f: 110, d: 1.995, at: 1.1, peak: .3, filter: 700 }),
+      noiseSwell(io, { a: .6, d: 2.3, at: .2, cut: 400, cut1: 120, peak: .18 }),
+    ),
+  },
+
+  /** Wind, everywhere: a slow lowpass swell. The only ambience that is not positioned — it is the air itself (~6 s). */
+  ambWind: {
+    gain: .5, loop: true,
+    synth: io => mix(
+      noiseSwell(io, { a: 2.2, d: 3.8, cut: 260, cut1: 420, peak: .3 }),
+      noiseSwell(io, { a: .8, d: 3.8, at: 1.4, cut: 150, peak: .22 }),
+    ),
+  },
+  /** One river stretch: burbling bandpassed water with two soft plips. Placed at the diagonal river (see `map.ts`). */
+  ambRiver: {
+    gain: .5, loop: true, ref: 460, maxDist: 1200,
+    synth: io => mix(
+      noiseSwell(io, { a: 1.2, d: 4, cut: 620, cut1: 900, type: 'bandpass', peak: .34 }),
+      noiseSwell(io, { a: .6, d: 3.8, at: .8, cut: 1400, cut1: 600, type: 'bandpass', peak: .16 }),
+      tone(io, { f: 620, f1: 520, d: 4.1, at: 1.1, peak: .1, filter: 2200 }),
+      tone(io, { f: 520, f1: 430, d: 2, at: 3.2, peak: .09, filter: 2000 }),
+    ),
+  },
+  /** A jungle camp: soft leaf rustle with a couple of distant bird calls. */
+  ambForest: {
+    gain: .45, loop: true, ref: 380, maxDist: 950,
+    synth: io => mix(
+      noiseSwell(io, { a: 1.6, d: 3.2, cut: 1200, cut1: 2600, type: 'highpass', peak: .2 }),
+      tone(io, { f: 1568, f1: 1864, d: 3.9, at: .9, peak: .12, filter: 4200 }),
+      tone(io, { f: 1864, f1: 1568, d: 3.75, at: 1.05, peak: .1, filter: 4200 }),
+      tone(io, { f: 1318, f1: 1174, d: 1.9, at: 2.9, peak: .1, filter: 4000 }),
+    ),
+  },
+  /** A magical base: a warm detuned fifth hum with rare bell tones over it. */
+  ambBase: {
+    gain: .4, loop: true, ref: 400, maxDist: 1100,
+    synth: io => mix(
+      tone(io, { f: 130.81, d: 5, a: .6, peak: .26, filter: 700 }),
+      tone(io, { f: 196, d: 4.7, a: .8, at: .1, peak: .2, filter: 900 }),
+      tone(io, { f: 392, d: 4.4, a: 1, at: .2, peak: .1, filter: 1600 }),
+      tone(io, { f: 523.25, d: 3.2, at: 2.4, peak: .12, filter: 3200 }),
+      tone(io, { f: 659.25, d: 2.5, at: 3.1, peak: .1, filter: 3400 }),
+    ),
+  },
+  /** A battle heard from far away: a muted boom with the highs gone. Layered in by combat beyond 2000 units. */
+  ambDistant: {
+    gain: .5, minGap: 900, max: 1, ref: 700, maxDist: 3400,
+    synth: io => mix(
+      tone(io, { f: 70, f1: 34, d: .7, peak: .5 }),
+      noiseSwell(io, { a: .05, d: .8, cut: 200, cut1: 90, peak: .4 }),
+    ),
+  },
+
+  /** One footfall on grass: a long muffled step. Played by `audio/footsteps.ts` from real movement only. */
+  stepGrass: {
+    gain: .5, minGap: 70, max: 5, ref: 300, maxDist: 1000,
+    synth: io => mix(
+      noiseSwell(io, { a: .004, d: .09, cut: 420, cut1: 180, peak: .5 }),
+      tone(io, { f: 120, f1: 70, d: .06, peak: .3 }),
+    ),
+  },
+  /** One footfall in the river shallows: a small splash. */
+  stepWater: {
+    gain: .55, minGap: 70, max: 5, ref: 300, maxDist: 1000,
+    synth: io => mix(
+      noiseSwell(io, { a: .002, d: .13, cut: 1800, cut1: 500, type: 'bandpass', peak: .6 }),
+      tone(io, { f: 420, f1: 260, d: .08, peak: .25, filter: 2200 }),
+      noiseSwell(io, { a: .003, d: .05, at: .05, cut: 2600, cut1: 1200, type: 'highpass', peak: .3 }),
+    ),
+  },
+
+  /** A soft blip when the pointer enters a hero card or settings row. */
+  uiHover: {
+    gain: .3, minGap: 50,
+    synth: io => tone(io, { f: 1046, f1: 1318, d: .05, peak: .5, filter: 4200 }),
+  },
+  /** Picking a hero: a two-note chime reserved for the selection, distinct from a plain click. */
+  uiSelect: {
+    gain: .6, minGap: 120,
+    synth: io => mix(
+      tone(io, { f: 659.25, d: .14, peak: .4, filter: 3400 }),
+      tone(io, { f: 987.77, d: .2, at: .08, peak: .34, filter: 3800 }),
+    ),
+  },
+  /** Opening the shop: a rising parchment-and-coin rustle. */
+  shopOpen: {
+    gain: .6, minGap: 150,
+    synth: io => mix(
+      noiseSwell(io, { a: .02, d: .16, cut: 700, cut1: 2400, type: 'highpass', peak: .35 }),
+      tone(io, { f: 392, d: .12, peak: .3, filter: 3000 }),
+      tone(io, { f: 587.33, d: .14, at: .06, peak: .3, filter: 3200 }),
+    ),
+  },
+  /** Closing the shop: the same shape falling. */
+  shopClose: {
+    gain: .55, minGap: 150,
+    synth: io => mix(
+      noiseSwell(io, { a: .02, d: .14, cut: 2000, cut1: 500, peak: .3 }),
+      tone(io, { f: 587.33, d: .1, peak: .28, filter: 3000 }),
+      tone(io, { f: 392, d: .14, at: .06, peak: .28, filter: 3000 }),
+    ),
+  },
+  /** A purchase: two quick bright coin notes. */
+  shopBuy: {
+    gain: .65, minGap: 120,
+    synth: io => mix(
+      tone(io, { f: 1318.5, d: .09, peak: .4, filter: 4400 }),
+      tone(io, { f: 1760, d: .14, at: .07, peak: .34, filter: 4600 }),
+      noiseSwell(io, { a: .004, d: .07, cut: 3200, cut1: 5200, type: 'highpass', peak: .2 }),
+    ),
+  },
+  /** A sale: two coin notes a step lower, with the clink of the till. */
+  shopSell: {
+    gain: .65, minGap: 120,
+    synth: io => mix(
+      tone(io, { f: 987.77, d: .1, peak: .38, filter: 3800 }),
+      tone(io, { f: 1318.5, d: .16, at: .08, peak: .32, filter: 4200 }),
+      noiseSwell(io, { a: .004, d: .09, at: .02, cut: 2400, cut1: 4000, type: 'highpass', peak: .2 }),
+    ),
+  },
+  /** A level-up: a rising major arpeggio, richer than any reward tick so the moment is unmistakable. */
+  uiLevel: {
+    gain: .85, minGap: 300,
+    synth: io => mix(
+      tone(io, { f: 523.25, d: .2, peak: .34, a: .01, filter: 3600 }),
+      tone(io, { f: 659.25, d: .2, at: .09, peak: .34, a: .01, filter: 3800 }),
+      tone(io, { f: 783.99, d: .3, at: .18, peak: .36, a: .01, filter: 4000 }),
+      tone(io, { f: 1046.5, d: .4, at: .27, peak: .3, a: .01, filter: 4400 }),
+      noiseSwell(io, { a: .06, d: .4, cut: 900, cut1: 3000, type: 'highpass', peak: .16 }),
+    ),
+  },
+  /** A gold reward tick: one quick coin note, throttled by its minGap while farming. */
+  uiGold: {
+    gain: .5, minGap: 140,
+    synth: io => tone(io, { f: 1568, f1: 2093, d: .07, peak: .4, filter: 4600 }),
+  },
+  /** Pausing: the world settles — a hollow descending pair. */
+  uiPause: {
+    gain: .6, minGap: 200,
+    synth: io => mix(
+      tone(io, { f: 440, f1: 392, d: .18, peak: .32, filter: 2600 }),
+      tone(io, { f: 220, f1: 196, d: .3, at: .08, peak: .3, filter: 1200 }),
+    ),
+  },
+  /** Resuming: the same pair rising back up. */
+  uiResume: {
+    gain: .6, minGap: 200,
+    synth: io => mix(
+      tone(io, { f: 392, f1: 440, d: .18, peak: .32, filter: 2600 }),
+      tone(io, { f: 196, f1: 220, d: .3, at: .08, peak: .3, filter: 1200 }),
     ),
   },
 };
