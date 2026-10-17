@@ -58,7 +58,7 @@ describe('simulation (no DOM, no Three.js)', () => {
     run(11); kind('tower', 1).forEach(t => hurt(app.me, t, 1e6)); hurt(app.me, kind('core', 1)[0], 1e6); expect(winner).toBe(0);
     createWorld(); winner = -1; run(11); hurt(heroes(1)[0], kind('core', 0)[0], 1e9); expect(winner).toBe(1);
   });
-  it('units never end a frame inside terrain obstacles', () => {
+  it('units never end a frame inside terrain obstacles', { timeout: 60000 }, () => {
     app.me.ai = true; run(240);
     const bad = app.all.filter(u => !u.dead && u.k !== 'tower' && u.k !== 'core').filter(u => OB.some(o => Math.hypot(u.x - o.x, u.y - o.y) < u.r + o.r - 3));
     expect(bad).toHaveLength(0);

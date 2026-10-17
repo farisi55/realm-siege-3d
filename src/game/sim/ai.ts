@@ -1,5 +1,5 @@
 import { dist } from '../util';
-import { app } from '../state';
+import { app, hooks } from '../state';
 import { atk, cast, go, near, reach } from './combat';
 import { BASE, IT, SP, path } from '../config';
 import { rc } from './units';
@@ -21,7 +21,7 @@ export function ai(h,dt){const b=BASE[h.team];
   tw=app.all.some(o=>o.k==='tower'&&o.team!==h.team&&!o.dead&&dist(o,h)<560);
  if(ally||!tw)go(h,w[0],w[1],dt)}
 export function hup(h,dt){
- if(h.dead){h.rs-=dt;if(h.rs<=0){h.dead=false;h.x=SP[h.team][0];h.y=SP[h.team][1];rc(h,1);h.tgt=null;h.mv=null;h.rt=0}return}
+ if(h.dead){h.rs-=dt;if(h.rs<=0){h.dead=false;h.x=SP[h.team][0];h.y=SP[h.team][1];hooks.snd({k:'respawn',x:h.x,y:h.y,team:h.team,kind:'hero',player:h===app.me});rc(h,1);h.tgt=null;h.mv=null;h.rt=0}return}
  for(let i=0;i<4;i++)h.acd[i]=Math.max(0,h.acd[i]-dt);
  h.mp=Math.min(h.mmax,h.mp+(h.mmax*.01+1.5)*dt);h.hp=Math.min(h.max,h.hp+h.max*.004*dt);h.g+=2.3*dt;
  const b=BASE[h.team];if(Math.hypot(h.x-b[0],h.y-b[1])<330){h.hp=Math.min(h.max,h.hp+h.max*.08*dt);h.mp=Math.min(h.mmax,h.mp+h.mmax*.08*dt)}

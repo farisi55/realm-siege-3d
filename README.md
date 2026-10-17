@@ -6,13 +6,13 @@ Original 5v5 fantasy MOBA prototype: Three.js + TypeScript + Vite. No external a
     npm run dev        # dev server
     npm run build      # tsc --noEmit + production build (dist/)
     npm run typecheck  # tsc --noEmit
-    npm test           # simulation, character system, GLB pipeline, VFX pools + Director, camera maths, the world (ground, scatter, painter, river, structures, plants), quality governor, post-processing chain, audio engine (stubbed WebAudio), UI/3D scene (jsdom, stubbed WebGL)
+    npm test           # simulation, character system, GLB pipeline, VFX pools + Director, camera maths, the world (ground, scatter, painter, river, structures, plants), quality governor, post-processing chain, audio engine + combat mix (stubbed WebAudio), UI/3D scene (jsdom, stubbed WebGL)
 
 ## Structure
 - `src/game/`  config (map, heroes, items), `state.ts` (shared state + hooks), `sim/` (units, combat, ai, world): pure simulation, no DOM/Three.js
 - `src/render/` Three.js only: scene and lighting (`scene.ts`, `lighting.ts`), the world (`environment.ts` + `env/`, below), `ground.ts` (render-only standing height, bridge decks), the character system (below), `readability.ts` (rim light, contact shadows), `models.ts` (siege engines, health bars), the effects system (`vfx.ts` + `fx/`, below), post-processing (`post.ts`), the quality governor (`governor.ts` pure, `quality.ts` applies it), the camera (`camrig.ts` maths + `camera.ts`, below), input, hero-select stage (`stage.ts`), `units.ts` (mirrors the simulation into render objects)
 - `src/assets/` AssetManager: GLB preload, cache, SkeletonUtils cloning, Draco
-- `src/audio/` Web Audio only (below): `AudioManager.ts` (context, five buses, voices, asset cache), `synth.ts` (the built-in sounds), `audio.ts` (the facade the game and UI import)
+- `src/audio/` Web Audio only (below): `AudioManager.ts` (context, five buses, voices, asset cache), `synth.ts` (the built-in sounds), `combat.ts` (simulation events into the combat mix), `audio.ts` (the facade the game and UI import)
 - `src/ui/` React only: `store.ts` (external store + `useUi`), `hudData.ts` (HUD snapshot ~10x/s), `commands.ts` (buy, sell, pause, settings), `screens/` (MainMenu, Hud, Shop, Overlays), `minimap.ts` (canvas drawn imperatively)
 - `src/flow.ts` boot / play / menu flow and the per-frame entry point, `src/main.ts` browser loop. Open the page with `?debug` to get `window.__realm` for fast-forwarding.
 
@@ -90,11 +90,30 @@ The audio subsystem mirrors the effects one: `src/audio/audio.ts` is the one fac
     audio.ts          facade: initAudio (gesture unlock, tab suspend, pagehide stop, delegated UI click), playSFX / playUI / playMusic / playAmbient, setVolume / setMuted / stopAll / resetAudio, audioPrefs / audioStats
       AudioManager.ts the engine: one AudioContext, five gain buses (master -> sfx / music / ambient / ui), voice registry with a cap, asset cache with `load` / `preload`, localStorage-backed volumes, never throws
       synth.ts        the built-in sounds, synthesized with oscillators and one shared noise buffer (no external assets)
+      combat.ts       the combat mix: simulation events -> voice, distance, budget (below)
 
 - **Buses and volumes.** `master` feeds the speakers; `sfx` / `music` / `ambient` / `ui` feed `master` and each has its own volume (menu -> Settings -> the volume sliders, or mute). Volumes persist as `rs_vol*` / `rs_mute`; "Reset saved settings" clears them.
 - **Autoplay.** The context is created and resumed on the first pointer or key gesture; a hidden tab suspends it and `pagehide` stops every voice. Before a gesture nothing is built and `play()` reports false. No node is created for a click on a silent bus, inside a sound's `minGap` or beyond the voice cap.
 - **Sources.** Every sound is synthesized by default. To use a file instead, add `urls` to the sound in `SOUNDS`; `preload()` tries them at boot and the synth stays as the fallback whenever a file is missing or undecodable, so the game is never silent because an asset did not ship.
-- **Triggers so far.** `uiClick`: any button, form control or hero card (one delegated listener in `initAudio`, nothing per component). `matchStart`: `play()` in `flow.ts` starts a match. Combat, ability and structure mappings come later and follow the same rule as effects: no per-frame plays, distance and budget first.
+- **Triggers so far.** `uiClick`: any button, form control or hero card (one delegated listener in `initAudio`, nothing per component). `matchStart`: `play()` in `flow.ts` starts a match (and stops whatever the previous one left sounding).
+- **Combat.** The simulation never imports audio, exactly like effects: it pushes one typed, read-only event through a no-op `hooks.snd` at each real moment — a melee windup (`swing`), a projectile, bolt or tower shot leaving the weapon (`launch`), damage actually landing (`hit`, inside `hurt` and `blast`), a death (`die`) and a respawn (`respawn`). `flow.ts` wires the hook to `combat.ts`, which picks the voice; nothing is ever triggered from the render loop.
+
+| simulation event | sound | when |
+|---|---|---|
+| melee windup | `swing` | at `atk`, melee reach (the blade swings even when the blow misses) |
+| arrow release | `bowShot` | at `atk`, ranged creeps and the Huntress |
+| siege or tower shot | `siegeShot` | a tower or siege engine fires |
+| magic release | `magicShot` | a hero bolt is pushed, or the core shoots |
+| arrow / heavy impact | `hitArrow` / `hitHeavy` | the projectile reaches the unit it was tracking |
+| bolt / blast impact | `hitMagic` / `boomBlast` | a ballistic bolt connects / one voice for a blast, however many victims |
+| melee impact | `hitMelee` | damage lands from a melee blow |
+| structure / core damage | `hitStructure` / `hitCore` | `hurt` on a tower / on the core (core is global) |
+| creep death | `dieCreep` | any minion or siege engine falls |
+| hero / boss death | `dieBig` | any hero or jungle boss falls |
+| tower / core destruction | `collapseTower` / `coreCollapse` | forced and global; one event covers the structure falling |
+| hero respawn | `respawn` | `hup`, when the respawn timer ends |
+
+- **The mix.** The listener is the player's hero: a cue fades with distance and goes silent past its range (short around a creep skirmish, global for structures and the cores), so nearby play always beats distant play. A rolling budget (five non-priority voices per 0.15 s of game time) spreads a swarm, while player events and structure losses are priority and force past it. Melee, arrow, magic, siege, structure and core events each own a distinct voice, and every play takes a small random pitch and gain nudge so no two impacts sound stamped.
 - **Debug.** With `?debug`, `__realm.audio` is the AudioManager: after one click anywhere, `audio.snapshot()`, `audio.play('sfx', 'notify')`, `audio.setVolume('music', .5)`, `audio.stopAll()`.
 
 ## Camera

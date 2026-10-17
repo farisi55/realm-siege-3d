@@ -13,14 +13,15 @@ import type { QualitySetting } from './render/quality';
 import { ui, pushFeed } from './ui/store';
 import { publishHud } from './ui/hudData';
 import { finishMatch, resetSettings } from './ui/commands';
-import { initAudio, playSFX, preloadAudio } from './audio/audio';
+import { initAudio, playSFX, preloadAudio, stopAll } from './audio/audio';
+import { resetCombatAudio, sndEvent } from './audio/combat';
 
 /** Wires the simulation to the renderer and the React UI, preloads models, then opens the menu. */
 export async function boot(): Promise<void> {
   initAudio(); void preloadAudio(); // unlock on the first gesture; optional sound files load in the background
   app.sel = ST.get('hero', 0); app.bloom = ST.get('bloom', true);
   setQuality(ST.get('quality', 'auto') as QualitySetting);
-  hooks.fx = fx; hooks.ft = ft; hooks.feed = pushFeed; hooks.finish = finishMatch;
+  hooks.fx = fx; hooks.ft = ft; hooks.feed = pushFeed; hooks.finish = finishMatch; hooks.snd = sndEvent;
   ui.set({ phase: 'loading', sel: app.sel });
   // models (network) and the world (CPU: ground texture, meshes, plants) load side by side; one bar for both
   let models = [0, 1], world = [0, 1];
@@ -37,6 +38,8 @@ export function selectHero(i: number): void { app.sel = i; ST.set('hero', i); ui
 export function resetAndShowMenu(): void { resetSettings(); app.sel = 0; ui.set({ sel: 0 }); pvShow(); }
 export function play(): void {
   ST.set('hero', app.sel); startMatch();
+  stopAll(); // a restart never keeps the previous match's collapse ringing
+  resetCombatAudio();
   playSFX('matchStart');
   ui.set({ phase: 'play', paused: false, result: null, shop: false, scoreboard: false, feed: [] });
   publishHud();
