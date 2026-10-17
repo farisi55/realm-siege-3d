@@ -1,4 +1,7 @@
 // @vitest-environment jsdom
+// Drives the real UI the way a player does. The screens are React: mount() renders them (main.ts does
+// this just before boot()) and every state change is followed by `await flush()` so the DOM assertions
+// read a committed render. Buttons carry no test-only ids, so they are found by their label.
 import { describe, it, expect, vi, beforeAll } from 'vitest';
 import { readFileSync } from 'node:fs';
 
@@ -9,9 +12,18 @@ vi.mock('three', async orig => {
 
 let F: any, S: any, U: any, C: any;
 const el = (id: string) => document.getElementById(id)!;
-const click = (sel: string) => (document.querySelector(sel) as HTMLElement).click();
+const $ = (sel: string) => document.querySelector(sel) as HTMLElement;
+const $$ = (sel: string) => Array.from(document.querySelectorAll(sel)) as HTMLElement[];
 const frames = (n: number) => { for (let i = 0; i < n; i++) F.frame(1 / 30); };
 const key = (type: string, k: string) => window.dispatchEvent(new KeyboardEvent(type, { key: k }));
+/** Lets React commit the render it scheduled for the state change that just happened. */
+const flush = (): Promise<void> => new Promise(r => setTimeout(r, 0));
+/** The button whose label is exactly `text`. */
+const button = (text: string, root: ParentNode = document): HTMLButtonElement =>
+  Array.from(root.querySelectorAll('button')).find(b => b.textContent?.trim() === text)!;
+/** The checkbox of the labelled setting row whose text contains `text`. */
+const settingBox = (text: string): HTMLInputElement =>
+  Array.from($('#menu').querySelectorAll('label')).find(l => l.textContent?.includes(text))!.querySelector('input')!;
 
 beforeAll(async () => {
   localStorage.setItem('rs_bloom', 'false'); // tests run on a stubbed renderer: skip the composer
@@ -20,37 +32,48 @@ beforeAll(async () => {
   const ctx = new Proxy({}, { get: (t: any, k) => (k in t ? t[k] : () => ({ addColorStop() {} })), set: (t: any, k, v) => ((t[k] = v), true) });
   (HTMLCanvasElement.prototype as any).getContext = () => ctx;
   await import('../src/render/environment');
+  const M = await import('../src/ui/mount');
   F = await import('../src/flow'); S = await import('../src/game/state'); U = await import('../src/render/units'); C = await import('../src/game/sim/combat');
+  M.mount(); // the React root, exactly as main.ts does before boot()
   await F.boot();
-});
+  await flush(); // boot finished: the menu is committed
+}, 30000);
 
 describe('UI + 3D scene (jsdom, stubbed WebGL)', () => {
-  it('asset preload finishes, hides the loading screen and the bloom option persists', () => {
-    expect(el('loading').classList.contains('hid')).toBe(true);
-    const box = el('bloomc') as HTMLInputElement; box.checked = false; box.dispatchEvent(new Event('change', { bubbles: true }));
+  it('asset preload finishes, hides the loading screen and the bloom option persists', async () => {
+    expect(document.getElementById('loading')).toBeNull(); // boot done: the loading overlay is unmounted
+    expect(el('menu').className).toContain('ov');
+    const box = settingBox('Bloom');
+    expect(box.checked).toBe(false); // rs_bloom was saved as false
+    box.click(); await flush();
+    expect(S.app.bloom).toBe(true); expect(localStorage.getItem('rs_bloom')).toBe('true');
+    box.click(); await flush(); // back off again: the stubbed renderer stays on the simple path
     expect(S.app.bloom).toBe(false); expect(localStorage.getItem('rs_bloom')).toBe('false');
   });
-  it('menu lists five heroes; selecting one swaps the 3D preview', () => {
-    expect(document.querySelectorAll('#heroes .hc')).toHaveLength(5);
-    click('#heroes [data-act="select"][data-n="2"]');
-    expect(S.app.sel).toBe(2); expect(document.querySelector('#heroes .hc.s b')!.textContent).toBe('Ember Mage');
+  it('menu lists five heroes; selecting one swaps the 3D preview', async () => {
+    expect($$('#heroes .hc')).toHaveLength(5);
+    $$('#heroes .hc')[2].click(); await flush();
+    expect(S.app.sel).toBe(2); expect($('#heroes .hc.s b')!.textContent).toBe('Ember Mage');
   });
-  it('Play starts a match: HUD shown, render objects created, gold grows, animation states change', () => {
-    click('[data-act="play"]');
-    expect(S.app.mode).toBe('play'); expect(el('menu').classList.contains('hid')).toBe(true); expect(el('hud').classList.contains('hid')).toBe(false);
+  it('Play starts a match: HUD shown, render objects created, gold grows, animation states change', { timeout: 30000 }, async () => {
+    button('Play').click(); await flush();
+    expect(S.app.mode).toBe('play'); expect(document.getElementById('menu')).toBeNull(); expect(document.getElementById('hud')).toBeTruthy();
     const g0 = S.app.me.g, seen = new Set<string>();
-    for (let i = 0; i < 700; i++) { F.frame(1 / 30); for (const r of U.R.values()) if (r.an) seen.add(r.an.cur); }
+    for (let i = 0; i < 700; i++) { F.frame(1 / 30); for (const r of U.R.values()) if (r.cv) seen.add(r.cv.state); }
+    await flush();
     expect(S.app.me.g).toBeGreaterThan(g0); expect(el('gd').textContent).toMatch(/gold/);
     expect(U.R.size).toBeGreaterThanOrEqual(S.app.all.length);
-    for (const s of ['idle', 'walk', 'attack']) expect(seen.has(s)).toBe(true);
+    for (const s of ['IDLE', 'WALK', 'ATTACK']) expect(seen.has(s)).toBe(true);
   });
-  it('shop buy/sell via delegated buttons changes stats and inventory', () => {
+  it('shop buy/sell changes stats, inventory and the HUD item slots', async () => {
     const me = S.app.me; me.g = 5000; const d0 = me.dmg;
-    click('[data-act="toggleShop"]'); expect(el('shop').classList.contains('hid')).toBe(false);
-    click('#shop [data-act="buy"][data-n="0"]'); expect(me.it).toHaveLength(1); expect(me.dmg).toBe(d0 + 25);
-    frames(10); expect(el('s0').textContent).toBe('IB');
-    click('#shop [data-act="sell"][data-n="0"]'); expect(me.it).toHaveLength(0); expect(me.dmg).toBe(d0);
-    click('#shop [data-act="toggleShop"]'); expect(el('shop').classList.contains('hid')).toBe(true);
+    button('Shop (B)').click(); await flush(); expect(document.getElementById('shop')).toBeTruthy();
+    ($$('#shop .cards')[0].children[0].querySelector('button') as HTMLElement).click(); await flush();
+    expect(me.it).toHaveLength(1); expect(me.dmg).toBe(d0 + 25);
+    frames(10); await flush(); expect($$('#its .sl')[0].textContent).toBe('IB'); // Iron Blade -> its initials
+    Array.from($$('#shop button')).find(b => b.textContent!.startsWith('Sell'))!.click(); await flush();
+    expect(me.it).toHaveLength(0); expect(me.dmg).toBe(d0);
+    button('Close (B)').click(); await flush(); expect(document.getElementById('shop')).toBeNull();
   });
   it('arrow keys move the hero relative to the camera', () => {
     const me = S.app.me; me.x = 1600; me.y = 2200; me.dead = false; me.mv = null; me.tgt = null; frames(5);
@@ -68,16 +91,18 @@ describe('UI + 3D scene (jsdom, stubbed WebGL)', () => {
     const me = S.app.me; me.mp = me.mmax; me.acd = [0, 0, 0, 0]; key('keydown', 'q');
     expect(me.acd[0]).toBeGreaterThan(0);
   });
-  it('Escape pauses, Resume continues', () => {
-    key('keydown', 'Escape'); expect(S.app.G.pause).toBe(true);
+  it('Escape pauses, Resume continues', async () => {
+    key('keydown', 'Escape'); await flush(); expect(S.app.G.pause).toBe(true);
     const t = S.app.G.t; frames(30); expect(S.app.G.t).toBe(t);
-    click('[data-act="resume"]'); expect(S.app.G.pause).toBe(false);
+    button('Resume').click(); await flush(); expect(S.app.G.pause).toBe(false);
   });
-  it('Victory screen, Play Again, Main Menu', () => {
+  it('Victory screen, Play Again, Main Menu', async () => {
     const me = S.app.me; S.app.all.filter((u: any) => u.k === 'tower' && u.team === 1).forEach((t: any) => C.hurt(me, t, 1e6));
-    C.hurt(me, S.app.all.find((u: any) => u.k === 'core' && u.team === 1), 1e6); frames(3);
-    expect(el('res').textContent).toBe('VICTORY'); expect(el('end').classList.contains('hid')).toBe(false);
-    click('[data-act="again"]'); expect(S.app.G.t).toBeLessThan(1); expect(S.app.G.over).toBe(false);
-    click('[data-act="toMenu"]'); expect(S.app.mode).toBe('menu'); expect(U.R.size).toBe(0); expect(el('menu').classList.contains('hid')).toBe(false);
+    C.hurt(me, S.app.all.find((u: any) => u.k === 'core' && u.team === 1), 1e6); frames(3); await flush();
+    expect(el('res').textContent).toBe('VICTORY'); expect(document.getElementById('end')).toBeTruthy();
+    button('Play Again').click(); await flush(); expect(S.app.G.t).toBeLessThan(1); expect(S.app.G.over).toBe(false);
+    key('keydown', 'Escape'); await flush(); // pause, as a player would: the Main Menu lives in the pause overlay
+    button('Main Menu').click(); await flush();
+    expect(S.app.mode).toBe('menu'); expect(U.R.size).toBe(0); expect(document.getElementById('menu')).toBeTruthy();
   });
 });
