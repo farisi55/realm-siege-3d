@@ -42,7 +42,7 @@ describe('React UI + 3D scene (jsdom, stubbed WebGL)', () => {
     expect(S.app.me.g).toBeGreaterThan(g0); expect(screen.queryByText(/Match begins in/)).toBeNull(); expect(screen.getByText(/\d+ gold/)).toBeTruthy();
     expect(U.R.size).toBeGreaterThanOrEqual(S.app.all.length);
     for (const s of ['IDLE', 'WALK', 'ATTACK']) expect(seen.has(s)).toBe(true);
-  });
+  }, 20000); // 700 frames of the full loop plus React: the default 5 s is not enough under a loaded full-suite run
   it('characters outside the camera view are not drawn, and the ones in view are (skinned meshes have culling off, so the renderer does not do it for them)', () => {
     const me = S.app.me, mine = U.R.get(me);
     frames(3);
