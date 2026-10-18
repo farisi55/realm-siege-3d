@@ -17,7 +17,8 @@ import { resetCombatAudio } from './combat';
  *  - Footsteps advance only from the movement the simulation actually produced (never while paused).
  *  - Pause ducks the gameplay buses to a quarter (the UI stays crisp); resuming restores them.
  *  - Level-ups and gold gains are *watched*, not injected into the simulation: the HUD snapshot is the interface, so
- *    `uiLevel` / `uiGold` fire for real progression without one new sim event.
+ *    `uiLevel` / `uiGold` fire for real progression without one new sim event. The +2.3/s passive income only steps
+ *    the floored gold by a coin per snapshot, so it stays silent — `uiGold` is for rewards, not for bookkeeping.
  */
 
 /** Every voice phase 4 adds — the manifest check in the tests and the README table both read this list. */
@@ -30,6 +31,14 @@ export const WORLD_SOUNDS = [
 
 /** How much the world drops to while paused (music, sfx and ambience; the UI bus is never ducked). */
 const PAUSE_DUCK = .25;
+
+/**
+ * Smallest gold gain (in one HUD snapshot) that counts as a reward voice. The passive income line (`h.g += 2.3*dt`
+ * in the sim) crosses a whole number every ~0.43 s, which used to tick `uiGold` ~2.3 times a second for the whole
+ * match — a metronome under everything else. A real reward is a jump: creep bounties are 22–48, a tower bonus 120,
+ * a hero kill 200+, so a threshold of 8 keeps every one of them and swallows the drip.
+ */
+const GOLD_REWARD = 8;
 
 type Stage = 'none' | 'menu' | 'live' | 'over';
 let stage: Stage = 'none';
@@ -84,6 +93,6 @@ function rewards(): void {
   if (!h) { lv = 1; gold = 0; time = -1; return; }
   if (time < 0 || h.time < time) { lv = h.lv; gold = h.gold; time = h.time; return; } // adopting a running match: silent
   if (h.lv > lv) playUI('uiLevel');
-  else if (h.gold > gold && !ui.get().shop) playUI('uiGold'); // selling in the shop has its own voice
+  else if (h.gold - gold >= GOLD_REWARD && !ui.get().shop) playUI('uiGold'); // a reward jump; the passive drip and shop sales stay quiet
   lv = h.lv; gold = h.gold; time = h.time;
 }

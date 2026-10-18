@@ -304,7 +304,7 @@ describe('lifecycle', () => {
     expect(snd.levels().music).toBeCloseTo(DEFAULT_VOLUME.music, 5);
   });
 
-  it('announces level-ups and gold from the HUD snapshot, and stays quiet when a new match starts', () => {
+  it('announces level-ups and reward-sized gold gains from the HUD snapshot (never the passive drip), and stays quiet on a new match', () => {
     startPlay();
     const snap = (lv: number, gold: number, time: number): HudSnap => ({
       hero: 0, lv, hp: 1, max: 1, mp: 1, mmax: 1, xp: 0, xpNext: 1, gold, cds: [0, 0, 0, 0],
@@ -319,6 +319,20 @@ describe('lifecycle', () => {
     expect(names()).toContain('uiLevel');
 
     ui.set({ hud: snap(2, 700, 1.2) });
+    worldAudioTick(1 / 60);
+    expect(names()).toContain('uiGold');
+
+    calls.length = 0;
+    // The passive income line crosses a whole number every ~0.4 s; a coin or three per snapshot is bookkeeping, not a reward.
+    ui.set({ hud: snap(2, 701, 1.3) });
+    worldAudioTick(1 / 60);
+    ui.set({ hud: snap(2, 702, 1.4) });
+    worldAudioTick(1 / 60);
+    ui.set({ hud: snap(2, 704, 1.5) });
+    worldAudioTick(1 / 60);
+    expect(names()).not.toContain('uiGold');
+
+    ui.set({ hud: snap(2, 726, 1.6) }); // a creep bounty: delta 22, the smallest real reward in the game
     worldAudioTick(1 / 60);
     expect(names()).toContain('uiGold');
 
