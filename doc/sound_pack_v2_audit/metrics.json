@@ -1,0 +1,4467 @@
+{
+ "generated_by": "analyze.py",
+ "repo": "C:\\Users\\banu.farisi\\repo\\realm-siege-3d",
+ "files": {
+  "ambience/forest-loop.ogg": {
+   "duration": 8.0,
+   "sr": 44100,
+   "channels": 2,
+   "frames": 352800,
+   "peak_db": 0.0,
+   "rms_db": -19.65,
+   "crest_db": 19.65,
+   "clipped_samples": 2,
+   "near_fullscale": 2,
+   "dc_offset": 6e-06,
+   "lead_silence": 0.0,
+   "trail_silence": 0.0,
+   "silence_frac": 0.0,
+   "effective_end": 8.01,
+   "attack_time": 5.29,
+   "energy_centroid": 5.26,
+   "bursts": [
+    [
+     0.895,
+     -8.3
+    ],
+    [
+     2.795,
+     -8.0
+    ],
+    [
+     5.29,
+     -7.8
+    ],
+    [
+     6.605,
+     -8.0
+    ]
+   ],
+   "centroid_hz": 2814,
+   "flatness": 0.0,
+   "roll85_hz": 5233,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.005,
+    "350-1000": 0.1463,
+    "1000-3000": 0.46,
+    "3000-6000": 0.3325,
+    "6000-12000": 0.0562,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": 0.1,
+   "loop_seam": 0.00119,
+   "md5_file": "5c27b4fd1adfbcc7bb93f5f8a78c0885",
+   "md5_pcm": "cb6fafd4874434ebd6b7d8b1febb2d0c",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 2,
+    "bitrate": 160000,
+    "duration": 8.0,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "ambience.forest_loop",
+    "duration": 8.0,
+    "volume": 0.1,
+    "loop": true,
+    "spatial": false,
+    "description": "Soft forest/jungle ambience loop",
+    "trigger": "Optional jungle environment layer; low volume",
+    "dur_delta": 0.0
+   },
+   "defs": [],
+   "mid": "ambience.forest_loop",
+   "cat": 6,
+   "group": "Loops",
+   "trigger": "UNUSED \u2014 stereo loop; forest emitters are positional points (def ambForest synthesizes)"
+  },
+  "ambience/river-loop.ogg": {
+   "duration": 8.0,
+   "sr": 44100,
+   "channels": 2,
+   "frames": 352800,
+   "peak_db": -1.13,
+   "rms_db": -7.37,
+   "crest_db": 6.24,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -1e-06,
+   "lead_silence": 0.0,
+   "trail_silence": 0.0,
+   "silence_frac": 0.0,
+   "effective_end": 8.01,
+   "attack_time": 2.875,
+   "energy_centroid": 4.3,
+   "bursts": [
+    [
+     2.805,
+     -6.5
+    ],
+    [
+     2.875,
+     -6.4
+    ],
+    [
+     4.68,
+     -6.6
+    ],
+    [
+     4.755,
+     -6.5
+    ]
+   ],
+   "centroid_hz": 296,
+   "flatness": 0.0,
+   "roll85_hz": 323,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0001,
+    "120-350": 0.9417,
+    "350-1000": 0.0442,
+    "1000-3000": 0.0127,
+    "3000-6000": 0.0013,
+    "6000-12000": 0.0,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": 2.3,
+   "loop_seam": 0.005,
+   "md5_file": "360043cbbf2b49791c7a5de6fe61965a",
+   "md5_pcm": "6e835ab6e5b6ee51038f25c37737079b",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 2,
+    "bitrate": 160000,
+    "duration": 8.0,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "ambience.river_loop",
+    "duration": 8.0,
+    "volume": 0.1,
+    "loop": true,
+    "spatial": false,
+    "description": "Gentle flowing river ambience loop",
+    "trigger": "Optional river zone ambience; low volume",
+    "dur_delta": 0.0
+   },
+   "defs": [],
+   "mid": "ambience.river_loop",
+   "cat": 6,
+   "group": "Loops",
+   "trigger": "UNUSED \u2014 stereo loop; river emitters are positional points (def ambRiver synthesizes)"
+  },
+  "ambience/wind-loop.ogg": {
+   "duration": 8.0,
+   "sr": 44100,
+   "channels": 2,
+   "frames": 352800,
+   "peak_db": -1.07,
+   "rms_db": -8.78,
+   "crest_db": 7.71,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.000109,
+   "lead_silence": 0.0,
+   "trail_silence": 0.0,
+   "silence_frac": 0.0,
+   "effective_end": 8.01,
+   "attack_time": 7.32,
+   "energy_centroid": 6.665,
+   "bursts": [
+    [
+     7.195,
+     -5.3
+    ],
+    [
+     7.32,
+     -5.3
+    ],
+    [
+     7.385,
+     -5.4
+    ],
+    [
+     7.48,
+     -5.3
+    ]
+   ],
+   "centroid_hz": 94,
+   "flatness": 0.0,
+   "roll85_hz": 108,
+   "bands": {
+    "20-60": 0.0003,
+    "60-120": 0.9497,
+    "120-350": 0.0422,
+    "350-1000": 0.0077,
+    "1000-3000": 0.0001,
+    "3000-6000": 0.0,
+    "6000-12000": 0.0,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": 0.97,
+   "loop_seam": 0.03075,
+   "md5_file": "fb998309d136ba17819e8153cdb40958",
+   "md5_pcm": "1727b85ac6aa47cb7e20dff23b38dbd1",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 2,
+    "bitrate": 160000,
+    "duration": 8.0,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "ambience.wind_loop",
+    "duration": 8.0,
+    "volume": 0.12,
+    "loop": true,
+    "spatial": false,
+    "description": "Low restrained battlefield wind ambience loop",
+    "trigger": "Loop quietly during match; fade in/out",
+    "dur_delta": 0.0
+   },
+   "defs": [
+    "ambWind"
+   ],
+   "mid": "ambience.wind_loop",
+   "cat": 6,
+   "group": "Loops",
+   "trigger": "Non-positional wind bed for the whole match (fade in/out)"
+  },
+  "combat/arrow-impact.ogg": {
+   "duration": 0.2371,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 10456,
+   "peak_db": -1.11,
+   "rms_db": -22.73,
+   "crest_db": 21.62,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -0.000121,
+   "lead_silence": 0.0,
+   "trail_silence": 0.022,
+   "silence_frac": 0.043,
+   "effective_end": 0.21,
+   "attack_time": 0.0,
+   "energy_centroid": 0.005,
+   "bursts": [],
+   "centroid_hz": 923,
+   "flatness": 0.0003,
+   "roll85_hz": 2326,
+   "bands": {
+    "20-60": 0.0002,
+    "60-120": 0.0087,
+    "120-350": 0.7478,
+    "350-1000": 0.0111,
+    "1000-3000": 0.1087,
+    "3000-6000": 0.099,
+    "6000-12000": 0.0244,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "4b4aacfff94ed4f70f11d332fced8352",
+   "md5_pcm": "107030b0f9680545c13b471828ec770b",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.24,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "combat.arrow_impact",
+    "duration": 0.24,
+    "volume": 0.46,
+    "loop": false,
+    "spatial": true,
+    "description": "Arrow impact with wood/armor thud",
+    "trigger": "Arrow hits a target",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "hitArrow",
+    "shPoisonHit"
+   ],
+   "mid": "combat.arrow_impact",
+   "cat": 1,
+   "group": "Ranged",
+   "trigger": "Arrow impact \u2014 SHARED: generic arrow tick + Shadow Huntress W poison hit"
+  },
+  "combat/footstep-grass-1.ogg": {
+   "duration": 0.1571,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 6928,
+   "peak_db": -0.97,
+   "rms_db": -20.5,
+   "crest_db": 19.53,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.001713,
+   "lead_silence": 0.0,
+   "trail_silence": 0.017,
+   "silence_frac": 0.032,
+   "effective_end": 0.135,
+   "attack_time": 0.0,
+   "energy_centroid": 0.005,
+   "bursts": [],
+   "centroid_hz": 596,
+   "flatness": 0.0,
+   "roll85_hz": 1163,
+   "bands": {
+    "20-60": 0.0125,
+    "60-120": 0.1208,
+    "120-350": 0.3073,
+    "350-1000": 0.3411,
+    "1000-3000": 0.2161,
+    "3000-6000": 0.0022,
+    "6000-12000": 0.0,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "2a9cba0c2b10aec52eafdd60dc4bb59c",
+   "md5_pcm": "08f55d83e9303f0f660ac85d79766c78",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.16,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "combat.footstep_grass_1",
+    "duration": 0.16,
+    "volume": 0.22,
+    "loop": false,
+    "spatial": true,
+    "description": "Grass/dirt footstep variation 1",
+    "trigger": "Player locomotion footstep; speed-based cadence",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "stepGrass"
+   ],
+   "mid": "combat.footstep_grass_1",
+   "cat": 7,
+   "group": "Footsteps",
+   "trigger": "Grass footstep, random pick 1 of 3; stride = speed-based cadence (~3.8/s max)"
+  },
+  "combat/footstep-grass-2.ogg": {
+   "duration": 0.1571,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 6928,
+   "peak_db": -4.29,
+   "rms_db": -22.07,
+   "crest_db": 17.78,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.001177,
+   "lead_silence": 0.0,
+   "trail_silence": 0.022,
+   "silence_frac": 0.032,
+   "effective_end": 0.13,
+   "attack_time": 0.0,
+   "energy_centroid": 0.005,
+   "bursts": [],
+   "centroid_hz": 521,
+   "flatness": 0.0,
+   "roll85_hz": 1012,
+   "bands": {
+    "20-60": 0.008,
+    "60-120": 0.2086,
+    "120-350": 0.2174,
+    "350-1000": 0.407,
+    "1000-3000": 0.1568,
+    "3000-6000": 0.0022,
+    "6000-12000": 0.0,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "36e1b0be2386a6d7be3e97a17b2b9a22",
+   "md5_pcm": "d96b28eb9cedd6a910a17c6b8c86a264",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.16,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "combat.footstep_grass_2",
+    "duration": 0.16,
+    "volume": 0.22,
+    "loop": false,
+    "spatial": true,
+    "description": "Grass/dirt footstep variation 2",
+    "trigger": "Player locomotion footstep; speed-based cadence",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "stepGrass2"
+   ],
+   "mid": "combat.footstep_grass_2",
+   "cat": 7,
+   "group": "Footsteps",
+   "trigger": "Grass footstep, random pick 1 of 3"
+  },
+  "combat/footstep-grass-3.ogg": {
+   "duration": 0.1814,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 8000,
+   "peak_db": -5.18,
+   "rms_db": -23.92,
+   "crest_db": 18.74,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.000761,
+   "lead_silence": 0.0,
+   "trail_silence": 0.041,
+   "silence_frac": 0.167,
+   "effective_end": 0.135,
+   "attack_time": 0.0,
+   "energy_centroid": 0.005,
+   "bursts": [],
+   "centroid_hz": 559,
+   "flatness": 0.0,
+   "roll85_hz": 991,
+   "bands": {
+    "20-60": 0.0074,
+    "60-120": 0.1973,
+    "120-350": 0.2037,
+    "350-1000": 0.4422,
+    "1000-3000": 0.1457,
+    "3000-6000": 0.0038,
+    "6000-12000": 0.0,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "fd5dce5832d04541c31b2c7d0bc21b83",
+   "md5_pcm": "a75ca75723afbe347d6aa98b1849514c",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.16,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "combat.footstep_grass_3",
+    "duration": 0.16,
+    "volume": 0.22,
+    "loop": false,
+    "spatial": true,
+    "description": "Grass/dirt footstep variation 3",
+    "trigger": "Player locomotion footstep; speed-based cadence",
+    "dur_delta": 0.0214
+   },
+   "defs": [
+    "stepGrass3"
+   ],
+   "mid": "combat.footstep_grass_3",
+   "cat": 7,
+   "group": "Footsteps",
+   "trigger": "Grass footstep, random pick 1 of 3"
+  },
+  "combat/hero-death.ogg": {
+   "duration": 1.05,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 46305,
+   "peak_db": -1.09,
+   "rms_db": -21.22,
+   "crest_db": 20.14,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -6.4e-05,
+   "lead_silence": 0.0,
+   "trail_silence": 0.04,
+   "silence_frac": 0.019,
+   "effective_end": 1.005,
+   "attack_time": 0.015,
+   "energy_centroid": 0.04,
+   "bursts": [
+    [
+     0.015,
+     -8.6
+    ]
+   ],
+   "centroid_hz": 740,
+   "flatness": 0.0206,
+   "roll85_hz": 991,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0051,
+    "120-350": 0.3094,
+    "350-1000": 0.5386,
+    "1000-3000": 0.1206,
+    "3000-6000": 0.0143,
+    "6000-12000": 0.0077,
+    "12000-20000": 0.0042
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "c767908647676b0c4101bdff34b9c035",
+   "md5_pcm": "cc4c3b7592a5ee9cdafc601818eee59e",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 1.05,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "combat.hero_death",
+    "duration": 1.05,
+    "volume": 0.48,
+    "loop": false,
+    "spatial": true,
+    "description": "Dark downward death dissolve",
+    "trigger": "Hero death",
+    "dur_delta": 0.0
+   },
+   "defs": [
+    "dieBig"
+   ],
+   "mid": "combat.hero_death",
+   "cat": 2,
+   "group": "Death",
+   "trigger": "Any hero falls (die kind=\"hero\"); also used for player death"
+  },
+  "combat/hero-hit.ogg": {
+   "duration": 0.2471,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 10897,
+   "peak_db": -1.75,
+   "rms_db": -17.89,
+   "crest_db": 16.13,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.014657,
+   "lead_silence": 0.0,
+   "trail_silence": 0.002,
+   "silence_frac": 0.0,
+   "effective_end": 0.24,
+   "attack_time": 0.0,
+   "energy_centroid": 0.015,
+   "bursts": [
+    [
+     0.01,
+     -10.6
+    ],
+    [
+     0.095,
+     -22.6
+    ]
+   ],
+   "centroid_hz": 96,
+   "flatness": 0.0,
+   "roll85_hz": 65,
+   "bands": {
+    "20-60": 0.8407,
+    "60-120": 0.0545,
+    "120-350": 0.0497,
+    "350-1000": 0.0465,
+    "1000-3000": 0.0037,
+    "3000-6000": 0.0038,
+    "6000-12000": 0.0011,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "18da5aad50efa638a2efb6d8ffb843ca",
+   "md5_pcm": "52e974d150cfe2d4c8fd07c660b81b86",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.25,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "combat.hero_hit",
+    "duration": 0.25,
+    "volume": 0.45,
+    "loop": false,
+    "spatial": true,
+    "description": "Character damage feedback, short and non-gory",
+    "trigger": "Player hero takes meaningful damage; throttle",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "heroHit"
+   ],
+   "mid": "combat.hero_hit",
+   "cat": 2,
+   "group": "Damage",
+   "trigger": "Player hero damaged (victim=true, 300 ms sim-clock throttle)"
+  },
+  "combat/hero-respawn.ogg": {
+   "duration": 0.9709,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 42816,
+   "peak_db": -1.18,
+   "rms_db": -19.28,
+   "crest_db": 18.09,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -8e-06,
+   "lead_silence": 0.0,
+   "trail_silence": 0.101,
+   "silence_frac": 0.036,
+   "effective_end": 0.865,
+   "attack_time": 0.045,
+   "energy_centroid": 0.075,
+   "bursts": [
+    [
+     0.045,
+     -8.6
+    ],
+    [
+     0.105,
+     -10.8
+    ]
+   ],
+   "centroid_hz": 519,
+   "flatness": 0.0001,
+   "roll85_hz": 818,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.4273,
+    "350-1000": 0.5521,
+    "1000-3000": 0.0071,
+    "3000-6000": 0.0066,
+    "6000-12000": 0.0069,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "965ae98aa182d359022ef74d38d8e581",
+   "md5_pcm": "604057691eac0b05592ce9985c9477a0",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.95,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "combat.hero_respawn",
+    "duration": 0.95,
+    "volume": 0.42,
+    "loop": false,
+    "spatial": true,
+    "description": "Rising magical respawn swell",
+    "trigger": "Hero respawn",
+    "dur_delta": 0.0209
+   },
+   "defs": [
+    "respawn"
+   ],
+   "mid": "combat.hero_respawn",
+   "cat": 2,
+   "group": "Death",
+   "trigger": "Hero respawn timer ends"
+  },
+  "combat/magic-impact.ogg": {
+   "duration": 0.4223,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 18624,
+   "peak_db": -1.15,
+   "rms_db": -17.62,
+   "crest_db": 16.47,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.007895,
+   "lead_silence": 0.0,
+   "trail_silence": 0.027,
+   "silence_frac": 0.048,
+   "effective_end": 0.39,
+   "attack_time": 0.01,
+   "energy_centroid": 0.035,
+   "bursts": [
+    [
+     0.01,
+     -8.8
+    ],
+    [
+     0.085,
+     -15.1
+    ]
+   ],
+   "centroid_hz": 468,
+   "flatness": 0.0001,
+   "roll85_hz": 754,
+   "bands": {
+    "20-60": 0.3631,
+    "60-120": 0.0187,
+    "120-350": 0.0169,
+    "350-1000": 0.5626,
+    "1000-3000": 0.0361,
+    "3000-6000": 0.0013,
+    "6000-12000": 0.0012,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "a6f8200f23c3f656f5d59bd140957188",
+   "md5_pcm": "49e8c04fe7616e67c80684a7c03f6cce",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.4,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "combat.magic_impact",
+    "duration": 0.4,
+    "volume": 0.52,
+    "loop": false,
+    "spatial": true,
+    "description": "Magic hit with sharp transient and crystalline tail",
+    "trigger": "Magical projectile impact",
+    "dur_delta": 0.0223
+   },
+   "defs": [
+    "hitMagic",
+    "akStrikeHit",
+    "emFireHit"
+   ],
+   "mid": "combat.magic_impact",
+   "cat": 1,
+   "group": "Magic",
+   "trigger": "Magic impact \u2014 SHARED: core bolt + AK Q hit + EM Q hit"
+  },
+  "combat/magic-launch.ogg": {
+   "duration": 0.3371,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 14866,
+   "peak_db": -1.03,
+   "rms_db": -17.5,
+   "crest_db": 16.48,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -0.000244,
+   "lead_silence": 0.0,
+   "trail_silence": 0.002,
+   "silence_frac": 0.0,
+   "effective_end": 0.33,
+   "attack_time": 0.01,
+   "energy_centroid": 0.02,
+   "bursts": [
+    [
+     0.01,
+     -7.9
+    ]
+   ],
+   "centroid_hz": 584,
+   "flatness": 0.0002,
+   "roll85_hz": 668,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.5029,
+    "350-1000": 0.4607,
+    "1000-3000": 0.0128,
+    "3000-6000": 0.0107,
+    "6000-12000": 0.0129,
+    "12000-20000": 0.0001
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "5eb58a35712feb68427d64ae83496016",
+   "md5_pcm": "d7af10f8fc46c0774150c3dde529baa1",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.34,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "combat.magic_launch",
+    "duration": 0.34,
+    "volume": 0.42,
+    "loop": false,
+    "spatial": true,
+    "description": "Arcane projectile launch shimmer",
+    "trigger": "Magical projectile launches",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "magicShot"
+   ],
+   "mid": "combat.magic_launch",
+   "cat": 1,
+   "group": "Magic",
+   "trigger": "Core bolt release (launch kind \"magic\")"
+  },
+  "combat/melee-impact-heavy.ogg": {
+   "duration": 0.5471,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 24127,
+   "peak_db": -1.98,
+   "rms_db": -24.29,
+   "crest_db": 22.31,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.000629,
+   "lead_silence": 0.0,
+   "trail_silence": 0.012,
+   "silence_frac": 0.0,
+   "effective_end": 0.53,
+   "attack_time": 0.0,
+   "energy_centroid": 0.01,
+   "bursts": [
+    [
+     0.04,
+     -23.0
+    ]
+   ],
+   "centroid_hz": 304,
+   "flatness": 0.0059,
+   "roll85_hz": 129,
+   "bands": {
+    "20-60": 0.0094,
+    "60-120": 0.7232,
+    "120-350": 0.1753,
+    "350-1000": 0.0518,
+    "1000-3000": 0.0206,
+    "3000-6000": 0.0113,
+    "6000-12000": 0.0062,
+    "12000-20000": 0.0021
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "fff4568d235baa7ffbd84f149ce83b61",
+   "md5_pcm": "07ad2786efbefcc27944d86b380a7530",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.55,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "combat.melee_impact_heavy",
+    "duration": 0.55,
+    "volume": 0.62,
+    "loop": false,
+    "spatial": true,
+    "description": "Heavy body impact with low metallic resonance",
+    "trigger": "Heavy melee hit confirmed",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "hitMeleeHeavy"
+   ],
+   "mid": "combat.melee_impact_heavy",
+   "cat": 1,
+   "group": "Melee",
+   "trigger": "Confirmed melee hit, hero attacker (src=\"hero\")"
+  },
+  "combat/melee-impact-light.ogg": {
+   "duration": 0.2771,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 12220,
+   "peak_db": -1.46,
+   "rms_db": -21.07,
+   "crest_db": 19.62,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -0.000254,
+   "lead_silence": 0.0,
+   "trail_silence": 0.022,
+   "silence_frac": 0.018,
+   "effective_end": 0.25,
+   "attack_time": 0.0,
+   "energy_centroid": 0.005,
+   "bursts": [],
+   "centroid_hz": 580,
+   "flatness": 0.0113,
+   "roll85_hz": 215,
+   "bands": {
+    "20-60": 0.0004,
+    "60-120": 0.0066,
+    "120-350": 0.8586,
+    "350-1000": 0.002,
+    "1000-3000": 0.0978,
+    "3000-6000": 0.0183,
+    "6000-12000": 0.0114,
+    "12000-20000": 0.0049
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "4cea3fa6aa4bd5ee42aa9c22d9f843a3",
+   "md5_pcm": "96c8c731afc71152a40f4b98fba5ba5c",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.28,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "combat.melee_impact_light",
+    "duration": 0.28,
+    "volume": 0.5,
+    "loop": false,
+    "spatial": true,
+    "description": "Short metallic and organic impact",
+    "trigger": "Light melee hit confirmed",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "hitMelee"
+   ],
+   "mid": "combat.melee_impact_light",
+   "cat": 1,
+   "group": "Melee",
+   "trigger": "Confirmed melee hit, non-hero attacker"
+  },
+  "combat/melee-swing-heavy.ogg": {
+   "duration": 0.4171,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 18394,
+   "peak_db": -1.04,
+   "rms_db": -20.67,
+   "crest_db": 19.63,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -0.000304,
+   "lead_silence": 0.0,
+   "trail_silence": 0.012,
+   "silence_frac": 0.0,
+   "effective_end": 0.4,
+   "attack_time": 0.0,
+   "energy_centroid": 0.005,
+   "bursts": [],
+   "centroid_hz": 1049,
+   "flatness": 0.0,
+   "roll85_hz": 2455,
+   "bands": {
+    "20-60": 0.0002,
+    "60-120": 0.0374,
+    "120-350": 0.4446,
+    "350-1000": 0.1216,
+    "1000-3000": 0.3218,
+    "3000-6000": 0.074,
+    "6000-12000": 0.0004,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "5f29f75e5763cae0bce6ccfde362fdfb",
+   "md5_pcm": "d99e964fc62f6a7f735ec4fba30dd4d5",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.42,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "combat.melee_swing_heavy",
+    "duration": 0.42,
+    "volume": 0.58,
+    "loop": false,
+    "spatial": true,
+    "description": "Weighted heavy weapon sweep",
+    "trigger": "Heavy melee attack wind-up",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "swingHeavy"
+   ],
+   "mid": "combat.melee_swing_heavy",
+   "cat": 1,
+   "group": "Melee",
+   "trigger": "Melee wind-up, hero attacker (kind=\"hero\")"
+  },
+  "combat/melee-swing-light.ogg": {
+   "duration": 0.2409,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 10624,
+   "peak_db": -1.44,
+   "rms_db": -17.84,
+   "crest_db": 16.4,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -0.000249,
+   "lead_silence": 0.0,
+   "trail_silence": 0.006,
+   "silence_frac": 0.0,
+   "effective_end": 0.23,
+   "attack_time": 0.0,
+   "energy_centroid": 0.01,
+   "bursts": [
+    [
+     0.12,
+     -21.6
+    ]
+   ],
+   "centroid_hz": 3693,
+   "flatness": 0.0018,
+   "roll85_hz": 7127,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.2644,
+    "350-1000": 0.0263,
+    "1000-3000": 0.1656,
+    "3000-6000": 0.2915,
+    "6000-12000": 0.2513,
+    "12000-20000": 0.0008
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "25d295cc7d633a7e12ff27b7a8054772",
+   "md5_pcm": "2dbd0c05332793a86504bde84818f1a3",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.24,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "combat.melee_swing_light",
+    "duration": 0.24,
+    "volume": 0.45,
+    "loop": false,
+    "spatial": true,
+    "description": "Fast light blade/weapon swing",
+    "trigger": "Melee attack wind-up",
+    "dur_delta": 0.0009
+   },
+   "defs": [
+    "swing"
+   ],
+   "mid": "combat.melee_swing_light",
+   "cat": 1,
+   "group": "Melee",
+   "trigger": "Melee wind-up, non-hero attacker (creep/neutral swing cue)"
+  },
+  "combat/move-command.ogg": {
+   "duration": 0.1071,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 4723,
+   "peak_db": -3.42,
+   "rms_db": -19.24,
+   "crest_db": 15.81,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -3.7e-05,
+   "lead_silence": 0.0,
+   "trail_silence": 0.012,
+   "silence_frac": 0.0,
+   "effective_end": 0.09,
+   "attack_time": 0.0,
+   "energy_centroid": 0.005,
+   "bursts": [],
+   "centroid_hz": 561,
+   "flatness": 0.0,
+   "roll85_hz": 560,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.0001,
+    "350-1000": 0.9969,
+    "1000-3000": 0.0004,
+    "3000-6000": 0.001,
+    "6000-12000": 0.0015,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "8edb9ca1cacf5a1df530281a52eea015",
+   "md5_pcm": "63b862529dae639b230f83b6b14ccb3a",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.11,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "combat.move_command",
+    "duration": 0.11,
+    "volume": 0.22,
+    "loop": false,
+    "spatial": true,
+    "description": "Quiet movement command confirm",
+    "trigger": "World move command; debounce",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "moveCommand"
+   ],
+   "mid": "combat.move_command",
+   "cat": 7,
+   "group": "Movement",
+   "trigger": "Ground move order (not attack), 90 ms gap; synth stepWater exists for water surfaces (no file)"
+  },
+  "combat/ranged-launch.ogg": {
+   "duration": 0.2171,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 9574,
+   "peak_db": -4.03,
+   "rms_db": -26.18,
+   "crest_db": 22.14,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 5.4e-05,
+   "lead_silence": 0.0,
+   "trail_silence": 0.012,
+   "silence_frac": 0.0,
+   "effective_end": 0.2,
+   "attack_time": 0.0,
+   "energy_centroid": 0.005,
+   "bursts": [],
+   "centroid_hz": 4350,
+   "flatness": 0.0048,
+   "roll85_hz": 8355,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.0022,
+    "350-1000": 0.2764,
+    "1000-3000": 0.141,
+    "3000-6000": 0.2377,
+    "6000-12000": 0.3343,
+    "12000-20000": 0.0084
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "4d44b1ac676d5e8b11259f6cdf7af6fe",
+   "md5_pcm": "5e231db6078f394654ad97e6fe3640e5",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.22,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "combat.ranged_launch",
+    "duration": 0.22,
+    "volume": 0.4,
+    "loop": false,
+    "spatial": true,
+    "description": "Bow/proj launch air release",
+    "trigger": "Arrow or physical projectile launches",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "bowShot"
+   ],
+   "mid": "combat.ranged_launch",
+   "cat": 1,
+   "group": "Ranged",
+   "trigger": "Ranged-creep arrow release (launch kind \"arrow\")"
+  },
+  "combat/shield-impact.ogg": {
+   "duration": 0.4271,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 18835,
+   "peak_db": -2.23,
+   "rms_db": -23.87,
+   "crest_db": 21.64,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -2.2e-05,
+   "lead_silence": 0.0,
+   "trail_silence": 0.032,
+   "silence_frac": 0.0,
+   "effective_end": 0.39,
+   "attack_time": 0.005,
+   "energy_centroid": 0.01,
+   "bursts": [
+    [
+     0.005,
+     -11.5
+    ]
+   ],
+   "centroid_hz": 1460,
+   "flatness": 0.0007,
+   "roll85_hz": 1464,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.0,
+    "350-1000": 0.4256,
+    "1000-3000": 0.5278,
+    "3000-6000": 0.0181,
+    "6000-12000": 0.0282,
+    "12000-20000": 0.0003
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "4b71c5e3ce2da3d7fd27f9a4eeaf17c7",
+   "md5_pcm": "4dadf8d7aed2533b6ee81082da0fe0ed",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.43,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "combat.shield_impact",
+    "duration": 0.43,
+    "volume": 0.48,
+    "loop": false,
+    "spatial": true,
+    "description": "Metallic magical shield clang",
+    "trigger": "Shield absorbs a hit",
+    "dur_delta": -0.0029
+   },
+   "defs": [],
+   "mid": "combat.shield_impact",
+   "cat": 1,
+   "group": "Magic",
+   "trigger": "UNUSED \u2014 no shield/absorb mechanic in the game"
+  },
+  "heroes/arcane-knight/arcane-shield.ogg": {
+   "duration": 0.7171,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 31624,
+   "peak_db": -1.08,
+   "rms_db": -18.58,
+   "crest_db": 17.49,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -7e-06,
+   "lead_silence": 0.0,
+   "trail_silence": 0.047,
+   "silence_frac": 0.0,
+   "effective_end": 0.665,
+   "attack_time": 0.02,
+   "energy_centroid": 0.045,
+   "bursts": [
+    [
+     0.02,
+     -8.9
+    ],
+    [
+     0.15,
+     -22.6
+    ]
+   ],
+   "centroid_hz": 670,
+   "flatness": 0.0,
+   "roll85_hz": 969,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.5315,
+    "350-1000": 0.3204,
+    "1000-3000": 0.1472,
+    "3000-6000": 0.0006,
+    "6000-12000": 0.0002,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "81a4a23d19c7ff81171a328f4e8a12ab",
+   "md5_pcm": "069dc34f421f02cae7f8ba94b42c89c5",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.72,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/arcane-knight.arcane_shield",
+    "duration": 0.72,
+    "volume": 0.44,
+    "loop": false,
+    "spatial": true,
+    "description": "Protective runic shield forming",
+    "trigger": "Arcane Knight W shield/heal activated",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "akShield"
+   ],
+   "mid": "heroes/arcane-knight.arcane_shield",
+   "cat": 3,
+   "group": "Arcane Knight",
+   "trigger": "AK W (heal) activation"
+  },
+  "heroes/arcane-knight/arcane-strike.ogg": {
+   "duration": 0.3771,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 16630,
+   "peak_db": -1.11,
+   "rms_db": -20.02,
+   "crest_db": 18.91,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -0.000117,
+   "lead_silence": 0.0,
+   "trail_silence": 0.042,
+   "silence_frac": 0.0,
+   "effective_end": 0.33,
+   "attack_time": 0.01,
+   "energy_centroid": 0.02,
+   "bursts": [
+    [
+     0.01,
+     -10.5
+    ],
+    [
+     0.07,
+     -17.8
+    ],
+    [
+     0.135,
+     -25.0
+    ]
+   ],
+   "centroid_hz": 816,
+   "flatness": 0.0002,
+   "roll85_hz": 991,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.0908,
+    "350-1000": 0.7593,
+    "1000-3000": 0.129,
+    "3000-6000": 0.0149,
+    "6000-12000": 0.0058,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "f0090731ec6408fd1a20cbbb27f80747",
+   "md5_pcm": "8cee8fec0e2d3c26fe463ad828be7f74",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.38,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/arcane-knight.arcane_strike",
+    "duration": 0.38,
+    "volume": 0.52,
+    "loop": false,
+    "spatial": true,
+    "description": "Blue arcane sword sweep",
+    "trigger": "Arcane Knight Q cast; generic impact on confirmed hit",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "akStrike"
+   ],
+   "mid": "heroes/arcane-knight.arcane_strike",
+   "cat": 3,
+   "group": "Arcane Knight",
+   "trigger": "AK Q cast cue (+250 ms bolt release); hit \u2192 combat/magic-impact.ogg"
+  },
+  "heroes/arcane-knight/ground-slam.ogg": {
+   "duration": 0.7771,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 34270,
+   "peak_db": -4.9,
+   "rms_db": -23.69,
+   "crest_db": 18.79,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.001033,
+   "lead_silence": 0.0,
+   "trail_silence": 0.102,
+   "silence_frac": 0.065,
+   "effective_end": 0.67,
+   "attack_time": 0.01,
+   "energy_centroid": 0.03,
+   "bursts": [
+    [
+     0.01,
+     -11.5
+    ],
+    [
+     0.105,
+     -21.1
+    ]
+   ],
+   "centroid_hz": 165,
+   "flatness": 0.0,
+   "roll85_hz": 194,
+   "bands": {
+    "20-60": 0.0363,
+    "60-120": 0.7872,
+    "120-350": 0.0802,
+    "350-1000": 0.0774,
+    "1000-3000": 0.017,
+    "3000-6000": 0.0012,
+    "6000-12000": 0.0008,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "2faf3ed4729e9cbc29ca4c3fc2399776",
+   "md5_pcm": "8964556c00404e0da5b7a71e8c44b4bd",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.78,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/arcane-knight.ground_slam",
+    "duration": 0.78,
+    "volume": 0.66,
+    "loop": false,
+    "spatial": true,
+    "description": "Weapon wind-up, heavy slam and shockwave",
+    "trigger": "Arcane Knight E; time with impact frame",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "akSlamWind"
+   ],
+   "mid": "heroes/arcane-knight.ground_slam",
+   "cat": 3,
+   "group": "Arcane Knight",
+   "trigger": "AK E \u2014 COMBINED clip (wind-up+slam); suppresses fallback akSlamImpact when loaded"
+  },
+  "heroes/arcane-knight/meteor-prison.ogg": {
+   "duration": 1.25,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 55125,
+   "peak_db": -2.32,
+   "rms_db": -21.91,
+   "crest_db": 19.58,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.000687,
+   "lead_silence": 0.0,
+   "trail_silence": 0.225,
+   "silence_frac": 0.056,
+   "effective_end": 1.02,
+   "attack_time": 0.0,
+   "energy_centroid": 0.06,
+   "bursts": [
+    [
+     0.01,
+     -10.3
+    ],
+    [
+     0.07,
+     -13.1
+    ],
+    [
+     0.16,
+     -19.7
+    ],
+    [
+     0.29,
+     -20.1
+    ]
+   ],
+   "centroid_hz": 346,
+   "flatness": 0.0017,
+   "roll85_hz": 560,
+   "bands": {
+    "20-60": 0.0271,
+    "60-120": 0.3814,
+    "120-350": 0.0559,
+    "350-1000": 0.5222,
+    "1000-3000": 0.01,
+    "3000-6000": 0.0017,
+    "6000-12000": 0.0014,
+    "12000-20000": 0.0003
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "11525fac818460badcc12d27966e73a1",
+   "md5_pcm": "c0b2c1a38595adca790ee6b6e6efb684",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 1.25,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/arcane-knight.meteor_prison",
+    "duration": 1.25,
+    "volume": 0.72,
+    "loop": false,
+    "spatial": true,
+    "description": "Meteor descent buildup and crushing arcane explosion",
+    "trigger": "Arcane Knight R ultimate; align major transient with impact",
+    "dur_delta": 0.0
+   },
+   "defs": [
+    "akMeteorBuild"
+   ],
+   "mid": "heroes/arcane-knight.meteor_prison",
+   "cat": 3,
+   "group": "Arcane Knight",
+   "trigger": "AK R \u2014 COMBINED clip (buildup+explosion); suppresses akMeteorImpact when loaded"
+  },
+  "heroes/ember-mage/burning-zone-ignition.ogg": {
+   "duration": 0.7171,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 31624,
+   "peak_db": -1.11,
+   "rms_db": -21.94,
+   "crest_db": 20.84,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.002805,
+   "lead_silence": 0.0,
+   "trail_silence": 0.172,
+   "silence_frac": 0.063,
+   "effective_end": 0.54,
+   "attack_time": 0.005,
+   "energy_centroid": 0.025,
+   "bursts": [
+    [
+     0.005,
+     -10.1
+    ],
+    [
+     0.065,
+     -15.1
+    ]
+   ],
+   "centroid_hz": 440,
+   "flatness": 0.0003,
+   "roll85_hz": 215,
+   "bands": {
+    "20-60": 0.4586,
+    "60-120": 0.3106,
+    "120-350": 0.1294,
+    "350-1000": 0.031,
+    "1000-3000": 0.019,
+    "3000-6000": 0.0263,
+    "6000-12000": 0.0249,
+    "12000-20000": 0.0002
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "3ea4c9892e80711fd6a4e58250348e6e",
+   "md5_pcm": "d0a2e10fef19d8556d0e1cf64466b54a",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.72,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/ember-mage.burning_zone_ignition",
+    "duration": 0.72,
+    "volume": 0.52,
+    "loop": false,
+    "spatial": true,
+    "description": "Fire pool ignition; one-shot, not a continuous loop",
+    "trigger": "Ember Mage E zone activation",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "emZoneFire"
+   ],
+   "mid": "heroes/ember-mage.burning_zone_ignition",
+   "cat": 3,
+   "group": "Ember Mage",
+   "trigger": "EM E ignition one-shot"
+  },
+  "heroes/ember-mage/burning-zone-loop.ogg": {
+   "duration": 4.0,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 176400,
+   "peak_db": -1.05,
+   "rms_db": -6.03,
+   "crest_db": 4.97,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.000157,
+   "lead_silence": 0.0,
+   "trail_silence": 0.0,
+   "silence_frac": 0.0,
+   "effective_end": 4.0,
+   "attack_time": 3.135,
+   "energy_centroid": 2.0,
+   "bursts": [
+    [
+     2.915,
+     -4.3
+    ],
+    [
+     2.99,
+     -3.6
+    ],
+    [
+     3.05,
+     -3.8
+    ],
+    [
+     3.135,
+     -3.6
+    ]
+   ],
+   "centroid_hz": 67,
+   "flatness": 0.0,
+   "roll85_hz": 86,
+   "bands": {
+    "20-60": 0.3601,
+    "60-120": 0.6312,
+    "120-350": 0.006,
+    "350-1000": 0.0004,
+    "1000-3000": 0.0012,
+    "3000-6000": 0.0011,
+    "6000-12000": 0.0001,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": 0.00034,
+   "md5_file": "94f9eb7de06619654ced0d507df44a89",
+   "md5_pcm": "a52341382fca2e584fa14acb79554756",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 96000,
+    "duration": 4.0,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/ember-mage.burning_zone_loop",
+    "duration": 4.0,
+    "volume": 0.2,
+    "loop": true,
+    "spatial": true,
+    "description": "Subdued crackling fire bed; looping",
+    "trigger": "Only loop while a persistent Burning Zone is active",
+    "dur_delta": 0.0
+   },
+   "defs": [],
+   "mid": "heroes/ember-mage.burning_zone_loop",
+   "cat": 6,
+   "group": "Unused loops",
+   "trigger": "UNUSED \u2014 zone is instant AoE, no persistent loop exists"
+  },
+  "heroes/ember-mage/fire-bolt.ogg": {
+   "duration": 0.3371,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 14866,
+   "peak_db": -1.06,
+   "rms_db": -22.34,
+   "crest_db": 21.28,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.000238,
+   "lead_silence": 0.0,
+   "trail_silence": 0.032,
+   "silence_frac": 0.0,
+   "effective_end": 0.3,
+   "attack_time": 0.01,
+   "energy_centroid": 0.01,
+   "bursts": [
+    [
+     0.01,
+     -11.3
+    ]
+   ],
+   "centroid_hz": 3350,
+   "flatness": 0.069,
+   "roll85_hz": 7666,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.1995,
+    "350-1000": 0.2252,
+    "1000-3000": 0.1759,
+    "3000-6000": 0.1409,
+    "6000-12000": 0.252,
+    "12000-20000": 0.0065
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "f29fa1cb16906053ab710611352da7a8",
+   "md5_pcm": "0b98ac7dea28259f125d83a20b4f0181",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.34,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/ember-mage.fire_bolt",
+    "duration": 0.34,
+    "volume": 0.48,
+    "loop": false,
+    "spatial": true,
+    "description": "Flaming projectile launch with crackling tail",
+    "trigger": "Ember Mage Q projectile launch; use fire-impact on confirmed impact",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "emFireCast"
+   ],
+   "mid": "heroes/ember-mage.fire_bolt",
+   "cat": 3,
+   "group": "Ember Mage",
+   "trigger": "EM Q cast cue; hit \u2192 magic-impact.ogg (shared)"
+  },
+  "heroes/ember-mage/flame-wave.ogg": {
+   "duration": 0.6313,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 27840,
+   "peak_db": -1.02,
+   "rms_db": -21.36,
+   "crest_db": 20.34,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -0.000375,
+   "lead_silence": 0.0,
+   "trail_silence": 0.031,
+   "silence_frac": 0.016,
+   "effective_end": 0.595,
+   "attack_time": 0.0,
+   "energy_centroid": 0.01,
+   "bursts": [],
+   "centroid_hz": 1653,
+   "flatness": 0.0003,
+   "roll85_hz": 3984,
+   "bands": {
+    "20-60": 0.0002,
+    "60-120": 0.0291,
+    "120-350": 0.4456,
+    "350-1000": 0.072,
+    "1000-3000": 0.2073,
+    "3000-6000": 0.2196,
+    "6000-12000": 0.0261,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "6a0af0a60cc1b7dae07d2e7a689748cf",
+   "md5_pcm": "69e6e1f33330be6e924132ee1849a14f",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.62,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/ember-mage.flame_wave",
+    "duration": 0.62,
+    "volume": 0.55,
+    "loop": false,
+    "spatial": true,
+    "description": "Broad sweep of flame with low rush",
+    "trigger": "Ember Mage W area cast",
+    "dur_delta": 0.0113
+   },
+   "defs": [
+    "emWave"
+   ],
+   "mid": "heroes/ember-mage.flame_wave",
+   "cat": 3,
+   "group": "Ember Mage",
+   "trigger": "EM W area cast"
+  },
+  "heroes/ember-mage/inferno-storm.ogg": {
+   "duration": 1.7,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 74970,
+   "peak_db": -2.77,
+   "rms_db": -25.04,
+   "crest_db": 22.26,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.001379,
+   "lead_silence": 0.0,
+   "trail_silence": 0.28,
+   "silence_frac": 0.041,
+   "effective_end": 1.415,
+   "attack_time": 0.0,
+   "energy_centroid": 0.02,
+   "bursts": [
+    [
+     0.05,
+     -13.7
+    ],
+    [
+     0.13,
+     -19.2
+    ]
+   ],
+   "centroid_hz": 406,
+   "flatness": 0.0049,
+   "roll85_hz": 388,
+   "bands": {
+    "20-60": 0.2366,
+    "60-120": 0.5489,
+    "120-350": 0.0489,
+    "350-1000": 0.0796,
+    "1000-3000": 0.0405,
+    "3000-6000": 0.0358,
+    "6000-12000": 0.0094,
+    "12000-20000": 0.0003
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "a67e9dcf5057187d2428c00118a0b8c2",
+   "md5_pcm": "b8584ee52ffcb610a86c9b878edb4ab1",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 1.7,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/ember-mage.inferno_storm",
+    "duration": 1.7,
+    "volume": 0.72,
+    "loop": false,
+    "spatial": true,
+    "description": "Large rolling firestorm with two distant bursts",
+    "trigger": "Ember Mage R; play once on ultimate start, avoid stacking repeated impacts",
+    "dur_delta": 0.0
+   },
+   "defs": [
+    "emStormBuild"
+   ],
+   "mid": "heroes/ember-mage.inferno_storm",
+   "cat": 3,
+   "group": "Ember Mage",
+   "trigger": "EM R \u2014 COMBINED clip (storm+bursts); suppresses emStormImpact when loaded"
+  },
+  "heroes/nature-guardian/forest-rebirth.ogg": {
+   "duration": 1.65,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 72765,
+   "peak_db": -0.99,
+   "rms_db": -20.58,
+   "crest_db": 19.59,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 2.5e-05,
+   "lead_silence": 0.0,
+   "trail_silence": 0.16,
+   "silence_frac": 0.036,
+   "effective_end": 1.485,
+   "attack_time": 0.115,
+   "energy_centroid": 0.13,
+   "bursts": [
+    [
+     0.055,
+     -13.9
+    ],
+    [
+     0.115,
+     -9.0
+    ],
+    [
+     0.2,
+     -13.7
+    ],
+    [
+     0.265,
+     -18.5
+    ]
+   ],
+   "centroid_hz": 476,
+   "flatness": 0.0001,
+   "roll85_hz": 668,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0436,
+    "120-350": 0.5439,
+    "350-1000": 0.3426,
+    "1000-3000": 0.0544,
+    "3000-6000": 0.0067,
+    "6000-12000": 0.0087,
+    "12000-20000": 0.0001
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "65c5ff3368216ffb4f0abb9aa57aa543",
+   "md5_pcm": "258b2a476c42756c1eedc60c8633ca3d",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 1.65,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/nature-guardian.forest_rebirth",
+    "duration": 1.65,
+    "volume": 0.62,
+    "loop": false,
+    "spatial": true,
+    "description": "Large nature restoration, rising choral-like synthetic shimmer",
+    "trigger": "Nature Guardian R ultimate heal",
+    "dur_delta": 0.0
+   },
+   "defs": [
+    "ngRebirthBuild"
+   ],
+   "mid": "heroes/nature-guardian.forest_rebirth",
+   "cat": 3,
+   "group": "Nature Guardian",
+   "trigger": "NG R ultimate; heal confirm kept on ngRebirthPulse"
+  },
+  "heroes/nature-guardian/healing-seed.ogg": {
+   "duration": 0.8171,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 36034,
+   "peak_db": -1.12,
+   "rms_db": -19.3,
+   "crest_db": 18.17,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 2e-06,
+   "lead_silence": 0.0,
+   "trail_silence": 0.077,
+   "silence_frac": 0.0,
+   "effective_end": 0.735,
+   "attack_time": 0.04,
+   "energy_centroid": 0.06,
+   "bursts": [
+    [
+     0.04,
+     -8.4
+    ],
+    [
+     0.13,
+     -15.1
+    ]
+   ],
+   "centroid_hz": 788,
+   "flatness": 0.0001,
+   "roll85_hz": 1141,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.0,
+    "350-1000": 0.7983,
+    "1000-3000": 0.1891,
+    "3000-6000": 0.0066,
+    "6000-12000": 0.006,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "339922c1d2c3d158a35b937f546cef3d",
+   "md5_pcm": "965a73b8b62f942088ae79b7f2debce1",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.82,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/nature-guardian.healing_seed",
+    "duration": 0.82,
+    "volume": 0.42,
+    "loop": false,
+    "spatial": true,
+    "description": "Warm restorative chimes",
+    "trigger": "Nature Guardian Q healing",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "ngSeed"
+   ],
+   "mid": "heroes/nature-guardian.healing_seed",
+   "cat": 3,
+   "group": "Nature Guardian",
+   "trigger": "NG Q heal"
+  },
+  "heroes/nature-guardian/nature-barrier.ogg": {
+   "duration": 0.7471,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 32947,
+   "peak_db": -1.17,
+   "rms_db": -19.81,
+   "crest_db": 18.63,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -1.7e-05,
+   "lead_silence": 0.0,
+   "trail_silence": 0.052,
+   "silence_frac": 0.0,
+   "effective_end": 0.69,
+   "attack_time": 0.04,
+   "energy_centroid": 0.055,
+   "bursts": [
+    [
+     0.04,
+     -9.3
+    ],
+    [
+     0.165,
+     -21.9
+    ]
+   ],
+   "centroid_hz": 732,
+   "flatness": 0.0001,
+   "roll85_hz": 1357,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.4464,
+    "350-1000": 0.3381,
+    "1000-3000": 0.193,
+    "3000-6000": 0.0145,
+    "6000-12000": 0.008,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "a398746477b92de6c282c6665f3f58c9",
+   "md5_pcm": "69a5bd7d17b958953caadcd2dfb37b81",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.75,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/nature-guardian.nature_barrier",
+    "duration": 0.75,
+    "volume": 0.42,
+    "loop": false,
+    "spatial": true,
+    "description": "Organic magical barrier bloom",
+    "trigger": "Nature Guardian E barrier/heal activated",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "ngBarrier"
+   ],
+   "mid": "heroes/nature-guardian.nature_barrier",
+   "cat": 3,
+   "group": "Nature Guardian",
+   "trigger": "NG E barrier/heal activation"
+  },
+  "heroes/nature-guardian/root-trap.ogg": {
+   "duration": 0.4171,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 18394,
+   "peak_db": -0.82,
+   "rms_db": -21.41,
+   "crest_db": 20.58,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 3.4e-05,
+   "lead_silence": 0.0,
+   "trail_silence": 0.057,
+   "silence_frac": 0.024,
+   "effective_end": 0.355,
+   "attack_time": 0.005,
+   "energy_centroid": 0.01,
+   "bursts": [
+    [
+     0.005,
+     -9.4
+    ]
+   ],
+   "centroid_hz": 507,
+   "flatness": 0.0,
+   "roll85_hz": 991,
+   "bands": {
+    "20-60": 0.0002,
+    "60-120": 0.0045,
+    "120-350": 0.5703,
+    "350-1000": 0.2768,
+    "1000-3000": 0.1419,
+    "3000-6000": 0.0063,
+    "6000-12000": 0.0001,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "958f88e66307274477f7577dd2fdf7b1",
+   "md5_pcm": "41b63e03b1bfb59ac15b373e46511bdf",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.42,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/nature-guardian.root_trap",
+    "duration": 0.42,
+    "volume": 0.48,
+    "loop": false,
+    "spatial": true,
+    "description": "Roots crack through earth and tighten",
+    "trigger": "Nature Guardian W root trap activation",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "ngRoot"
+   ],
+   "mid": "heroes/nature-guardian.root_trap",
+   "cat": 3,
+   "group": "Nature Guardian",
+   "trigger": "NG W root activation"
+  },
+  "heroes/shadow-huntress/death-mark.ogg": {
+   "duration": 0.7471,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 32947,
+   "peak_db": -1.59,
+   "rms_db": -19.86,
+   "crest_db": 18.27,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.004681,
+   "lead_silence": 0.0,
+   "trail_silence": 0.112,
+   "silence_frac": 0.04,
+   "effective_end": 0.63,
+   "attack_time": 0.01,
+   "energy_centroid": 0.03,
+   "bursts": [
+    [
+     0.01,
+     -8.2
+    ],
+    [
+     0.07,
+     -15.1
+    ],
+    [
+     0.13,
+     -21.3
+    ]
+   ],
+   "centroid_hz": 358,
+   "flatness": 0.0064,
+   "roll85_hz": 646,
+   "bands": {
+    "20-60": 0.4451,
+    "60-120": 0.1745,
+    "120-350": 0.1624,
+    "350-1000": 0.096,
+    "1000-3000": 0.1099,
+    "3000-6000": 0.0077,
+    "6000-12000": 0.003,
+    "12000-20000": 0.0013
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "9474276f28080502755f4d411847a4e0",
+   "md5_pcm": "8aaefa175ae4afa144bc3e800152cf9b",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.75,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/shadow-huntress.death_mark",
+    "duration": 0.75,
+    "volume": 0.62,
+    "loop": false,
+    "spatial": true,
+    "description": "Ominous target mark followed by dark burst",
+    "trigger": "Shadow Huntress R; use at cast or confirmed detonation according to current logic",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "shMark"
+   ],
+   "mid": "heroes/shadow-huntress.death_mark",
+   "cat": 3,
+   "group": "Shadow Huntress",
+   "trigger": "SH R \u2014 COMBINED clip (mark+burst); suppresses shMarkBurst when loaded"
+  },
+  "heroes/shadow-huntress/poison-arrow.ogg": {
+   "duration": 0.4471,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 19717,
+   "peak_db": -1.86,
+   "rms_db": -23.42,
+   "crest_db": 21.56,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -3.1e-05,
+   "lead_silence": 0.0,
+   "trail_silence": 0.087,
+   "silence_frac": 0.056,
+   "effective_end": 0.355,
+   "attack_time": 0.0,
+   "energy_centroid": 0.01,
+   "bursts": [],
+   "centroid_hz": 1997,
+   "flatness": 0.0018,
+   "roll85_hz": 4264,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.0006,
+    "350-1000": 0.7463,
+    "1000-3000": 0.0677,
+    "3000-6000": 0.0789,
+    "6000-12000": 0.104,
+    "12000-20000": 0.0024
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "bbe8431c3c6a76773ee6fc09c2114c58",
+   "md5_pcm": "0ffeced1e674f86774406d1d87f312e9",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.45,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/shadow-huntress.poison_arrow",
+    "duration": 0.45,
+    "volume": 0.46,
+    "loop": false,
+    "spatial": true,
+    "description": "Toxic arrow launch with bitter resonant tail",
+    "trigger": "Shadow Huntress W projectile; poison impact can use arrow-impact",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "shPoison"
+   ],
+   "mid": "heroes/shadow-huntress.poison_arrow",
+   "cat": 3,
+   "group": "Shadow Huntress",
+   "trigger": "SH W launch; hit \u2192 arrow-impact.ogg (shared)"
+  },
+  "heroes/shadow-huntress/shadow-dash.ogg": {
+   "duration": 0.4209,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 18560,
+   "peak_db": -2.68,
+   "rms_db": -23.73,
+   "crest_db": 21.05,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -0.000145,
+   "lead_silence": 0.0,
+   "trail_silence": 0.001,
+   "silence_frac": 0.0,
+   "effective_end": 0.415,
+   "attack_time": 0.0,
+   "energy_centroid": 0.01,
+   "bursts": [],
+   "centroid_hz": 2179,
+   "flatness": 0.0019,
+   "roll85_hz": 5642,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0001,
+    "120-350": 0.132,
+    "350-1000": 0.5411,
+    "1000-3000": 0.0757,
+    "3000-6000": 0.116,
+    "6000-12000": 0.1338,
+    "12000-20000": 0.0013
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "a071c26d456dc17750f127bb267dc591",
+   "md5_pcm": "6bee9ac4ceff461d88fbed60b64f98b7",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.42,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/shadow-huntress.shadow_dash",
+    "duration": 0.42,
+    "volume": 0.48,
+    "loop": false,
+    "spatial": true,
+    "description": "Fast phase-shift dash with purple spectral tail",
+    "trigger": "Shadow Huntress Q dash",
+    "dur_delta": 0.0009
+   },
+   "defs": [
+    "shDash"
+   ],
+   "mid": "heroes/shadow-huntress.shadow_dash",
+   "cat": 3,
+   "group": "Shadow Huntress",
+   "trigger": "SH Q dash"
+  },
+  "heroes/shadow-huntress/smoke-veil.ogg": {
+   "duration": 0.7171,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 31624,
+   "peak_db": -1.2,
+   "rms_db": -19.53,
+   "crest_db": 18.33,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 1e-06,
+   "lead_silence": 0.0,
+   "trail_silence": 0.032,
+   "silence_frac": 0.0,
+   "effective_end": 0.68,
+   "attack_time": 0.05,
+   "energy_centroid": 0.065,
+   "bursts": [
+    [
+     0.05,
+     -9.8
+    ],
+    [
+     0.11,
+     -16.5
+    ]
+   ],
+   "centroid_hz": 928,
+   "flatness": 0.0,
+   "roll85_hz": 1529,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0016,
+    "120-350": 0.4298,
+    "350-1000": 0.2408,
+    "1000-3000": 0.2691,
+    "3000-6000": 0.0571,
+    "6000-12000": 0.0015,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "d2c7bf7dad6f7d7e8c3cbd821e7a353a",
+   "md5_pcm": "25beb88d507ce19144ad1866fd209f23",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.72,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/shadow-huntress.smoke_veil",
+    "duration": 0.72,
+    "volume": 0.4,
+    "loop": false,
+    "spatial": true,
+    "description": "Dark smoke bloom and fading shadow",
+    "trigger": "Shadow Huntress E buff activation",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "shVeil"
+   ],
+   "mid": "heroes/shadow-huntress.smoke_veil",
+   "cat": 3,
+   "group": "Shadow Huntress",
+   "trigger": "SH E buff activation"
+  },
+  "heroes/storm-warrior/lightning-punch.ogg": {
+   "duration": 0.3371,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 14866,
+   "peak_db": -1.15,
+   "rms_db": -20.55,
+   "crest_db": 19.4,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.009104,
+   "lead_silence": 0.0,
+   "trail_silence": 0.087,
+   "silence_frac": 0.045,
+   "effective_end": 0.245,
+   "attack_time": 0.005,
+   "energy_centroid": 0.015,
+   "bursts": [
+    [
+     0.005,
+     -10.5
+    ],
+    [
+     0.065,
+     -20.1
+    ]
+   ],
+   "centroid_hz": 459,
+   "flatness": 0.0132,
+   "roll85_hz": 431,
+   "bands": {
+    "20-60": 0.6639,
+    "60-120": 0.094,
+    "120-350": 0.0656,
+    "350-1000": 0.1149,
+    "1000-3000": 0.0211,
+    "3000-6000": 0.0174,
+    "6000-12000": 0.0196,
+    "12000-20000": 0.0034
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "2b6469eb2827efcd9ddb9d88323b6060",
+   "md5_pcm": "8db7b295c908f547dc2034ab746147d1",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.34,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/storm-warrior.lightning_punch",
+    "duration": 0.34,
+    "volume": 0.52,
+    "loop": false,
+    "spatial": true,
+    "description": "Sharp electrical strike with punchy body",
+    "trigger": "Storm Warrior Q hit",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "swPunchHit"
+   ],
+   "mid": "heroes/storm-warrior.lightning_punch",
+   "cat": 3,
+   "group": "Storm Warrior",
+   "trigger": "SW Q hit"
+  },
+  "heroes/storm-warrior/static-field.ogg": {
+   "duration": 0.6971,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 30741,
+   "peak_db": -3.44,
+   "rms_db": -26.76,
+   "crest_db": 23.32,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.000947,
+   "lead_silence": 0.0,
+   "trail_silence": 0.102,
+   "silence_frac": 0.058,
+   "effective_end": 0.59,
+   "attack_time": 0.0,
+   "energy_centroid": 0.01,
+   "bursts": [
+    [
+     0.04,
+     -18.9
+    ]
+   ],
+   "centroid_hz": 1626,
+   "flatness": 0.0421,
+   "roll85_hz": 3898,
+   "bands": {
+    "20-60": 0.0079,
+    "60-120": 0.3601,
+    "120-350": 0.1828,
+    "350-1000": 0.1745,
+    "1000-3000": 0.1067,
+    "3000-6000": 0.0648,
+    "6000-12000": 0.0934,
+    "12000-20000": 0.0098
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "61ff08168b43a268c01ea9dbc1106aee",
+   "md5_pcm": "c783ff098c0eb1f1ff0b68c2cfbd7c33",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.699977,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/storm-warrior.static_field",
+    "duration": 0.7,
+    "volume": 0.52,
+    "loop": false,
+    "spatial": true,
+    "description": "Radial electric field discharge",
+    "trigger": "Storm Warrior W area cast",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "swField"
+   ],
+   "mid": "heroes/storm-warrior.static_field",
+   "cat": 3,
+   "group": "Storm Warrior",
+   "trigger": "SW W area cast"
+  },
+  "heroes/storm-warrior/storm-rage.ogg": {
+   "duration": 1.05,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 46305,
+   "peak_db": -1.87,
+   "rms_db": -22.52,
+   "crest_db": 20.65,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.000566,
+   "lead_silence": 0.0,
+   "trail_silence": 0.055,
+   "silence_frac": 0.0,
+   "effective_end": 0.99,
+   "attack_time": 0.01,
+   "energy_centroid": 0.05,
+   "bursts": [
+    [
+     0.01,
+     -10.9
+    ],
+    [
+     0.075,
+     -13.3
+    ]
+   ],
+   "centroid_hz": 1019,
+   "flatness": 0.0294,
+   "roll85_hz": 1184,
+   "bands": {
+    "20-60": 0.0009,
+    "60-120": 0.3504,
+    "120-350": 0.1787,
+    "350-1000": 0.3032,
+    "1000-3000": 0.0752,
+    "3000-6000": 0.0408,
+    "6000-12000": 0.0453,
+    "12000-20000": 0.0055
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "e0652a81a906672d55ff7481eaf05435",
+   "md5_pcm": "6cd9b21a8516a9402593c324f017cd3f",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 1.05,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/storm-warrior.storm_rage",
+    "duration": 1.05,
+    "volume": 0.62,
+    "loop": false,
+    "spatial": true,
+    "description": "Electric power-up surge with rising harmonic layer",
+    "trigger": "Storm Warrior R buff activation",
+    "dur_delta": 0.0
+   },
+   "defs": [
+    "swRage"
+   ],
+   "mid": "heroes/storm-warrior.storm_rage",
+   "cat": 3,
+   "group": "Storm Warrior",
+   "trigger": "SW R buff activation"
+  },
+  "heroes/storm-warrior/thunder-charge.ogg": {
+   "duration": 0.6471,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 28537,
+   "peak_db": -4.22,
+   "rms_db": -23.43,
+   "crest_db": 19.21,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.002112,
+   "lead_silence": 0.0,
+   "trail_silence": 0.002,
+   "silence_frac": 0.0,
+   "effective_end": 0.64,
+   "attack_time": 0.015,
+   "energy_centroid": 0.02,
+   "bursts": [
+    [
+     0.015,
+     -12.3
+    ],
+    [
+     0.13,
+     -24.3
+    ]
+   ],
+   "centroid_hz": 304,
+   "flatness": 0.0033,
+   "roll85_hz": 194,
+   "bands": {
+    "20-60": 0.0887,
+    "60-120": 0.7128,
+    "120-350": 0.0911,
+    "350-1000": 0.0574,
+    "1000-3000": 0.0248,
+    "3000-6000": 0.0133,
+    "6000-12000": 0.0108,
+    "12000-20000": 0.0011
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "b6f645a1d1263fe074f63dfdc3dd6b9d",
+   "md5_pcm": "661f383337ac4cc72fad553077bb9271",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.65,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "heroes/storm-warrior.thunder_charge",
+    "duration": 0.65,
+    "volume": 0.64,
+    "loop": false,
+    "spatial": true,
+    "description": "Charged rush ending with a thunder impact",
+    "trigger": "Storm Warrior E dash; align impact layer with landing when possible",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "swCharge"
+   ],
+   "mid": "heroes/storm-warrior.thunder_charge",
+   "cat": 3,
+   "group": "Storm Warrior",
+   "trigger": "SW E \u2014 COMBINED clip (rush+thunder); suppresses swChargeHit when loaded"
+  },
+  "structures/boss-attack.ogg": {
+   "duration": 0.5971,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 26332,
+   "peak_db": -1.42,
+   "rms_db": -19.84,
+   "crest_db": 18.42,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.002952,
+   "lead_silence": 0.0,
+   "trail_silence": 0.022,
+   "silence_frac": 0.0,
+   "effective_end": 0.57,
+   "attack_time": 0.01,
+   "energy_centroid": 0.015,
+   "bursts": [
+    [
+     0.01,
+     -7.3
+    ],
+    [
+     0.095,
+     -19.5
+    ]
+   ],
+   "centroid_hz": 129,
+   "flatness": 0.0,
+   "roll85_hz": 86,
+   "bands": {
+    "20-60": 0.1185,
+    "60-120": 0.7799,
+    "120-350": 0.0341,
+    "350-1000": 0.0567,
+    "1000-3000": 0.0086,
+    "3000-6000": 0.0012,
+    "6000-12000": 0.0011,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "8ed6df841df8dfa52f86061295e7ebac",
+   "md5_pcm": "140800bc981d2566bbd49bbe99b264ea",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.6,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "structures.boss_attack",
+    "duration": 0.6,
+    "volume": 0.62,
+    "loop": false,
+    "spatial": true,
+    "description": "Heavy neutral boss attack",
+    "trigger": "Boss attack wind-up/impact; align with game event",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "bossAttack"
+   ],
+   "mid": "structures.boss_attack",
+   "cat": 4,
+   "group": "Boss",
+   "trigger": "Neutral boss fires (launch kind \"boss\")"
+  },
+  "structures/boss-death.ogg": {
+   "duration": 1.5,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 66150,
+   "peak_db": -1.11,
+   "rms_db": -19.44,
+   "crest_db": 18.33,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.000962,
+   "lead_silence": 0.0,
+   "trail_silence": 0.365,
+   "silence_frac": 0.113,
+   "effective_end": 1.13,
+   "attack_time": 0.005,
+   "energy_centroid": 0.09,
+   "bursts": [
+    [
+     0.005,
+     -7.4
+    ],
+    [
+     0.095,
+     -11.4
+    ],
+    [
+     0.295,
+     -17.6
+    ],
+    [
+     0.395,
+     -18.4
+    ]
+   ],
+   "centroid_hz": 303,
+   "flatness": 0.0013,
+   "roll85_hz": 409,
+   "bands": {
+    "20-60": 0.0332,
+    "60-120": 0.2485,
+    "120-350": 0.4593,
+    "350-1000": 0.2456,
+    "1000-3000": 0.0099,
+    "3000-6000": 0.0023,
+    "6000-12000": 0.001,
+    "12000-20000": 0.0002
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "21b325036e595f4ab8729e58d12e09ef",
+   "md5_pcm": "6255efc2a90e83b2d5a34c6db4221ed1",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 1.5,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "structures.boss_death",
+    "duration": 1.5,
+    "volume": 0.7,
+    "loop": false,
+    "spatial": true,
+    "description": "Large creature defeat, rumbling fall and energy release",
+    "trigger": "Boss death",
+    "dur_delta": 0.0
+   },
+   "defs": [
+    "bossDeath"
+   ],
+   "mid": "structures.boss_death",
+   "cat": 4,
+   "group": "Boss",
+   "trigger": "Neutral boss falls (die kind=\"neutral\", big)"
+  },
+  "structures/core-critical.ogg": {
+   "duration": 0.9971,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 43972,
+   "peak_db": -1.34,
+   "rms_db": -21.92,
+   "crest_db": 20.59,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -9e-06,
+   "lead_silence": 0.0,
+   "trail_silence": 0.067,
+   "silence_frac": 0.005,
+   "effective_end": 0.925,
+   "attack_time": 0.025,
+   "energy_centroid": 0.035,
+   "bursts": [
+    [
+     0.025,
+     -8.6
+    ],
+    [
+     0.085,
+     -15.1
+    ]
+   ],
+   "centroid_hz": 426,
+   "flatness": 0.0,
+   "roll85_hz": 474,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.002,
+    "120-350": 0.5978,
+    "350-1000": 0.3265,
+    "1000-3000": 0.072,
+    "3000-6000": 0.0016,
+    "6000-12000": 0.0,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "ea08c88f71e239db2cca71771fcb20d3",
+   "md5_pcm": "b1c2ecb17c07db3907de76d8944897e9",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 1.0,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "structures.core_critical",
+    "duration": 1.0,
+    "volume": 0.42,
+    "loop": false,
+    "spatial": true,
+    "description": "Unstable low magical pulse; trigger once at critical health",
+    "trigger": "Core crosses critical-health threshold; do not play every frame",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "coreCritical"
+   ],
+   "mid": "structures.core_critical",
+   "cat": 4,
+   "group": "Core",
+   "trigger": "Core first crosses 35 % hp (once per team per match)"
+  },
+  "structures/core-destroy.ogg": {
+   "duration": 1.65,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 72765,
+   "peak_db": -1.04,
+   "rms_db": -19.71,
+   "crest_db": 18.67,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.000578,
+   "lead_silence": 0.0,
+   "trail_silence": 0.16,
+   "silence_frac": 0.039,
+   "effective_end": 1.485,
+   "attack_time": 0.0,
+   "energy_centroid": 0.09,
+   "bursts": [
+    [
+     0.01,
+     -8.4
+    ],
+    [
+     0.085,
+     -13.0
+    ],
+    [
+     0.15,
+     -17.1
+    ],
+    [
+     0.635,
+     -18.8
+    ]
+   ],
+   "centroid_hz": 344,
+   "flatness": 0.0014,
+   "roll85_hz": 517,
+   "bands": {
+    "20-60": 0.0301,
+    "60-120": 0.3576,
+    "120-350": 0.0912,
+    "350-1000": 0.5,
+    "1000-3000": 0.0141,
+    "3000-6000": 0.0047,
+    "6000-12000": 0.002,
+    "12000-20000": 0.0002
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "b920db95183058c7dd696e93647cf727",
+   "md5_pcm": "8d7cf200820ed066f443d51626339089",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 1.65,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "structures.core_destroy",
+    "duration": 1.65,
+    "volume": 0.82,
+    "loop": false,
+    "spatial": true,
+    "description": "Major magical core collapse, low impact plus energy tail",
+    "trigger": "Core destroyed; stop conflicting match audio then play once",
+    "dur_delta": 0.0
+   },
+   "defs": [
+    "coreCollapse"
+   ],
+   "mid": "structures.core_destroy",
+   "cat": 4,
+   "group": "Core",
+   "trigger": "Core destroyed (once, forced; match end follows)"
+  },
+  "structures/core-hit.ogg": {
+   "duration": 0.4771,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 21040,
+   "peak_db": -1.1,
+   "rms_db": -15.08,
+   "crest_db": 13.97,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.000401,
+   "lead_silence": 0.0,
+   "trail_silence": 0.002,
+   "silence_frac": 0.0,
+   "effective_end": 0.47,
+   "attack_time": 0.01,
+   "energy_centroid": 0.05,
+   "bursts": [
+    [
+     0.01,
+     -7.5
+    ],
+    [
+     0.09,
+     -10.0
+    ],
+    [
+     0.18,
+     -16.0
+    ],
+    [
+     0.29,
+     -19.2
+    ]
+   ],
+   "centroid_hz": 550,
+   "flatness": 0.0,
+   "roll85_hz": 668,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0131,
+    "120-350": 0.0097,
+    "350-1000": 0.9723,
+    "1000-3000": 0.0023,
+    "3000-6000": 0.0014,
+    "6000-12000": 0.0011,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "bcd5fe379c5da6cb1bccd7740977bbde",
+   "md5_pcm": "c4ce6192fbb49e11246fbc3ca329e3c0",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.48,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "structures.core_hit",
+    "duration": 0.48,
+    "volume": 0.55,
+    "loop": false,
+    "spatial": true,
+    "description": "Resonant magical core strike",
+    "trigger": "Core receives damage",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "hitCore"
+   ],
+   "mid": "structures.core_hit",
+   "cat": 4,
+   "group": "Core",
+   "trigger": "Core takes damage (global range)"
+  },
+  "structures/tower-destroy.ogg": {
+   "duration": 1.1,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 48510,
+   "peak_db": -1.2,
+   "rms_db": -22.86,
+   "crest_db": 21.66,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.000922,
+   "lead_silence": 0.0,
+   "trail_silence": 0.015,
+   "silence_frac": 0.0,
+   "effective_end": 1.08,
+   "attack_time": 0.0,
+   "energy_centroid": 0.02,
+   "bursts": [
+    [
+     0.09,
+     -21.7
+    ]
+   ],
+   "centroid_hz": 251,
+   "flatness": 0.0016,
+   "roll85_hz": 280,
+   "bands": {
+    "20-60": 0.0947,
+    "60-120": 0.6989,
+    "120-350": 0.0857,
+    "350-1000": 0.0878,
+    "1000-3000": 0.0155,
+    "3000-6000": 0.0138,
+    "6000-12000": 0.0031,
+    "12000-20000": 0.0003
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "52b5190bcb1d8aa3de086696d47a2a90",
+   "md5_pcm": "5a91eeedd96a3fd4b51f2e18a4de11e4",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 1.1,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "structures.tower_destroy",
+    "duration": 1.1,
+    "volume": 0.72,
+    "loop": false,
+    "spatial": true,
+    "description": "Stone/metal structure collapse with debris",
+    "trigger": "Tower destruction",
+    "dur_delta": 0.0
+   },
+   "defs": [
+    "collapseTower"
+   ],
+   "mid": "structures.tower_destroy",
+   "cat": 4,
+   "group": "Towers",
+   "trigger": "Tower destroyed (once, forced)"
+  },
+  "structures/tower-impact.ogg": {
+   "duration": 0.3471,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 15306,
+   "peak_db": -1.82,
+   "rms_db": -17.04,
+   "crest_db": 15.22,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.007048,
+   "lead_silence": 0.0,
+   "trail_silence": 0.012,
+   "silence_frac": 0.0,
+   "effective_end": 0.33,
+   "attack_time": 0.005,
+   "energy_centroid": 0.025,
+   "bursts": [
+    [
+     0.005,
+     -8.0
+    ],
+    [
+     0.065,
+     -14.6
+    ]
+   ],
+   "centroid_hz": 110,
+   "flatness": 0.0,
+   "roll85_hz": 65,
+   "bands": {
+    "20-60": 0.5019,
+    "60-120": 0.3961,
+    "120-350": 0.0363,
+    "350-1000": 0.06,
+    "1000-3000": 0.0032,
+    "3000-6000": 0.0016,
+    "6000-12000": 0.0009,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "276dfae6e615ba7910bd015054243016",
+   "md5_pcm": "73f0fc543fa9b49033d5d625d1acf5f6",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.349977,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "structures.tower_impact",
+    "duration": 0.35,
+    "volume": 0.54,
+    "loop": false,
+    "spatial": true,
+    "description": "Tower bolt impact",
+    "trigger": "Tower projectile confirmed impact",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "hitHeavy"
+   ],
+   "mid": "structures.tower_impact",
+   "cat": 4,
+   "group": "Towers",
+   "trigger": "Heavy projectile impact (tower/siege bolt connected)"
+  },
+  "structures/tower-shot.ogg": {
+   "duration": 0.2771,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 12220,
+   "peak_db": -1.57,
+   "rms_db": -21.13,
+   "crest_db": 19.56,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -7.5e-05,
+   "lead_silence": 0.0,
+   "trail_silence": 0.022,
+   "silence_frac": 0.0,
+   "effective_end": 0.25,
+   "attack_time": 0.0,
+   "energy_centroid": 0.01,
+   "bursts": [
+    [
+     0.01,
+     -10.4
+    ]
+   ],
+   "centroid_hz": 680,
+   "flatness": 0.0001,
+   "roll85_hz": 1830,
+   "bands": {
+    "20-60": 0.0002,
+    "60-120": 0.0229,
+    "120-350": 0.7459,
+    "350-1000": 0.0477,
+    "1000-3000": 0.1101,
+    "3000-6000": 0.0686,
+    "6000-12000": 0.0046,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "c88844c1d84c155ae2aa78d866c6422e",
+   "md5_pcm": "e63cb21c525689abf1a8318668d90f53",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.28,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "structures.tower_shot",
+    "duration": 0.28,
+    "volume": 0.45,
+    "loop": false,
+    "spatial": true,
+    "description": "Heavy defensive tower launch",
+    "trigger": "Tower projectile launch",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "siegeShot"
+   ],
+   "mid": "structures.tower_shot",
+   "cat": 4,
+   "group": "Towers",
+   "trigger": "Tower or siege-engine shot (launch kind \"heavy\")"
+  },
+  "ui/defeat-stinger.ogg": {
+   "duration": 2.7,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 119070,
+   "peak_db": -1.1,
+   "rms_db": -20.24,
+   "crest_db": 19.14,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -3.7e-05,
+   "lead_silence": 0.0,
+   "trail_silence": 0.145,
+   "silence_frac": 0.006,
+   "effective_end": 2.55,
+   "attack_time": 0.065,
+   "energy_centroid": 0.11,
+   "bursts": [
+    [
+     0.065,
+     -7.4
+    ],
+    [
+     0.14,
+     -10.7
+    ],
+    [
+     0.205,
+     -16.7
+    ],
+    [
+     0.27,
+     -18.5
+    ]
+   ],
+   "centroid_hz": 182,
+   "flatness": 0.0016,
+   "roll85_hz": 215,
+   "bands": {
+    "20-60": 0.0019,
+    "60-120": 0.5747,
+    "120-350": 0.3835,
+    "350-1000": 0.0303,
+    "1000-3000": 0.0065,
+    "3000-6000": 0.0017,
+    "6000-12000": 0.0009,
+    "12000-20000": 0.0005
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "1c04e705baf0996f97b12ee04207b6fe",
+   "md5_pcm": "bd1e0c9ad7da87d1f2eb81549b8cf5d8",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 2.7,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "ui.defeat_stinger",
+    "duration": 2.7,
+    "volume": 0.56,
+    "loop": false,
+    "spatial": true,
+    "description": "Original dark descending defeat cue",
+    "trigger": "Match defeat",
+    "dur_delta": 0.0
+   },
+   "defs": [
+    "musicDefeat"
+   ],
+   "mid": "ui.defeat_stinger",
+   "cat": 6,
+   "group": "Stingers",
+   "trigger": "Match defeat (once; music bus)"
+  },
+  "ui/gold-reward.ogg": {
+   "duration": 0.2771,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 12220,
+   "peak_db": -1.89,
+   "rms_db": -21.13,
+   "crest_db": 19.24,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -0.0,
+   "lead_silence": 0.0,
+   "trail_silence": 0.027,
+   "silence_frac": 0.0,
+   "effective_end": 0.245,
+   "attack_time": 0.0,
+   "energy_centroid": 0.01,
+   "bursts": [],
+   "centroid_hz": 1404,
+   "flatness": 0.0,
+   "roll85_hz": 1593,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.0,
+    "350-1000": 0.144,
+    "1000-3000": 0.8467,
+    "3000-6000": 0.0078,
+    "6000-12000": 0.0013,
+    "12000-20000": 0.0002
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "608f365d514a82fbcd29a22cb892ae0a",
+   "md5_pcm": "4a52ca5a80318e5dde91ac5cbaba5532",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.28,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "ui.gold_reward",
+    "duration": 0.28,
+    "volume": 0.3,
+    "loop": false,
+    "spatial": true,
+    "description": "Short coin/valuable pickup sparkle",
+    "trigger": "Meaningful gold reward; throttle repeated events",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "uiGold"
+   ],
+   "mid": "ui.gold_reward",
+   "cat": 5,
+   "group": "Menu & rewards",
+   "trigger": "Gold gain \u2265 8 in one snapshot (watched; passive income silent)"
+  },
+  "ui/hero-select.ogg": {
+   "duration": 0.9171,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 40444,
+   "peak_db": -1.2,
+   "rms_db": -18.45,
+   "crest_db": 17.25,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -0.0,
+   "lead_silence": 0.0,
+   "trail_silence": 0.042,
+   "silence_frac": 0.0,
+   "effective_end": 0.87,
+   "attack_time": 0.06,
+   "energy_centroid": 0.065,
+   "bursts": [
+    [
+     0.06,
+     -9.0
+    ],
+    [
+     0.135,
+     -14.2
+    ],
+    [
+     0.215,
+     -21.4
+    ]
+   ],
+   "centroid_hz": 712,
+   "flatness": 0.0001,
+   "roll85_hz": 775,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.0,
+    "350-1000": 0.8764,
+    "1000-3000": 0.1124,
+    "3000-6000": 0.0054,
+    "6000-12000": 0.0058,
+    "12000-20000": 0.0001
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "8bbdcdbdad2e006bbb982934c8d7d39f",
+   "md5_pcm": "8fa026b036937cf62390a9204fb71830",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.92,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "ui.hero_select",
+    "duration": 0.92,
+    "volume": 0.4,
+    "loop": false,
+    "spatial": true,
+    "description": "Hero select arcane shimmer",
+    "trigger": "Hero selected",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "uiSelect"
+   ],
+   "mid": "ui.hero_select",
+   "cat": 5,
+   "group": "Menu & rewards",
+   "trigger": "Hero card select"
+  },
+  "ui/item-purchase.ogg": {
+   "duration": 0.3371,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 14866,
+   "peak_db": -1.17,
+   "rms_db": -20.52,
+   "crest_db": 19.35,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 2.4e-05,
+   "lead_silence": 0.0,
+   "trail_silence": 0.017,
+   "silence_frac": 0.0,
+   "effective_end": 0.315,
+   "attack_time": 0.01,
+   "energy_centroid": 0.015,
+   "bursts": [
+    [
+     0.01,
+     -9.9
+    ]
+   ],
+   "centroid_hz": 1233,
+   "flatness": 0.0,
+   "roll85_hz": 1723,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.0,
+    "350-1000": 0.2074,
+    "1000-3000": 0.784,
+    "3000-6000": 0.0072,
+    "6000-12000": 0.0013,
+    "12000-20000": 0.0001
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "d803ea0adb582162a7750fbebfab4368",
+   "md5_pcm": "89c2f07abd3f935a26f6767591735801",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.34,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "ui.item_purchase",
+    "duration": 0.34,
+    "volume": 0.38,
+    "loop": false,
+    "spatial": true,
+    "description": "Coin-like purchase shimmer",
+    "trigger": "Item purchased",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "shopBuy"
+   ],
+   "mid": "ui.item_purchase",
+   "cat": 5,
+   "group": "Menu & rewards",
+   "trigger": "Item bought (sell reuses)"
+  },
+  "ui/level-up.ogg": {
+   "duration": 0.8971,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 39562,
+   "peak_db": -1.05,
+   "rms_db": -19.62,
+   "crest_db": 18.57,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 1.2e-05,
+   "lead_silence": 0.0,
+   "trail_silence": 0.072,
+   "silence_frac": 0.017,
+   "effective_end": 0.82,
+   "attack_time": 0.04,
+   "energy_centroid": 0.05,
+   "bursts": [
+    [
+     0.04,
+     -9.1
+    ],
+    [
+     0.12,
+     -15.8
+    ]
+   ],
+   "centroid_hz": 871,
+   "flatness": 0.0,
+   "roll85_hz": 1206,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.0003,
+    "350-1000": 0.6913,
+    "1000-3000": 0.3033,
+    "3000-6000": 0.0023,
+    "6000-12000": 0.0028,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "dfe6876ac7e630dc3117bba35a818aa1",
+   "md5_pcm": "0d1f010d154bffb79d94cbcbff003f3a",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.9,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "ui.level_up",
+    "duration": 0.9,
+    "volume": 0.45,
+    "loop": false,
+    "spatial": true,
+    "description": "Ascending layered level-up chime",
+    "trigger": "Hero gains a level",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "uiLevel"
+   ],
+   "mid": "ui.level_up",
+   "cat": 5,
+   "group": "Menu & rewards",
+   "trigger": "Hero levels up (watched from HUD snapshot)"
+  },
+  "ui/match-start.ogg": {
+   "duration": 1.55,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 68355,
+   "peak_db": -1.03,
+   "rms_db": -19.81,
+   "crest_db": 18.78,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.00183,
+   "lead_silence": 0.0,
+   "trail_silence": 0.1,
+   "silence_frac": 0.019,
+   "effective_end": 1.445,
+   "attack_time": 0.005,
+   "energy_centroid": 0.06,
+   "bursts": [
+    [
+     0.005,
+     -7.8
+    ],
+    [
+     0.065,
+     -10.7
+    ],
+    [
+     0.15,
+     -13.7
+    ],
+    [
+     0.215,
+     -17.2
+    ]
+   ],
+   "centroid_hz": 246,
+   "flatness": 0.0053,
+   "roll85_hz": 452,
+   "bands": {
+    "20-60": 0.2602,
+    "60-120": 0.2999,
+    "120-350": 0.2628,
+    "350-1000": 0.1546,
+    "1000-3000": 0.0146,
+    "3000-6000": 0.0042,
+    "6000-12000": 0.0025,
+    "12000-20000": 0.0012
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "5a7349189cdcef4b94ee3a21a3dca22e",
+   "md5_pcm": "7b504a51a3cfba834dede7749f6a305a",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 1.55,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "ui.match_start",
+    "duration": 1.55,
+    "volume": 0.55,
+    "loop": false,
+    "spatial": true,
+    "description": "Dark-fantasy match-start swell and impact",
+    "trigger": "Match begins",
+    "dur_delta": 0.0
+   },
+   "defs": [
+    "matchStart"
+   ],
+   "mid": "ui.match_start",
+   "cat": 5,
+   "group": "Menu & rewards",
+   "trigger": "Match begins"
+  },
+  "ui/pause.ogg": {
+   "duration": 0.2471,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 10897,
+   "peak_db": -1.01,
+   "rms_db": -17.79,
+   "crest_db": 16.78,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 8.4e-05,
+   "lead_silence": 0.0,
+   "trail_silence": 0.037,
+   "silence_frac": 0.02,
+   "effective_end": 0.205,
+   "attack_time": 0.01,
+   "energy_centroid": 0.01,
+   "bursts": [
+    [
+     0.01,
+     -7.2
+    ]
+   ],
+   "centroid_hz": 431,
+   "flatness": 0.0,
+   "roll85_hz": 538,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.3413,
+    "350-1000": 0.6579,
+    "1000-3000": 0.0007,
+    "3000-6000": 0.0,
+    "6000-12000": 0.0,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "9f80ef08a7eee6453f754be9a95f5ff1",
+   "md5_pcm": "520958da8a853f187295196f9690e884",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.25,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "ui.pause",
+    "duration": 0.25,
+    "volume": 0.3,
+    "loop": false,
+    "spatial": true,
+    "description": "Short descending pause cue",
+    "trigger": "Match paused",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "uiPause"
+   ],
+   "mid": "ui.pause",
+   "cat": 5,
+   "group": "Core UI",
+   "trigger": "Pause"
+  },
+  "ui/resume.ogg": {
+   "duration": 0.3171,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 13984,
+   "peak_db": -1.06,
+   "rms_db": -18.49,
+   "crest_db": 17.43,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -0.000252,
+   "lead_silence": 0.0,
+   "trail_silence": 0.037,
+   "silence_frac": 0.0,
+   "effective_end": 0.275,
+   "attack_time": 0.005,
+   "energy_centroid": 0.01,
+   "bursts": [
+    [
+     0.005,
+     -7.8
+    ]
+   ],
+   "centroid_hz": 404,
+   "flatness": 0.0,
+   "roll85_hz": 538,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.5574,
+    "350-1000": 0.4366,
+    "1000-3000": 0.0057,
+    "3000-6000": 0.0003,
+    "6000-12000": 0.0,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "30e06a973648f1927935303c5edbac14",
+   "md5_pcm": "9c6977068343ff8e6f21a19797f27ba7",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.32,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "ui.resume",
+    "duration": 0.32,
+    "volume": 0.32,
+    "loop": false,
+    "spatial": true,
+    "description": "Short rising resume cue",
+    "trigger": "Match resumed",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "uiResume"
+   ],
+   "mid": "ui.resume",
+   "cat": 5,
+   "group": "Core UI",
+   "trigger": "Resume"
+  },
+  "ui/shop-open.ogg": {
+   "duration": 0.3371,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 14866,
+   "peak_db": -1.06,
+   "rms_db": -18.73,
+   "crest_db": 17.67,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 1e-06,
+   "lead_silence": 0.0,
+   "trail_silence": 0.047,
+   "silence_frac": 0.0,
+   "effective_end": 0.285,
+   "attack_time": 0.01,
+   "energy_centroid": 0.02,
+   "bursts": [
+    [
+     0.01,
+     -8.5
+    ]
+   ],
+   "centroid_hz": 478,
+   "flatness": 0.0,
+   "roll85_hz": 861,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.6561,
+    "350-1000": 0.3395,
+    "1000-3000": 0.0023,
+    "3000-6000": 0.0013,
+    "6000-12000": 0.0008,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "9db1f6815cd7b609a0f173ff12b46481",
+   "md5_pcm": "07d091b7468a54d72902e8463d7f9fec",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.34,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "ui.shop_open",
+    "duration": 0.34,
+    "volume": 0.32,
+    "loop": false,
+    "spatial": true,
+    "description": "Small metallic menu open",
+    "trigger": "Shop opened",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "shopOpen"
+   ],
+   "mid": "ui.shop_open",
+   "cat": 5,
+   "group": "Menu & rewards",
+   "trigger": "Shop opens"
+  },
+  "ui/ui-click.ogg": {
+   "duration": 0.0871,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 3841,
+   "peak_db": -3.44,
+   "rms_db": -21.95,
+   "crest_db": 18.51,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -0.000187,
+   "lead_silence": 0.0,
+   "trail_silence": 0.002,
+   "silence_frac": 0.0,
+   "effective_end": 0.08,
+   "attack_time": 0.0,
+   "energy_centroid": 0.0,
+   "bursts": [],
+   "centroid_hz": 494,
+   "flatness": 0.0004,
+   "roll85_hz": 301,
+   "bands": {
+    "20-60": 0.0004,
+    "60-120": 0.0019,
+    "120-350": 0.9087,
+    "350-1000": 0.0122,
+    "1000-3000": 0.0409,
+    "3000-6000": 0.0233,
+    "6000-12000": 0.0124,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "ee438fd730ceb9465c9ea72ef3c2711f",
+   "md5_pcm": "b846dcb6675c1c978f96cae0c0a1711e",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.09,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "ui.ui_click",
+    "duration": 0.09,
+    "volume": 0.35,
+    "loop": false,
+    "spatial": true,
+    "description": "Tactile muted click with low body",
+    "trigger": "UI button click",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "uiClick"
+   ],
+   "mid": "ui.ui_click",
+   "cat": 5,
+   "group": "Core UI",
+   "trigger": "Delegated click on any control"
+  },
+  "ui/ui-confirm.ogg": {
+   "duration": 0.6471,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 28537,
+   "peak_db": -1.05,
+   "rms_db": -19.81,
+   "crest_db": 18.76,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 1e-06,
+   "lead_silence": 0.0,
+   "trail_silence": 0.042,
+   "silence_frac": 0.023,
+   "effective_end": 0.6,
+   "attack_time": 0.01,
+   "energy_centroid": 0.03,
+   "bursts": [
+    [
+     0.01,
+     -8.9
+    ],
+    [
+     0.125,
+     -22.0
+    ]
+   ],
+   "centroid_hz": 916,
+   "flatness": 0.0,
+   "roll85_hz": 1270,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.0,
+    "350-1000": 0.6965,
+    "1000-3000": 0.3024,
+    "3000-6000": 0.0009,
+    "6000-12000": 0.0002,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "3fbb25b2a4a44d5daa02b79e9228f6c3",
+   "md5_pcm": "dd846a64e3d641c377f20713f3ee717c",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.65,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "ui.ui_confirm",
+    "duration": 0.65,
+    "volume": 0.42,
+    "loop": false,
+    "spatial": true,
+    "description": "Three-layer confirm chime",
+    "trigger": "Confirmed action",
+    "dur_delta": -0.0029
+   },
+   "defs": [],
+   "mid": "ui.ui_confirm",
+   "cat": 5,
+   "group": "Core UI",
+   "trigger": "UNUSED \u2014 no distinct confirmation moment (select/buy/match-start own theirs)"
+  },
+  "ui/ui-error.ogg": {
+   "duration": 0.2371,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 10456,
+   "peak_db": -3.51,
+   "rms_db": -19.76,
+   "crest_db": 16.25,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": -0.000181,
+   "lead_silence": 0.0,
+   "trail_silence": 0.002,
+   "silence_frac": 0.0,
+   "effective_end": 0.23,
+   "attack_time": 0.01,
+   "energy_centroid": 0.01,
+   "bursts": [
+    [
+     0.01,
+     -10.5
+    ]
+   ],
+   "centroid_hz": 265,
+   "flatness": 0.0,
+   "roll85_hz": 301,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0001,
+    "120-350": 0.9868,
+    "350-1000": 0.0113,
+    "1000-3000": 0.0017,
+    "3000-6000": 0.0001,
+    "6000-12000": 0.0,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "3399cbd1029459ff692bdc279610517e",
+   "md5_pcm": "4db1086c1ed3202c39fa3d373d213f8b",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.24,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "ui.ui_error",
+    "duration": 0.24,
+    "volume": 0.32,
+    "loop": false,
+    "spatial": true,
+    "description": "Muted low double rejection cue",
+    "trigger": "Invalid action / unavailable ability",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "uiError"
+   ],
+   "mid": "ui.ui_error",
+   "cat": 5,
+   "group": "Core UI",
+   "trigger": "Refused cast/attack or failed buy/sell"
+  },
+  "ui/ui-hover.ogg": {
+   "duration": 0.1071,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 4723,
+   "peak_db": -1.02,
+   "rms_db": -16.51,
+   "crest_db": 15.49,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 7.3e-05,
+   "lead_silence": 0.0,
+   "trail_silence": 0.002,
+   "silence_frac": 0.0,
+   "effective_end": 0.1,
+   "attack_time": 0.0,
+   "energy_centroid": 0.005,
+   "bursts": [],
+   "centroid_hz": 902,
+   "flatness": 0.0,
+   "roll85_hz": 883,
+   "bands": {
+    "20-60": 0.0,
+    "60-120": 0.0,
+    "120-350": 0.0,
+    "350-1000": 0.894,
+    "1000-3000": 0.106,
+    "3000-6000": 0.0,
+    "6000-12000": 0.0,
+    "12000-20000": 0.0
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "6171235ef6eaf1adc4d710b68961dcaa",
+   "md5_pcm": "a980b28c3fa7bed304cb27fc757ab537",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 0.11,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "ui.ui_hover",
+    "duration": 0.11,
+    "volume": 0.28,
+    "loop": false,
+    "spatial": true,
+    "description": "Soft crystalline hover tick",
+    "trigger": "UI hover; debounce 80\u2013120 ms",
+    "dur_delta": -0.0029
+   },
+   "defs": [
+    "uiHover"
+   ],
+   "mid": "ui.ui_hover",
+   "cat": 5,
+   "group": "Core UI",
+   "trigger": "Hover on hero cards/menu rows (90 ms gap; pointer only)"
+  },
+  "ui/victory-stinger.ogg": {
+   "duration": 2.6,
+   "sr": 44100,
+   "channels": 1,
+   "frames": 114660,
+   "peak_db": -1.15,
+   "rms_db": -20.29,
+   "crest_db": 19.14,
+   "clipped_samples": 0,
+   "near_fullscale": 0,
+   "dc_offset": 0.001407,
+   "lead_silence": 0.0,
+   "trail_silence": 0.085,
+   "silence_frac": 0.004,
+   "effective_end": 2.51,
+   "attack_time": 0.0,
+   "energy_centroid": 0.14,
+   "bursts": [
+    [
+     0.01,
+     -8.6
+    ],
+    [
+     0.12,
+     -9.8
+    ],
+    [
+     0.19,
+     -11.5
+    ],
+    [
+     0.3,
+     -18.9
+    ]
+   ],
+   "centroid_hz": 447,
+   "flatness": 0.0066,
+   "roll85_hz": 797,
+   "bands": {
+    "20-60": 0.1186,
+    "60-120": 0.1713,
+    "120-350": 0.2672,
+    "350-1000": 0.4058,
+    "1000-3000": 0.026,
+    "3000-6000": 0.0059,
+    "6000-12000": 0.0034,
+    "12000-20000": 0.0018
+   },
+   "side_minus_mid_db": null,
+   "loop_seam": null,
+   "md5_file": "1c68bf860d4f4a999741be395adbc421",
+   "md5_pcm": "2a95feee0e25989fee0ff7799f38e439",
+   "probe": {
+    "codec": "vorbis",
+    "sr": 44100,
+    "channels": 1,
+    "bitrate": 110000,
+    "duration": 2.6,
+    "tags": {}
+   },
+   "manifest": {
+    "id": "ui.victory_stinger",
+    "duration": 2.6,
+    "volume": 0.62,
+    "loop": false,
+    "spatial": true,
+    "description": "Original triumphant fantasy victory cue",
+    "trigger": "Match victory",
+    "dur_delta": 0.0
+   },
+   "defs": [
+    "musicVictory"
+   ],
+   "mid": "ui.victory_stinger",
+   "cat": 6,
+   "group": "Stingers",
+   "trigger": "Match victory (once; music bus)"
+  }
+ },
+ "duplicates": {
+  "exact_file": [],
+  "exact_pcm": []
+ },
+ "near_duplicates": [
+  [
+   0.997,
+   "combat/footstep-grass-2.ogg",
+   "combat/footstep-grass-3.ogg"
+  ],
+  [
+   0.993,
+   "heroes/nature-guardian/healing-seed.ogg",
+   "ui/hero-select.ogg"
+  ],
+  [
+   0.992,
+   "combat/footstep-grass-1.ogg",
+   "combat/footstep-grass-2.ogg"
+  ],
+  [
+   0.989,
+   "heroes/nature-guardian/healing-seed.ogg",
+   "ui/level-up.ogg"
+  ],
+  [
+   0.988,
+   "combat/footstep-grass-1.ogg",
+   "combat/footstep-grass-3.ogg"
+  ],
+  [
+   0.987,
+   "heroes/storm-warrior/thunder-charge.ogg",
+   "structures/boss-attack.ogg"
+  ],
+  [
+   0.987,
+   "heroes/nature-guardian/nature-barrier.ogg",
+   "heroes/shadow-huntress/smoke-veil.ogg"
+  ],
+  [
+   0.986,
+   "heroes/arcane-knight/arcane-shield.ogg",
+   "heroes/nature-guardian/nature-barrier.ogg"
+  ],
+  [
+   0.985,
+   "ui/gold-reward.ogg",
+   "ui/item-purchase.ogg"
+  ],
+  [
+   0.984,
+   "heroes/arcane-knight/arcane-shield.ogg",
+   "structures/core-critical.ogg"
+  ],
+  [
+   0.984,
+   "combat/arrow-impact.ogg",
+   "combat/melee-impact-light.ogg"
+  ],
+  [
+   0.983,
+   "combat/arrow-impact.ogg",
+   "structures/tower-shot.ogg"
+  ],
+  [
+   0.982,
+   "structures/tower-shot.ogg",
+   "ui/ui-click.ogg"
+  ],
+  [
+   0.982,
+   "heroes/arcane-knight/ground-slam.ogg",
+   "structures/boss-attack.ogg"
+  ],
+  [
+   0.98,
+   "ui/pause.ogg",
+   "ui/resume.ogg"
+  ],
+  [
+   0.979,
+   "ui/hero-select.ogg",
+   "ui/level-up.ogg"
+  ],
+  [
+   0.979,
+   "heroes/arcane-knight/ground-slam.ogg",
+   "heroes/storm-warrior/thunder-charge.ogg"
+  ],
+  [
+   0.979,
+   "combat/melee-impact-light.ogg",
+   "ui/ui-click.ogg"
+  ],
+  [
+   0.977,
+   "ui/level-up.ogg",
+   "ui/ui-confirm.ogg"
+  ],
+  [
+   0.977,
+   "combat/melee-swing-heavy.ogg",
+   "heroes/ember-mage/flame-wave.ogg"
+  ],
+  [
+   0.977,
+   "combat/arrow-impact.ogg",
+   "ui/ui-click.ogg"
+  ],
+  [
+   0.976,
+   "ui/ui-click.ogg",
+   "ui/ui-error.ogg"
+  ],
+  [
+   0.976,
+   "heroes/storm-warrior/thunder-charge.ogg",
+   "structures/tower-destroy.ogg"
+  ],
+  [
+   0.975,
+   "combat/magic-launch.ogg",
+   "ui/shop-open.ogg"
+  ],
+  [
+   0.974,
+   "combat/hero-respawn.ogg",
+   "ui/shop-open.ogg"
+  ],
+  [
+   0.973,
+   "structures/core-critical.ogg",
+   "ui/shop-open.ogg"
+  ],
+  [
+   0.971,
+   "combat/move-command.ogg",
+   "ui/ui-hover.ogg"
+  ],
+  [
+   0.971,
+   "combat/melee-impact-heavy.ogg",
+   "structures/tower-destroy.ogg"
+  ],
+  [
+   0.97,
+   "structures/boss-attack.ogg",
+   "structures/tower-destroy.ogg"
+  ],
+  [
+   0.969,
+   "heroes/nature-guardian/forest-rebirth.ogg",
+   "heroes/nature-guardian/nature-barrier.ogg"
+  ],
+  [
+   0.968,
+   "heroes/arcane-knight/arcane-shield.ogg",
+   "heroes/nature-guardian/forest-rebirth.ogg"
+  ],
+  [
+   0.968,
+   "combat/magic-launch.ogg",
+   "ui/resume.ogg"
+  ],
+  [
+   0.967,
+   "ui/ui-confirm.ogg",
+   "ui/ui-hover.ogg"
+  ],
+  [
+   0.967,
+   "heroes/ember-mage/burning-zone-ignition.ogg",
+   "heroes/shadow-huntress/death-mark.ogg"
+  ],
+  [
+   0.967,
+   "heroes/arcane-knight/meteor-prison.ogg",
+   "structures/core-destroy.ogg"
+  ],
+  [
+   0.967,
+   "combat/melee-impact-heavy.ogg",
+   "heroes/storm-warrior/thunder-charge.ogg"
+  ],
+  [
+   0.966,
+   "heroes/nature-guardian/healing-seed.ogg",
+   "ui/ui-confirm.ogg"
+  ],
+  [
+   0.966,
+   "combat/hero-respawn.ogg",
+   "structures/core-critical.ogg"
+  ],
+  [
+   0.966,
+   "combat/hero-respawn.ogg",
+   "heroes/nature-guardian/forest-rebirth.ogg"
+  ],
+  [
+   0.965,
+   "combat/melee-impact-light.ogg",
+   "structures/tower-shot.ogg"
+  ]
+ ]
+}

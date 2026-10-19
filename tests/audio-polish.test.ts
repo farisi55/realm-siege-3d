@@ -93,10 +93,13 @@ describe('audio polish and regression (phase 5)', () => {
     (app as any).G = { t: 0 } as any;
     const ev = (k: SndEv['k'], kind: string, extra: Partial<SndEv> = {}): SndEv => ({ k, kind, x: 40, y: 0, team: 0, ...extra });
     const events: SndEv[] = [
-      // combat: one event per cue branch
-      ev('swing', 'hero'), ev('launch', 'heavy'), ev('launch', 'magic'), ev('launch', 'arrow'),
-      ev('hit', 'structure'), ev('hit', 'core'), ev('hit', 'blast', { big: true }), ev('hit', 'heavy'), ev('hit', 'magic'), ev('hit', 'arrow'), ev('hit', 'melee'),
-      ev('die', 'core', { big: true }), ev('die', 'tower', { big: true }), ev('die', 'hero', { uid: 1 }), ev('die', 'creep', { big: true }), ev('die', 'creep'),
+      // combat: one event per cue branch (including the pack-era weight and feedback branches)
+      ev('swing', 'hero'), ev('swing', 'melee'),
+      ev('launch', 'heavy'), ev('launch', 'magic'), ev('launch', 'arrow'), ev('launch', 'boss'),
+      ev('hit', 'structure'), ev('hit', 'core'), ev('hit', 'blast', { big: true }), ev('hit', 'heavy'), ev('hit', 'magic'), ev('hit', 'arrow'),
+      ev('hit', 'melee'), ev('hit', 'melee', { src: 'hero' }), ev('hit', 'melee', { victim: true }),
+      ev('die', 'core', { big: true }), ev('die', 'tower', { big: true }), ev('die', 'hero', { uid: 1 }),
+      ev('die', 'neutral', { big: true }), ev('die', 'creep'),
       ev('respawn', 'hero'),
       ev('cast', 'bolt'), ev('heal', 'heal'), // no ability id: deliberately silent, never a generic guess
       ev('hit', 'core', { ab: 3 }), ev('hit', 'structure', { ab: 3 }), // structures keep their material voice
@@ -122,8 +125,12 @@ describe('audio polish and regression (phase 5)', () => {
       expect(['sfx', 'music', 'ambient', 'ui'], `the mapping uses bus "${bus}"`).toContain(bus); // never master
     }
     const names = seen.map(s => s.name);
-    expect(names).toContain('swing'); expect(names).toContain('siegeShot'); expect(names).toContain('boomBlast');
+    expect(['swing', 'swing2', 'swing3'].some(n => names.includes(n))).toBe(true); // the light-swing takes (V2)
+    expect(names).toContain('swingHeavy'); expect(names).toContain('hitMeleeHeavy');
+    expect(['hitMelee', 'hitMelee2', 'hitMelee3'].some(n => names.includes(n))).toBe(true); // the light-impact takes (V2)
+    expect(names).toContain('siegeShot'); expect(names).toContain('boomBlast');
     expect(names).toContain('coreCollapse'); expect(names).toContain('collapseTower'); expect(names).toContain('hitCore');
+    expect(names).toContain('bossAttack'); expect(names).toContain('bossDeath'); expect(names).toContain('heroHit');
     expect(names).toContain('akMeteorImpact'); expect(names).toContain('ngRebirthPulse'); expect(names).toContain('healPulse');
   });
 

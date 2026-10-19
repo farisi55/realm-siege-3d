@@ -24,6 +24,10 @@ export interface SndEv {
   team: number;
   /** Characterizes the event: unit kind for swing/die, weapon for launch, impact source for hit, ability type for cast. */
   kind: string;
+  /** The attacker's unit kind on hit events (`hero`, `melee`, `ranged`, `siege`, `tower`, ...): the mix weighs the impact. */
+  src?: string;
+  /** The player's own hero was the one damaged: the mix may add a short personal feedback layer. */
+  victim?: boolean;
   /** The player's own hero is involved: the audio layer gives these priority. */
   player?: boolean;
   /** Structurally important (tower, core, boss): survives more throttling. */

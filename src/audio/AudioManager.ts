@@ -56,6 +56,8 @@ export interface SoundDef {
   urls?: string[];
   /** Voice gain before the bus (default 1). */
   gain?: number;
+  /** Gain used instead of `gain` when a decoded file plays (the pack's `recommendedVolume`); the synth keeps its own mix level. */
+  fileGain?: number;
   /** Minimum ms between two plays of this sound: swallows duplicate events and double clicks. */
   minGap?: number;
   /** Concurrent-voice cap for this sound: keeps a swarm of identical impacts from stacking (default: global cap only). */
@@ -386,9 +388,10 @@ export class AudioManager {
     if (ctx.state === 'suspended') this.resume(); // a gesture was seen: the queued voice starts on resume
     const busDest = this.buses.get(bus) ?? this.buses.get('master');
     if (!busDest) { this.stats.failed++; return false; }
-    const base = Math.max(0, (def.gain ?? 1) * (opts.gain ?? 1));
-    const rate = Math.min(2, Math.max(.5, opts.rate ?? 1)); // pitch variation, in tune-safe bounds
     const buffer = this.buffers.get(name);
+    // A loaded file plays at its own gain (`fileGain`, the pack's recommended volume); the synth keeps `gain`.
+    const base = Math.max(0, ((buffer ? def.fileGain ?? def.gain : def.gain) ?? 1) * (opts.gain ?? 1));
+    const rate = Math.min(2, Math.max(.5, opts.rate ?? 1)); // pitch variation, in tune-safe bounds
     // Positional voices get a pan node (when the engine can pan) and, for `ref` defs, a gain node the listener can move.
     const chain = sp ? this.buildSpatial(ctx, busDest, sp, def, base) : { dest: busDest, pan: null, vg: null, gain: base };
 
@@ -414,7 +417,7 @@ export class AudioManager {
    * Starts a sustained voice (`def.loop`) that lives until `handle.stop()` or its own internal fade. Same gates as
    * `play()` (gesture, mute, silent bus, `max`, voice cap — priority `force` plays may exceed the cap), minus the
    * minGap — loops are long-lived, not bursts.
-   * Returns a handle, or null when nothing could start. Used by the ability layer for the Burning Zone fire bed.
+   * Returns a handle, or null when nothing could start. Used by the world layer for music beds and ambience.
    */
   startLoop(bus: Bus, name: string, opts: PlayOptions = {}): LoopHandle | null {
     const def = this.sounds[name];
@@ -430,9 +433,9 @@ export class AudioManager {
     if (ctx.state === 'suspended') this.resume();
     const busDest = this.buses.get(bus) ?? this.buses.get('master');
     if (!busDest) { this.stats.failed++; return null; }
-    const base = Math.max(0, (def.gain ?? 1) * (opts.gain ?? 1));
-    const rate = Math.min(2, Math.max(.5, opts.rate ?? 1));
     const buffer = this.buffers.get(name);
+    const base = Math.max(0, ((buffer ? def.fileGain ?? def.gain : def.gain) ?? 1) * (opts.gain ?? 1));
+    const rate = Math.min(2, Math.max(.5, opts.rate ?? 1));
     const chain = sp ? this.buildSpatial(ctx, busDest, sp, def, base) : { dest: busDest, pan: null, vg: null, gain: base };
     const voice: Voice = { bus, name, stop: () => { /* replaced below */ } };
     const done = (): void => { this.voices.delete(voice); if (voice.spat) this.spatial.delete(voice.spat); };
@@ -506,6 +509,9 @@ export class AudioManager {
   }
 
   // -------------------------------------------------------------------------------------------------------------- assets
+
+  /** True when a decoded file is cached for `name` — the shipped pack replaced this voice's synthesizer. */
+  hasAsset(name: string): boolean { return this.buffers.has(name); }
 
   /** Loads and caches one file for a sound name. Resolves to null (never rejects) when it is missing or undecodable. */
   load(name: string, url: string): Promise<AudioBuffer | null> {

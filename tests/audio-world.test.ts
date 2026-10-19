@@ -76,6 +76,10 @@ function at(x: number, y: number): Unit {
 
 const names = (): string[] => calls.map(c => c.name);
 const steps = (name: string): Call[] => calls.filter(c => c.name === name);
+/** Any of the four grass takes: the pack ships four variants and a step rotates through them. */
+const grass = (): Call[] => calls.filter(c => c.name.startsWith('stepGrass'));
+/** Any of the three water takes (V2): the river shallows rotate through them as well. */
+const water = (): Call[] => calls.filter(c => c.name.startsWith('stepWater'));
 /** Nudges a unit by (`dx`,`dy`) per frame and ticks the world, the way the simulation would have moved it. */
 function walk(u: Unit, n: number, dx: number, dy: number): void {
   for (let i = 0; i < n; i++) { u.x += dx; u.y += dy; worldAudioTick(1 / 60); }
@@ -86,58 +90,62 @@ describe('footsteps', () => {
     startPlay();
     const me = at(2000, 1600); // grass
     worldAudioTick(1 / 60); // first sighting: no phantom step from the initial position
-    expect(steps('stepGrass').length).toBe(0);
+    expect(grass().length).toBe(0);
 
     walk(me, 60, 4, 0); // 240 units/s for one second: 240 / 62 stroll ≈ 3 steps
-    const fast = steps('stepGrass').length;
+    const fast = grass().length;
     expect(fast).toBeGreaterThanOrEqual(3);
     expect(fast).toBeLessThanOrEqual(4);
+    const takes = grass().map(c => c.name);
+    expect(new Set(takes).size).toBe(takes.length); // the four-take rotation: a short run never repeats a take
 
     calls.length = 0;
     walk(me, 60, 2, 0); // half the speed: the same distance takes twice the time
-    const slow = steps('stepGrass').length;
+    const slow = grass().length;
     expect(slow).toBeGreaterThanOrEqual(1);
     expect(slow).toBeLessThanOrEqual(2);
 
     calls.length = 0;
     walk(me, 60, 0, 0); // standing still: nothing
-    expect(steps('stepGrass').length).toBe(0);
+    expect(grass().length).toBe(0);
   });
 
   it('ticks differently in the river shallows than on grass', () => {
     startPlay();
     const me = at(1900, 1900); // |x - y| = 0: water
     walk(me, 40, 4, 0); // stays within |x - y| < 212 for all 40 ticks
-    expect(steps('stepWater').length).toBeGreaterThanOrEqual(1);
-    expect(steps('stepGrass').length).toBe(0);
+    expect(water().length).toBeGreaterThanOrEqual(1);
+    expect(grass().length).toBe(0);
+    const takes = water().map(c => c.name);
+    expect(new Set(takes).size).toBe(takes.length); // the three-take rotation holds too
 
     calls.length = 0;
     me.x = 2000; me.y = 1200; // a jump, then a walk on dry ground
     walk(me, 40, 4, 0);
-    expect(steps('stepGrass').length).toBeGreaterThanOrEqual(1);
-    expect(steps('stepWater').length).toBe(0);
+    expect(grass().length).toBeGreaterThanOrEqual(1);
+    expect(water().length).toBe(0);
   });
 
   it('never fires while dead or stunned, and never mistakes a dash for walking', () => {
     startPlay();
     const me = at(2000, 1600);
     walk(me, 40, 4, 0);
-    const base = steps('stepGrass').length;
+    const base = grass().length;
     expect(base).toBeGreaterThanOrEqual(1);
 
     me.dead = true;
     walk(me, 40, 4, 0);
-    expect(steps('stepGrass').length).toBe(base); // dead men do not walk
+    expect(grass().length).toBe(base); // dead men do not walk
 
     me.dead = false; me.st = 1; // stunned
     walk(me, 40, 4, 0);
-    expect(steps('stepGrass').length).toBe(base);
+    expect(grass().length).toBe(base);
 
     me.st = 0;
-    const before = steps('stepGrass').length;
+    const before = grass().length;
     me.x += 600; // a dash/blink: one enormous jump
     worldAudioTick(1 / 60);
-    expect(steps('stepGrass').length).toBe(before); // no step for a teleport
+    expect(grass().length).toBe(before); // no step for a teleport
   });
 
   it('keeps AI and creep footsteps low priority: near the listener only, quieter, budgeted', () => {
@@ -148,9 +156,9 @@ describe('footsteps', () => {
     app.cam.k.x = 1000; app.cam.k.y = 1000; // the camera watches the creep
     walk(creep, 40, 3, 0); // 120 units = one 74-unit creep stride
 
-    const near = steps('stepGrass').filter(c => (c.opts.gain ?? 1) < .5);
+    const near = grass().filter(c => (c.opts.gain ?? 1) < .5);
     expect(near.length).toBeGreaterThanOrEqual(1);
-    expect(steps('stepGrass').some(c => (c.opts.gain ?? 1) >= .9)).toBe(false); // the still player never stepped
+    expect(grass().some(c => (c.opts.gain ?? 1) >= .9)).toBe(false); // the still player never stepped
 
     calls.length = 0;
     const far = (() => { spawnCreep(1, 0, 'melee'); return app.all[app.all.length - 1]; })();

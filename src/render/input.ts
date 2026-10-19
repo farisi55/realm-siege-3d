@@ -7,6 +7,7 @@ import { cast } from '../game/sim/combat';
 import { ui } from '../ui/store';
 import { publishHud } from '../ui/hudData';
 import { setPause, toggleShop } from '../ui/commands';
+import { playSFX, playUI } from '../audio/audio';
 export const cv=rd.domElement;
 export const KD={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'};
 
@@ -19,7 +20,7 @@ export function tryCast(i:number,aim?:{x:number;y:number}):void{
  const h=app.me;if(!h.def.ab[i])return;
  const t=performance.now();if(t-lastCast[i]<160)return;lastCast[i]=t;
  const p=aim||aimPoint(h,i);
- fxAim(p.x,p.y);cast(h,i,p.x,p.y);
+ fxAim(p.x,p.y);if(!cast(h,i,p.x,p.y))playUI('uiError'); // a refused cast (mana, cooldown, level) is audibly rejected
 }
 /** Where a button cast aims: the selected target, else the nearest enemy in reach, else the direction the hero faces. */
 function aimPoint(h,i:number){const a=h.def.ab[i],T=a[2];
@@ -39,12 +40,14 @@ function aimTarget(h,rg:number){let u=null,us=1e9,s=null,ss=1e9;
 export function tryAttack():void{
  if(app.mode!=='play'||!app.G||app.G.pause||app.G.over||app.G.st!=='play'||app.me.dead)return;
  const h=app.me,t=aimTarget(h,640);
- if(t){h.tgt=t;h.mv=null}else hooks.ft(h.x,h.y-40,'No target','#ffe066');
+ if(t){h.tgt=t;h.mv=null}else{hooks.ft(h.x,h.y-40,'No target','#ffe066');playUI('uiError')}
 }
+/** A move order (button 2 or a ground tap; attack orders stay silent): the quiet confirm tick, debounced by its `minGap`. */
+const moveCmd=(w:{x:number;y:number})=>playSFX('moveCommand',{pos:{x:w.x,y:w.y}});
 
 cv.addEventListener('contextmenu',e=>e.preventDefault());
 cv.addEventListener('pointerdown',e=>{MS.x=e.clientX;MS.y=e.clientY;if(e.pointerType==='touch')MS.touch=1;if(app.mode!=='play'||!app.G||app.G.pause||app.G.over)return;if(e.isPrimary===false)return;if(e.button===1){MS.drag=1;e.preventDefault();return}if(app.me.dead||app.G.st!=='play')return;const w=wpt(e);
- if(e.button===2){app.me.tgt=null;app.me.mv=w;fxPing(w.x,w.y);return}const t=app.all.find(u=>!u.dead&&u.team!==0&&dist(u,w)<u.r+30);if(t){app.me.tgt=t;app.me.mv=null;fxPing(t.x,t.y,'attack')}else{app.me.tgt=null;app.me.mv=w;fxPing(w.x,w.y)}});
+ if(e.button===2){app.me.tgt=null;app.me.mv=w;moveCmd(w);fxPing(w.x,w.y);return}const t=app.all.find(u=>!u.dead&&u.team!==0&&dist(u,w)<u.r+30);if(t){app.me.tgt=t;app.me.mv=null;fxPing(t.x,t.y,'attack')}else{app.me.tgt=null;app.me.mv=w;moveCmd(w);fxPing(w.x,w.y)}});
 addEventListener('pointermove',e=>{if(e.pointerType!=='touch')MS.touch=0;if(MS.drag)camRotate(e.clientX-MS.x);MS.x=e.clientX;MS.y=e.clientY;MS.in=1});
 addEventListener('pointerup',()=>MS.drag=0);
 document.addEventListener('mouseleave',()=>MS.in=0);

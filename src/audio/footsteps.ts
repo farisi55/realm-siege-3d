@@ -23,6 +23,12 @@ const PLAYER_STRIDE = 62, AI_STRIDE = 74;
 const AI_RANGE = 430, AI_BURST = 3, AI_WINDOW = .5;
 /** A one-tick jump bigger than this is a dash, blink or respawn — never a step. */
 const TELEPORT = 90;
+/** The four grass takes the pack ships (plus the synth fallbacks): a step rotates through them so a walk never sounds stamped. */
+const GRASS_STEPS = ['stepGrass', 'stepGrass2', 'stepGrass3', 'stepGrass4'] as const;
+/** The three water takes (V2): the river shallows previously fell back to one synthesized splash. */
+const WATER_STEPS = ['stepWater', 'stepWater2', 'stepWater3'] as const;
+/** The take rotation: consecutive steps always differ, and it adds no `Math.random()` draw (the sim's `rnd()` shares that stream). */
+let grassTake = 0, waterTake = 0;
 
 interface Track { x: number; y: number; acc: number }
 const tracks = new Map<Unit, Track>();
@@ -66,7 +72,10 @@ function gait(u: Unit, stride: number, gain: number): void {
   t.acc -= stride;
   if (gain < 1 && !allowAI()) return;
   const water = surfaceAt(u.x, u.y) === 'water';
-  playSFX(water ? 'stepWater' : 'stepGrass', { pos: { x: u.x, y: u.y }, gain, rate: 1 + (Math.random() * 2 - 1) * .06 });
+  const step = water
+    ? WATER_STEPS[waterTake++ % WATER_STEPS.length]
+    : GRASS_STEPS[grassTake++ % GRASS_STEPS.length];
+  playSFX(step, { pos: { x: u.x, y: u.y }, gain, rate: 1 + (Math.random() * 2 - 1) * .06 });
 }
 
 /** The creep/AI step budget: a few per short window, reset with sim time so a paused clock never starves it. */

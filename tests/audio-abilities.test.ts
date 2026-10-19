@@ -9,16 +9,16 @@ import { cast, hurt } from '../src/game/sim/combat';
 import { snd, setVolume, stopAll } from '../src/audio/audio';
 import { SOUNDS } from '../src/audio/synth';
 import { resetCombatAudio, sndEvent } from '../src/audio/combat';
-import { abilitySoundNames, activeAbilityLoops } from '../src/audio/abilities';
+import { abilitySoundNames } from '../src/audio/abilities';
 import { FakeCtx } from './fake-audio';
 
 /**
  * Phase 3: hero and ability audio, verified against the real simulation. Every test drives `createWorld`/`stepSim` and
  * the real `cast()`/`hurt()` paths, recording two levels (the phase-2 pattern):
  *   events — what the simulation reported through `hooks.snd` (one per meaningful moment, `ab` = hero * 4 + slot)
- *   calls  — what the audio layer asked the engine to play (one-shots and loop starts), and whether it started
+ *   calls  — what the audio layer asked the engine to play (one-shots only: no ability sustains, no fake loops)
  * All 20 abilities are exercised via the real cast path (level 3, full mana); the fake context never fires `onended`,
- * so voice-registry assertions use explicit stops (loops) or play attempts (one-shots).
+ * so voice-registry assertions count play attempts or stop voices explicitly.
  */
 
 interface Call { bus: string; name: string; opts: { gain?: number; rate?: number; force?: boolean }; ok: boolean }
@@ -169,7 +169,7 @@ describe('ability audio: every hero skill maps to its own voices through real ga
   it('identities are distinct and every ability voice exists in the manifest', () => {
     for (const n of abilitySoundNames()) expect(SOUNDS[n], `missing sound definition: ${n}`).toBeTruthy();
     expect(new Set(Object.values(PRIMARY)).size).toBe(20); // no two skills share a signature voice
-    expect(SOUNDS.emZoneFire.loop).toBe(true); // the one sustained voice declares itself
+    expect(SOUNDS.emZoneFire.loop).toBeUndefined(); // Burning Zone is an instant AoE: the ignition is a one-shot, never a fake loop
   });
 
   it('cast and impact timings match the simulation clock', () => {
@@ -254,32 +254,43 @@ describe('ability audio: every hero skill maps to its own voices through real ga
   });
 });
 
-// ------------------------------------------------------------------------------------------------------------------ loops
+// -------------------------------------------------------------------------------------------------------- pack integration
 
-describe('ability audio: sustained voices obey their owner and the match lifecycle', () => {
-  it('the Burning Zone fire bed starts on ignition and dies with its caster', () => {
+describe('ability audio: no ability sustains (the pack ships an ignition, not a zone)', () => {
+  it('the Burning Zone ignition is a one-shot: one play, no sustained voice, nothing left on match restart', () => {
     const me = prep(2);
     me.mp = 9999; me.acd[2] = 0;
     cast(me, 2, me.x + 150, me.y);
     step(30);
-    expect(activeAbilityLoops()).toBe(1);
-    expect(snd.count('emZoneFire')).toBe(1);
-    const foe = app.all.find(u => u.k === 'hero' && u.team === 1) as Unit;
-    hurt(foe, me, 1e6); // the caster falls: the die event takes the loop down
-    expect(activeAbilityLoops()).toBe(0);
+    const ignitions = calls.filter(c => c.name === 'emZoneFire');
+    expect(ignitions.length).toBe(1); // exactly one ignition per cast…
+    expect(ignitions[0].ok).toBe(true);
+    expect(snd.count('emZoneFire')).toBe(1); // …and it is a normal voice, not a bed
+
+    hurt(app.all.find(u => u.k === 'hero' && u.team === 1) as Unit, me, 1e6); // the caster falls: no loop to clear
+    resetCombatAudio();
+    stopAll(); // exactly what flow.play() runs before a fresh match
     expect(snd.count('emZoneFire')).toBe(0);
   });
 
-  it('a match restart leaves no loop behind (resetCombatAudio + stopAll, as flow.play runs)', () => {
-    const me = prep(2);
+  it('a split clip plays its wind-up and its impact on their own moments (no suppression left)', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, arrayBuffer: async () => new ArrayBuffer(16) })));
+    const me = prep(0); // Ground Slam: V2 ships the wind-up and the slam as two files
     me.mp = 9999; me.acd[2] = 0;
-    cast(me, 2, me.x + 150, me.y);
+    cast(me, 2, me.x, me.y);
     step(30);
-    expect(snd.count('emZoneFire')).toBe(1);
-    resetCombatAudio();
-    stopAll(); // exactly what flow.play() runs before every fresh match
-    expect(activeAbilityLoops()).toBe(0);
-    expect(snd.count('emZoneFire')).toBe(0);
+    expect(names()).toContain('akSlamWind');
+    expect(names()).toContain('akSlamImpact'); // no file loaded: the fallback layers play exactly as before
+
+    expect(await snd.load('akSlamWind', 'audio/realm-siege/heroes/arcane-knight/ground-slam-windup.ogg')).not.toBeNull();
+    expect(await snd.load('akSlamImpact', 'audio/realm-siege/heroes/arcane-knight/ground-slam-impact.ogg')).not.toBeNull();
+    expect(snd.hasAsset('akSlamWind')).toBe(true);
+    calls.length = 0; events.length = 0;
+    me.mp = 9999; me.acd[2] = 0;
+    cast(me, 2, me.x, me.y);
+    step(30);
+    expect(names()).toContain('akSlamWind'); // the cast plays the wind-up file…
+    expect(names()).toContain('akSlamImpact'); // …and the resolved hit plays the impact file: two moments, one slam
   });
 });
 

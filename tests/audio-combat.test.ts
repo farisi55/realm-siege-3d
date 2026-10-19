@@ -94,8 +94,8 @@ describe('combat audio: simulation events map to sounds through real gameplay', 
     expect(hit!.t - swing!.t).toBeGreaterThanOrEqual(.2); // the impact follows the wind-up schedule
     expect(hit!.t - swing!.t).toBeLessThan(.3);
     expect(foe.hp).toBeLessThan(foe.max);
-    expect(names()).toContain('swing');
-    expect(names()).toContain('hitMelee');
+    expect(names()).toContain('swingHeavy'); // a hero swing carries more weight than a creep's
+    expect(names()).toContain('hitMeleeHeavy');
   });
 
   it('ranged: no swing, a launch at release, an arrow impact when the projectile reaches the foe', () => {
@@ -199,6 +199,25 @@ describe('combat audio: simulation events map to sounds through real gameplay', 
     expect(call!.opts.force).toBe(true);
   });
 
+  it('core critical: one warning when a core first drops below the threshold, never again per match', () => {
+    startPlay(0);
+    const core = app.all.find(u => u.k === 'core' && u.team === 1) as Unit;
+    hurt(app.me, core, 100); // still healthy: no warning
+    expect(names()).not.toContain('coreCritical');
+
+    hurt(app.me, core, 12000); // towers stand, so damage scales by .35: the core lands far below 35 %
+    expect(core.hp / core.max).toBeLessThan(.35);
+    const warnings = calls.filter(c => c.name === 'coreCritical');
+    expect(warnings.length).toBe(1); // the threshold crossing triggers once, not per hit and not per frame
+    expect(warnings[0].opts.force).toBe(true);
+
+    hurt(app.me, core, 100); // a later hit while still critical stays silent
+    expect(calls.filter(c => c.name === 'coreCritical').length).toBe(1);
+    resetCombatAudio(); // a fresh match re-arms the alarm
+    hurt(app.me, core, 100);
+    expect(calls.filter(c => c.name === 'coreCritical').length).toBe(2);
+  });
+
   it('area damage: one blast voice for many victims, silence per victim', () => {
     startPlay(0); // Ground Slam is ability index 2 (aoe)
     clearArena();
@@ -245,7 +264,10 @@ describe('combat audio: simulation events map to sounds through real gameplay', 
       { k: 'launch', x, y, team: 0, kind: 'arrow' },
       { k: 'launch', x, y, team: 0, kind: 'heavy' },
       { k: 'launch', x, y, team: 0, kind: 'magic' },
+      { k: 'launch', x, y, team: 0, kind: 'boss' },
       { k: 'hit', x, y, team: 0, kind: 'melee' },
+      { k: 'hit', x, y, team: 0, kind: 'melee', src: 'hero' },
+      { k: 'hit', x, y, team: 0, kind: 'melee', victim: true },
       { k: 'hit', x, y, team: 0, kind: 'arrow' },
       { k: 'hit', x, y, team: 0, kind: 'magic' },
       { k: 'hit', x, y, team: 0, kind: 'heavy' },
@@ -254,13 +276,17 @@ describe('combat audio: simulation events map to sounds through real gameplay', 
       { k: 'hit', x, y, team: 0, kind: 'blast' },
       { k: 'die', x, y, team: 0, kind: 'melee' },
       { k: 'die', x, y, team: 0, kind: 'hero' },
+      { k: 'die', x, y, team: 0, kind: 'neutral', big: true },
       { k: 'die', x, y, team: 0, kind: 'tower' },
       { k: 'die', x, y, team: 0, kind: 'core' },
       { k: 'respawn', x, y, team: 0, kind: 'hero' },
     ];
     for (const e of samples) { resetCombatAudio(); sndEvent(e); }
-    const used = new Set(names());
-    expect(used.size).toBe(16); // every kind of event found its own voice
+    // The V2 variation takes (`swing2/3`, `hitMelee2/3`) are one voice family per cue: fold them to the base name so
+    // the count still means "every event kind found its own voice".
+    const TAKE_BASE: Record<string, string> = { swing2: 'swing', swing3: 'swing', hitMelee2: 'hitMelee', hitMelee3: 'hitMelee' };
+    const used = new Set(names().map(n => TAKE_BASE[n] ?? n));
+    expect(used.size).toBe(20); // every kind of event found its own voice (the vocabulary above walks them all)
     for (const n of used) expect(SOUNDS[n], `missing sound definition: ${n}`).toBeTruthy();
   });
 });
@@ -278,8 +304,8 @@ describe('combat audio policy: attenuation, throttling, priority, variation', ()
     resetCombatAudio();
     sndEvent({ k: 'hit', x: me.x + 1000, y: me.y, team: 1, kind: 'melee' });
     const far = lastCall();
-    expect(near.name).toBe('hitMelee');
-    expect(far.name).toBe('hitMelee');
+    expect(['hitMelee', 'hitMelee2', 'hitMelee3']).toContain(near.name); // the light-impact takes (V2)
+    expect(['hitMelee', 'hitMelee2', 'hitMelee3']).toContain(far.name);
     expect(far.opts.gain!).toBeLessThan(near.opts.gain!);
   });
 
@@ -288,9 +314,10 @@ describe('combat audio policy: attenuation, throttling, priority, variation', ()
     const me = app.me;
     for (let i = 0; i < 12; i++) sndEvent({ k: 'hit', x: me.x + 60 + i * 3, y: me.y, team: 1, kind: 'melee' });
     expect(calls.length).toBe(5); // the rolling budget let five through…
-    const played = calls.filter(c => c.ok).length;
-    expect(played).toBeGreaterThanOrEqual(1);
-    expect(played).toBeLessThanOrEqual(2); // …and the engine's minGap collapsed the duplicates
+    const played = calls.filter(c => c.ok);
+    expect(played.length).toBeGreaterThanOrEqual(1);
+    expect(played.length).toBeLessThanOrEqual(3); // …the twelve impacts collapsed to the three takes at most (minGap per voice)
+    expect(new Set(played.map(c => c.name)).size).toBe(played.length); // and no two of them are the same take
   });
 
   it("priorities: the player's own hits bypass the budget and play forced with a gain lift", () => {
@@ -328,11 +355,39 @@ describe('combat audio: a full autonomous battle', () => {
     // collapseTower near the idle player) are already pinned to real events by the controlled tests above. Phase 3 moved
     // ability bolts and blasts onto hero voices, so the generic `magicShot` / `hitMagic` / `boomBlast` only ring for
     // structures and boss novas now; the ability vocabulary is asserted in `audio-abilities.test.ts`.
-    for (const n of ['swing', 'bowShot', 'siegeShot', 'hitArrow', 'hitHeavy', 'hitStructure', 'dieBig', 'respawn']) {
+    for (const n of ['bowShot', 'siegeShot', 'hitArrow', 'hitHeavy', 'hitStructure', 'dieBig', 'respawn']) {
       expect(used, `no ${n} over 100 s of battle`).toContain(n);
     }
+    expect(['swing', 'swing2', 'swing3'].some(n => used.includes(n)), 'no light-swing take over 100 s of battle').toBe(true);
     expect(events.length).toBeGreaterThan(300); // and the events were real: thousands of moments, not a mock
     expect(calls.length).toBeGreaterThan(100); // the player's corner always hears some of the battle…
     expect(calls.length).toBeLessThan(events.length / 3); // …but the mix plays only what happens nearby, never everything
+  });
+});
+
+// ---------------------------------------------------------------------------------------------------------------- personal feedback
+
+describe('combat audio: the personal hero-hit layer fires only for the player', () => {
+  it('adds one heroHit layer per real hit on the player, throttled in simulation time', () => {
+    startPlay(0);
+    const me = app.me;
+    app.G!.t = 5;
+    const hit: SndEv = { k: 'hit', x: me.x, y: me.y, team: 1, kind: 'melee', src: 'melee', victim: true };
+    sndEvent(hit);
+    expect(calls.filter(c => c.name === 'heroHit').length).toBe(1);
+    sndEvent(hit); // the same volley moment: the throttle keeps a burst readable
+    expect(calls.filter(c => c.name === 'heroHit').length).toBe(1);
+    expect(calls.find(c => c.name === 'heroHit')!.opts.force).toBe(true); // the player's own damage is never culled
+
+    app.G!.t = 5.35;
+    sndEvent(hit);
+    expect(calls.filter(c => c.name === 'heroHit').length).toBe(2);
+
+    // A hit that carries an ability id is already voiced by the ability mapping: no personal layer on top of it.
+    sndEvent({ k: 'hit', x: me.x, y: me.y, team: 1, kind: 'blast', ab: 8, victim: true });
+    expect(calls.filter(c => c.name === 'heroHit').length).toBe(2);
+    // Damage that did not land on the player never rings the personal layer.
+    sndEvent({ k: 'hit', x: me.x, y: me.y, team: 1, kind: 'melee', victim: false });
+    expect(calls.filter(c => c.name === 'heroHit').length).toBe(2);
   });
 });

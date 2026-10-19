@@ -25,7 +25,7 @@ import { resetCombatAudio } from './combat';
 export const WORLD_SOUNDS = [
   'musicMenu', 'musicMatch', 'musicVictory', 'musicDefeat',
   'ambWind', 'ambRiver', 'ambForest', 'ambBase', 'ambDistant',
-  'stepGrass', 'stepWater',
+  'stepGrass', 'stepGrass2', 'stepGrass3', 'stepGrass4', 'stepWater', 'stepWater2', 'stepWater3',
   'uiHover', 'uiSelect', 'shopOpen', 'shopClose', 'shopBuy', 'shopSell', 'uiLevel', 'uiGold', 'uiPause', 'uiResume',
 ] as const;
 

@@ -1,9 +1,12 @@
 import type { SoundDef, StopFn, SynthIo } from './AudioManager';
+import { PACK, packUrl } from './pack';
 
 /**
- * The built-in sound set: small, original voices synthesized with oscillators and one shared noise buffer — no external
- * assets, no third-party samples. Every definition may gain `urls` later (see `SoundDef`); the synth then stays as the
- * fallback whenever a file is missing or undecodable, so the game is never silent because an asset did not ship.
+ * The built-in sound set: small, original voices synthesized with oscillators and one shared noise buffer — original
+ * work, no third-party samples. The shipped original sound pack (see `pack.ts`) is attached to these definitions at
+ * the bottom of the file: the engine prefers a decoded file over the synth whenever one loaded, so the table below
+ * stays as the fallback whenever a file is missing or undecodable — the game is never silent because an asset did not
+ * ship.
  */
 
 /** One oscillator voice: a short tone that glides from `f` to `f1` with an attack/decay envelope. */
@@ -72,10 +75,9 @@ function noiseSwell(io: SynthIo, o: { at?: number; a?: number; d: number; cut?: 
 const mix = (...fns: StopFn[]): StopFn => () => { for (const f of fns) f(); };
 
 /**
- * A sustained fire bed for Burning Zone: an ignition whoomph (so the impact event that starts it reads as the ignition)
- * over a subdued looping roar and a quieter crackle layer. It fades out on its own after `dur` seconds — a lingering
- * burn, not an eternal one — and `stop` fades it early (owner death, match restart). The first sound in the game built
- * to run until stopped; everything else is fire-and-forget.
+ * The Burning Zone fallback: an ignition whoomph (so the impact event that starts the pool reads as the ignition) over
+ * a subdued roar and a quieter crackle layer, fading out on its own after ~3 s. The shipped pack backs this def with a
+ * one-shot ignition clip; the synth keeps a short burn tail so the fallback still reads as fire, never as a loop.
  */
 function fireBed(io: SynthIo, dur = 3): StopFn {
   const { ctx } = io, at = io.t0, r = io.rate || 1;
@@ -110,20 +112,36 @@ function fireBed(io: SynthIo, dur = 3): StopFn {
   };
 }
 
+/** The big-fall recipe shared by hero and boss deaths; `depth` adds the extra rumble and release of a boss. */
+function bigFall(io: SynthIo, depth = 0): StopFn {
+  const fns = [
+    tone(io, { f: 340, f1: 90, d: .5, peak: .6, filter: 1600 }),
+    tone(io, { f: 170, f1: 52, d: .55, peak: .45, at: .05 }),
+    noiseSwell(io, { a: .01, d: .4, cut: 900, cut1: 140, peak: .45 }),
+  ];
+  if (depth) {
+    fns.push(tone(io, { f: 68, f1: 24, d: .95, at: .12, peak: .55 }));
+    fns.push(noiseSwell(io, { a: .02, d: .75, at: .06, cut: 480, cut1: 80, peak: .38 }));
+    fns.push(tone(io, { f: 620, f1: 1700, d: .4, at: .2, peak: .14, filter: 3600 }));
+  }
+  return mix(...fns);
+}
+
 /**
- * The built-in set. Phase 1: the UI voices (`uiClick` is wired to the delegated click in `initAudio`, `matchStart` to
+ * The sound manifest. Phase 1: the UI voices (`uiClick` is wired to the delegated click in `initAudio`, `matchStart` to
  * `flow.play`). Phase 2: the combat voices — swings, launches, material impacts, deaths and structure losses — played
  * by `audio/combat.ts` from the simulation's `hooks.snd` events. Phase 3: the hero and ability voices — one family per
  * hero (`audio/abilities.ts` maps them to the same event stream, never a second audio system). Phase 4: the world —
  * music beds and stingers, ambience, footsteps and the menu voices (`audio/music.ts`, `audio/ambience.ts`,
- * `audio/footsteps.ts`). Every voice layers original oscillators and filtered noise; a `minGap` swallows duplicate
- * events, a `max` caps how many copies may ring at once, and no third-party samples are used anywhere.
+ * `audio/footsteps.ts`). Phase 6: the shipped sound pack replaces any definition it names with its Ogg file (see
+ * `pack.ts` and the loop at the bottom of this file). Every fallback voice layers original oscillators and filtered
+ * noise; a `minGap` swallows duplicate events, a `max` caps how many copies may ring at once.
  *
- * This table is the sound manifest: gameplay only ever names a voice, so any entry may gain `urls` later (replacing
- * the synthesized fallback with a local file) without touching a line of simulation or cue-mapping code. Sustained
- * voices carry `loop: true` — the Burning Zone fire bed and everything phase 4 keeps sounding (music, ambience) —
- * and are started through `startLoop`, never `play`. Defs with `ref`/`maxDist` opt into engine spatialization: the
- * engine pans them by the listener yaw and attenuates by distance when the caller passes a `pos`.
+ * Gameplay only ever names a voice: the pack table attaches files without touching a line of simulation or cue-mapping
+ * code, and a def with no file simply keeps synthesizing. Sustained voices carry `loop: true` and are started through
+ * `startLoop`, never `play` — after phase 6 that is only the world layer (music, ambience), never an ability. Defs
+ * with `ref`/`maxDist` opt into engine spatialization: the engine pans them by the listener yaw and attenuates by
+ * distance when the caller passes a `pos`.
  */
 export const SOUNDS: Record<string, SoundDef> = {
   /** A short, dry click for buttons, hero cards and sliders. */
@@ -166,6 +184,27 @@ export const SOUNDS: Record<string, SoundDef> = {
     gain: .5, minGap: 70, max: 4,
     synth: io => noiseSwell(io, { a: .02, d: .16, cut: 1800, cut1: 320, type: 'bandpass', peak: .8 }),
   },
+  /** Light melee windup variation 2 (V2 fallback): the same cut, a touch rounder and slower. */
+  swing2: {
+    gain: .5, minGap: 70, max: 4,
+    synth: io => noiseSwell(io, { a: .022, d: .17, cut: 2050, cut1: 360, type: 'bandpass', peak: .78 }),
+  },
+  /** Light melee windup variation 3 (V2 fallback): shortest and brightest of the three takes. */
+  swing3: {
+    gain: .5, minGap: 70, max: 4,
+    synth: io => mix(
+      noiseSwell(io, { a: .018, d: .14, cut: 1650, cut1: 300, type: 'bandpass', peak: .75 }),
+      noiseSwell(io, { a: .012, d: .05, at: .01, cut: 4200, cut1: 2600, type: 'highpass', peak: .12 }),
+    ),
+  },
+  /** Heavy melee windup (hero swings): the same cut with more weight behind it. */
+  swingHeavy: {
+    gain: .6, minGap: 80, max: 4,
+    synth: io => mix(
+      noiseSwell(io, { a: .03, d: .22, cut: 1200, cut1: 200, type: 'bandpass', peak: .9 }),
+      tone(io, { f: 190, f1: 70, d: .14, peak: .4, at: .02 }),
+    ),
+  },
   /** Bow release: a short wooden pluck with the string twang on top. */
   bowShot: {
     gain: .6, minGap: 60, max: 3,
@@ -196,6 +235,39 @@ export const SOUNDS: Record<string, SoundDef> = {
     synth: io => mix(
       tone(io, { f: 150, f1: 52, d: .14, peak: .85 }),
       noiseSwell(io, { a: .003, d: .08, cut: 1300, cut1: 450, peak: .5 }),
+    ),
+  },
+  /** Light melee impact variation 2 (V2 fallback): a lower body with the chop kept short. */
+  hitMelee2: {
+    gain: .8, minGap: 60, max: 4,
+    synth: io => mix(
+      tone(io, { f: 132, f1: 48, d: .15, peak: .85 }),
+      noiseSwell(io, { a: .003, d: .075, cut: 1150, cut1: 400, peak: .5 }),
+    ),
+  },
+  /** Light melee impact variation 3 (V2 fallback): brighter slap, shorter body. */
+  hitMelee3: {
+    gain: .8, minGap: 60, max: 4,
+    synth: io => mix(
+      tone(io, { f: 168, f1: 60, d: .12, peak: .8 }),
+      noiseSwell(io, { a: .002, d: .06, cut: 2100, cut1: 900, peak: .5 }),
+    ),
+  },
+  /** Heavy melee impact (hero blows): a loaded body hit with a low metallic ring under it. */
+  hitMeleeHeavy: {
+    gain: .9, minGap: 70, max: 4,
+    synth: io => mix(
+      tone(io, { f: 120, f1: 42, d: .2, peak: .95 }),
+      tone(io, { f: 430, f1: 300, type: 'triangle', d: .24, peak: .16, filter: 1600 }),
+      noiseSwell(io, { a: .002, d: .12, cut: 850, cut1: 260, peak: .55 }),
+    ),
+  },
+  /** The player's own hero was the one damaged: a short personal feedback layer, throttled by the mix. */
+  heroHit: {
+    gain: .6, minGap: 250, max: 2,
+    synth: io => mix(
+      tone(io, { f: 520, f1: 240, type: 'triangle', d: .1, peak: .45, filter: 2400 }),
+      noiseSwell(io, { a: .002, d: .07, cut: 1500, cut1: 600, type: 'bandpass', peak: .4 }),
     ),
   },
   /** Arrow/bolt tick: a bright snap with almost no body. */
@@ -241,6 +313,15 @@ export const SOUNDS: Record<string, SoundDef> = {
       noiseSwell(io, { a: .01, d: .3, cut: 2400, cut1: 300, type: 'bandpass', peak: .32 }),
     ),
   },
+  /** The core's first drop below critical health: a warning pulse, played once per core (never per hit). */
+  coreCritical: {
+    gain: .75, minGap: 1000, max: 1,
+    synth: io => mix(
+      tone(io, { f: 82, f1: 58, type: 'sawtooth', d: .55, peak: .5, filter: 300 }),
+      tone(io, { f: 164, f1: 118, d: .5, at: .06, peak: .24, filter: 640 }),
+      noiseSwell(io, { a: .06, d: .5, cut: 240, cut1: 120, peak: .28 }),
+    ),
+  },
   /** Area damage: one big boom per blast (the layer silences the per-victim hits). */
   boomBlast: {
     gain: .9, minGap: 130, max: 2,
@@ -258,14 +339,24 @@ export const SOUNDS: Record<string, SoundDef> = {
       noiseSwell(io, { a: .004, d: .14, cut: 700, cut1: 180, peak: .38 }),
     ),
   },
-  /** A hero (or a jungle boss) falls: a longer, weightier fall with a low bloom under it. */
+  /** A hero falls: a longer, weightier fall with a low bloom under it. */
   dieBig: {
     gain: .9, minGap: 120, max: 2,
+    synth: io => bigFall(io),
+  },
+  /** The junction boss attacks: a slow heavy swipe with a low body behind it. */
+  bossAttack: {
+    gain: .85, minGap: 120, max: 2,
     synth: io => mix(
-      tone(io, { f: 340, f1: 90, d: .5, peak: .6, filter: 1600 }),
-      tone(io, { f: 170, f1: 52, d: .55, peak: .45, at: .05 }),
-      noiseSwell(io, { a: .01, d: .4, cut: 900, cut1: 140, peak: .45 }),
+      tone(io, { f: 110, f1: 36, d: .34, peak: .9 }),
+      noiseSwell(io, { a: .01, d: .3, cut: 620, cut1: 120, peak: .7 }),
+      tone(io, { f: 240, f1: 90, type: 'square', d: .18, at: .04, peak: .4, filter: 700 }),
     ),
+  },
+  /** The junction boss falls: the big fall plus a deeper rumble and an energy release blooming out of it. */
+  bossDeath: {
+    gain: 1, minGap: 200, max: 1,
+    synth: io => bigFall(io, 1),
   },
   /** A tower comes down: rumble, a ground thud and two waves of debris. */
   collapseTower: {
@@ -297,11 +388,20 @@ export const SOUNDS: Record<string, SoundDef> = {
       tone(io, { f: 1760, d: .25, peak: .13, at: .18 }),
     ),
   },
+  /** A move order accepted: the quiet confirm tick under the ping (debounced by `minGap`). */
+  moveCommand: {
+    gain: .4, minGap: 90,
+    synth: io => mix(
+      tone(io, { f: 660, f1: 880, d: .05, peak: .3, filter: 2600 }),
+      noiseSwell(io, { a: .002, d: .04, cut: 1700, cut1: 900, type: 'bandpass', peak: .2 }),
+    ),
+  },
 
   // ---- Phase 3: hero and ability voices -----------------------------------------------------------------------------
   // One family per hero; every ability keeps its own voice, wired in `audio/abilities.ts`. Cast wind-ups are quiet and
-  // short (they must resolve into the +250 ms release), ultimates get the richest layering, and the only sustained
-  // voice is `emZoneFire` (a `loop` def started with `startLoop`).
+  // short (they must resolve into the +250 ms release) and ultimates get the richest layering. Combined pack clips
+  // (wind-up + impact in one file) silence their paired synth impact through `abilities.ts`'s LINKED table once the
+  // file is loaded.
 
   // Arcane Knight — warm bells and steel over low thuds.
   /** Q wind-up: the arcane bolt charging in the hand. */
@@ -489,9 +589,9 @@ export const SOUNDS: Record<string, SoundDef> = {
       tone(io, { f: 2600, f1: 1600, d: .05, at: .08, peak: .2 }),
     ),
   },
-  /** E ignition: the whoomph that starts the pool plus a subdued crackling fire bed (fades after ~3 s, loopable). */
+  /** E ignition: the whoomph that starts the pool plus a short crackling burn — a one-shot, never a sustain. */
   emZoneFire: {
-    gain: .55, minGap: 200, max: 2, loop: true,
+    gain: .55, minGap: 200, max: 2,
     synth: io => fireBed(io),
   },
   /** R build-up: the storm gathering above the cursor. */
@@ -755,6 +855,30 @@ export const SOUNDS: Record<string, SoundDef> = {
       tone(io, { f: 120, f1: 70, d: .06, peak: .3 }),
     ),
   },
+  /** Grass footfall variation 2: the same step with a softer, lower landing. */
+  stepGrass2: {
+    gain: .5, minGap: 70, max: 5, ref: 300, maxDist: 1000,
+    synth: io => mix(
+      noiseSwell(io, { a: .004, d: .1, cut: 520, cut1: 210, peak: .5 }),
+      tone(io, { f: 104, f1: 62, d: .06, peak: .28 }),
+    ),
+  },
+  /** Grass footfall variation 3: a shorter, drier step so a walk never sounds stamped. */
+  stepGrass3: {
+    gain: .5, minGap: 70, max: 5, ref: 300, maxDist: 1000,
+    synth: io => mix(
+      noiseSwell(io, { a: .003, d: .08, cut: 340, cut1: 150, peak: .45 }),
+      tone(io, { f: 134, f1: 78, d: .05, peak: .26 }),
+    ),
+  },
+  /** Grass footfall variation 4 (V2): the driest take; the file set is level-matched so a walk never jumps. */
+  stepGrass4: {
+    gain: .5, minGap: 70, max: 5, ref: 300, maxDist: 1000,
+    synth: io => mix(
+      noiseSwell(io, { a: .003, d: .075, cut: 480, cut1: 210, peak: .48 }),
+      tone(io, { f: 112, f1: 64, d: .055, peak: .27 }),
+    ),
+  },
   /** One footfall in the river shallows: a small splash. */
   stepWater: {
     gain: .55, minGap: 70, max: 5, ref: 300, maxDist: 1000,
@@ -764,11 +888,37 @@ export const SOUNDS: Record<string, SoundDef> = {
       noiseSwell(io, { a: .003, d: .05, at: .05, cut: 2600, cut1: 1200, type: 'highpass', peak: .3 }),
     ),
   },
+  /** Water footfall variation 2 (V2 fallback): a softer entry with more droplet tail. */
+  stepWater2: {
+    gain: .55, minGap: 70, max: 5, ref: 300, maxDist: 1000,
+    synth: io => mix(
+      noiseSwell(io, { a: .002, d: .12, cut: 2100, cut1: 560, type: 'bandpass', peak: .58 }),
+      tone(io, { f: 383, f1: 240, d: .075, peak: .24, filter: 2200 }),
+      noiseSwell(io, { a: .003, d: .05, at: .06, cut: 2900, cut1: 1300, type: 'highpass', peak: .28 }),
+    ),
+  },
+  /** Water footfall variation 3 (V2 fallback): a brighter, quicker splash. */
+  stepWater3: {
+    gain: .55, minGap: 70, max: 5, ref: 300, maxDist: 1000,
+    synth: io => mix(
+      noiseSwell(io, { a: .002, d: .11, cut: 2400, cut1: 700, type: 'bandpass', peak: .55 }),
+      tone(io, { f: 466, f1: 290, d: .07, peak: .22, filter: 2400 }),
+      noiseSwell(io, { a: .002, d: .045, at: .04, cut: 3200, cut1: 1500, type: 'highpass', peak: .26 }),
+    ),
+  },
 
-  /** A soft blip when the pointer enters a hero card or settings row. */
+  /** A soft blip when the pointer enters a hero card or settings row (desktop only, debounced). */
   uiHover: {
-    gain: .3, minGap: 50,
+    gain: .3, minGap: 90,
     synth: io => tone(io, { f: 1046, f1: 1318, d: .05, peak: .5, filter: 4200 }),
+  },
+  /** A rejected action: not enough mana, on cooldown, nothing to target, nothing to buy or sell. */
+  uiError: {
+    gain: .5, minGap: 250,
+    synth: io => mix(
+      tone(io, { f: 196, type: 'square', d: .09, peak: .32, filter: 900 }),
+      tone(io, { f: 147, type: 'square', d: .12, at: .1, peak: .3, filter: 800 }),
+    ),
   },
   /** Picking a hero: a two-note chime reserved for the selection, distinct from a plain click. */
   uiSelect: {
@@ -847,3 +997,13 @@ export const SOUNDS: Record<string, SoundDef> = {
     ),
   },
 };
+
+// The shipped sound pack: attach each mapped file (and its manifest gain) to the matching definition. The engine
+// prefers a decoded file over the synth whenever one loaded, so this loop is the whole integration; a missing or
+// undecodable file simply keeps the synthesized fallback, and no caller ever learns where a voice came from.
+for (const [name, entry] of Object.entries(PACK)) {
+  const def = SOUNDS[name];
+  if (!def) continue;
+  def.urls = [packUrl(entry.file)];
+  def.fileGain = entry.gain;
+}

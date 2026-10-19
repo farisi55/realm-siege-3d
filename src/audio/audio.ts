@@ -34,8 +34,10 @@ export function initAudio(): void {
     const el = e.target as HTMLElement | null;
     if (el?.closest?.('button, input, select, .hc')) snd.play('ui', 'uiClick');
   }, true);
-  // Hover feedback where it means something (hero cards, settings rows) — never on every element of the page.
+  // Hover feedback where it means something (hero cards, settings rows) — never on every element of the page, and never
+  // on touch: a tap would otherwise tick a hover voice on top of its own click.
   document.addEventListener('pointerover', e => {
+    if ((e as PointerEvent).pointerType === 'touch') return;
     const el = e.target as HTMLElement | null;
     if (el?.closest?.('.hc, summary')) snd.play('ui', 'uiHover');
   }, true);

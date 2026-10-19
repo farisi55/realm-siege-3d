@@ -25,13 +25,14 @@ export function setAudioMuted(muted: boolean): void { setMuted(muted); ui.set({ 
 const refresh = () => { publishHud(); ui.set({ rev: ui.get().rev + 1 }); };
 export function buy(n: number): void {
   const it = IT[n], me = app.me;
-  if (me.g < it[1] || me.it.length >= 6) { hooks.ft(me.x, me.y - 40, me.it.length >= 6 ? 'Inventory full' : 'Not enough gold', '#ffe066'); return; }
+  if (me.g < it[1] || me.it.length >= 6) { hooks.ft(me.x, me.y - 40, me.it.length >= 6 ? 'Inventory full' : 'Not enough gold', '#ffe066'); playUI('uiError'); return; }
   me.g -= it[1]; me.it.push({ n: it[0], c: it[1], b: it[2] }); rc(me); refresh();
   playUI('shopBuy');
 }
 export function sell(n: number): void {
   const it = app.me.it.splice(n, 1)[0];
-  if (it) { app.me.g += Math.floor(it.c * .6); rc(app.me); refresh(); playUI('shopSell'); }
+  if (it) { app.me.g += Math.floor(it.c * .6); rc(app.me); refresh(); playUI('shopSell'); return; }
+  playUI('uiError'); // an empty slot: a rejected action, not silence
 }
 
 export function setSetting(key: 'zoom' | 'showFps' | 'bloom', value: number | boolean): void {
