@@ -1,9 +1,10 @@
 import { buildEnvironment, updateEnvironment } from './render/environment';
 import './render/input';
 import { app, hooks } from './game/state';
+import type { CharacterPack } from './game/state';
 import { ST } from './game/storage';
 import { startMatch, step } from './game/match';
-import { assets } from './assets/AssetManager';
+import { MODEL_FILES_V3, assets } from './assets/AssetManager';
 import { fx, ft, resetFx } from './render/vfx';
 import { clearR } from './render/units';
 import { pvShow, prev, resetStage } from './render/stage';
@@ -17,13 +18,18 @@ import { initAudio, playSFX, playUI, preloadAudio, stopAll } from './audio/audio
 import { resetCombatAudio, sndEvent } from './audio/combat';
 import { worldAudioTick } from './audio/world';
 
+const PACK_TOTAL = Object.keys(MODEL_FILES_V3).length;
+let packRequest = 0;
+
 /** Wires the simulation to the renderer and the React UI, preloads models, then opens the menu. */
 export async function boot(): Promise<void> {
   initAudio(); void preloadAudio(); // unlock on the first gesture; optional sound files load in the background
   app.sel = ST.get('hero', 0); app.bloom = ST.get('bloom', true);
   setQuality(ST.get('quality', 'auto') as QualitySetting);
   hooks.fx = fx; hooks.ft = ft; hooks.feed = pushFeed; hooks.finish = finishMatch; hooks.snd = sndEvent;
-  ui.set({ phase: 'loading', sel: app.sel });
+  const savedV3 = ST.get('pack', 'procedural') === 'v3';
+  app.pack = 'procedural'; // never inherit an active pack from a previous boot; only the saved opt-in may restore it
+  ui.set({ phase: 'loading', sel: app.sel, pack: savedV3 ? 'v3' : 'procedural', packLoading: savedV3, packMissing: 0 });
   // models (network) and the world (CPU: ground texture, meshes, plants) load side by side; one bar for both
   let models = [0, 1], world = [0, 1];
   const report = (): void => ui.set({ loading: { done: models[0] + world[0], total: models[1] + world[1] } });
@@ -32,12 +38,47 @@ export async function boot(): Promise<void> {
       assets.preload((done, total) => { models = [done, total]; report(); }),
       buildEnvironment({ onProgress: (done, total) => { world = [done, total]; report(); } }).catch(e => console.warn('Environment unavailable, continuing with an empty world:', e)),
     ]);
+    // The v3 pack is only fetched when the player opted in previously. A failed opt-in falls back to procedural.
+    if (savedV3) {
+      const found = await assets.preloadV3();
+      if (found > 0) { app.pack = 'v3'; ui.set({ pack: 'v3', packLoading: false, packMissing: PACK_TOTAL - found }); }
+      else { ST.set('pack', 'procedural'); ui.set({ pack: 'procedural', packLoading: false, packMissing: PACK_TOTAL }); }
+    } else ui.set({ packLoading: false });
   } finally { ui.set({ phase: 'menu' }); }
   pvShow();
 }
 export function selectHero(i: number): void { app.sel = i; ST.set('hero', i); ui.set({ sel: i }); pvShow(); playUI('uiSelect'); }
+
+/**
+ * Opts into one character art set. Procedural is always available; v3 is fetched lazily and only becomes active once
+ * at least one file loaded. If none are available the selection reverts to procedural instead of breaking the menu.
+ */
+export async function setCharacterPack(pack: CharacterPack): Promise<void> {
+  const req = ++packRequest;
+  if (pack === 'procedural') {
+    app.pack = 'procedural'; ST.set('pack', 'procedural');
+    ui.set({ pack: 'procedural', packLoading: false, packMissing: 0 });
+    pvShow(); playUI('uiSelect');
+    return;
+  }
+  ui.set({ pack: 'v3', packLoading: true, packMissing: 0 }); playUI('uiSelect');
+  const found = await assets.preloadV3();
+  // The player changed the selection, or reset settings, while the files were loading.
+  if (req !== packRequest || ui.get().pack !== 'v3') return;
+  if (found === 0) {
+    app.pack = 'procedural'; ST.set('pack', 'procedural');
+    ui.set({ pack: 'procedural', packLoading: false, packMissing: PACK_TOTAL });
+    playUI('uiError');
+  } else {
+    app.pack = 'v3'; ST.set('pack', 'v3');
+    ui.set({ pack: 'v3', packLoading: false, packMissing: PACK_TOTAL - found });
+    playUI('uiConfirm');
+  }
+  pvShow();
+}
 export function resetAndShowMenu(): void { resetSettings(); app.sel = 0; ui.set({ sel: 0 }); pvShow(); }
 export function play(): void {
+  if (ui.get().packLoading) return; // the Play button is disabled, but never start with a half-loaded pack
   ST.set('hero', app.sel); startMatch();
   stopAll(); // a restart never keeps the previous match's collapse ringing
   resetCombatAudio();

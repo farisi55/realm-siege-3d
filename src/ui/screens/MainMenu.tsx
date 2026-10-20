@@ -2,10 +2,11 @@ import { HR } from '../../game/config';
 import { hex } from '../../game/util';
 import { useUi } from '../store';
 import { setAudioMuted, setAudioVolume, setGraphics, setSetting } from '../commands';
-import { play, selectHero, resetAndShowMenu } from '../../flow';
+import { play, selectHero, setCharacterPack, resetAndShowMenu } from '../../flow';
 
 export function MainMenu() {
-  const sel = useUi(s => s.sel), zoom = useUi(s => s.zoom), showFps = useUi(s => s.showFps), bloom = useUi(s => s.bloom), quality = useUi(s => s.quality), audio = useUi(s => s.audio);
+  const sel = useUi(s => s.sel), pack = useUi(s => s.pack), packLoading = useUi(s => s.packLoading), packMissing = useUi(s => s.packMissing);
+  const zoom = useUi(s => s.zoom), showFps = useUi(s => s.showFps), bloom = useUi(s => s.bloom), quality = useUi(s => s.quality), audio = useUi(s => s.audio);
   return (
     <div id="menu" className="ov">
       <h1 style={{ fontSize: 46, color: 'var(--gd)' }}>Moba DOTA</h1>
@@ -17,10 +18,21 @@ export function MainMenu() {
           </div>
         ))}
       </div>
+      <div id="pack" className="row" style={{ padding: '8px 0', maxWidth: 720, justifyContent: 'flex-start' }}>
+        <label>Hero models{' '}
+          <select value={pack} disabled={packLoading} onChange={e => void setCharacterPack(e.target.value as 'procedural' | 'v3')}>
+            <option value="procedural">Procedural (default)</option>
+            <option value="v3">Character Pack V3 (experimental)</option>
+          </select>
+        </label>
+        {packLoading && <small style={{ color: 'var(--mu)' }}>Loading V3 models…</small>}
+        {!packLoading && pack === 'v3' && <small style={{ color: 'var(--mu)' }}>V3 rigs are experimental{packMissing > 0 ? `; ${packMissing} missing — procedural fallback` : ''}</small>}
+        {!packLoading && pack === 'procedural' && packMissing > 0 && <small style={{ color: 'var(--mu)' }}>V3 files unavailable — procedural models kept</small>}
+      </div>
       <div id="hd" style={{ maxWidth: 720, color: 'var(--mu)', lineHeight: 1.6 }}>
         {HR[sel].ab.map((a, i) => <div key={a[0]}><b>{'QWER'[i]} {a[0]}</b>: {a[1]} ({a[3]}s, {a[4]} mana)</div>)}
       </div>
-      <button className="p" style={{ fontSize: 18, padding: '10px 40px' }} onClick={play}>Play</button>
+      <button className="p" style={{ fontSize: 18, padding: '10px 40px' }} onClick={play} disabled={packLoading}>Play</button>
       <details>
         <summary>Instructions</summary>
         Arrow keys or right click: move. Left click: attack an enemy or move. Q W E R: abilities (R unlocks at level 3). Space: center camera. B: shop. Tab: scoreboard. M: minimap size. Esc: pause. Mouse wheel: zoom. Middle-mouse drag: rotate camera. Screen edge: scroll camera. Touch: tap the battlefield to move or attack, tap Q W E R to cast, use the Attack button for the nearest enemy, two fingers rotate and pinch-zoom. Destroy towers with your creeps, then the enemy core.

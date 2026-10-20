@@ -55,6 +55,35 @@ describe('UI + 3D scene (jsdom, stubbed WebGL)', () => {
     $$('#heroes .hc')[2].click(); await flush();
     expect(S.app.sel).toBe(2); expect($('#heroes .hc.s b')!.textContent).toBe('Ember Mage');
   });
+  it('hero model pack is procedural by default and V3 is an explicit lazy opt-in', async () => {
+    const sel = $('#pack select') as HTMLSelectElement;
+    expect(sel.value).toBe('procedural');
+    const pack = ['arcane-knight-v3', 'shadow-huntress-v3', 'ember-mage-v3', 'nature-guardian-v3', 'storm-warrior-v3'];
+    vi.stubGlobal('fetch', async (req: Request) => {
+      const url = typeof req === 'string' ? req : req.url;
+      const key = pack.find(k => url.endsWith(`/characters/v3/${k}.glb`));
+      if (!key) return new Response('not found', { status: 404 });
+      const b = readFileSync(`public/assets/characters/v3/${key}.glb`);
+      return new Response(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength) as ArrayBuffer);
+    });
+    try {
+      const { HR } = await import('../src/game/config');
+      const sn = (await import('../src/render/scene')).sn;
+      const sceneCount = sn.children.length; // one pedestal preview, never a second one
+      const fakeHero = () => ({ k: 'hero', team: 0, def: HR[0], x: 0, y: 0, r: 18 }) as any;
+      await F.setCharacterPack('v3'); await flush();
+      expect(S.app.pack).toBe('v3'); expect(sel.value).toBe('v3');
+      const v3 = U.mkR(fakeHero());
+      expect(v3.cv.glb).toBe(true); U.kill(v3);
+      await F.setCharacterPack('procedural'); await flush();
+      expect(S.app.pack).toBe('procedural'); expect(sel.value).toBe('procedural');
+      const proc = U.mkR(fakeHero());
+      expect(proc.cv.glb).toBe(false); U.kill(proc);
+      await F.setCharacterPack('v3'); await flush();
+      await F.setCharacterPack('procedural'); await flush();
+      expect(sn.children.length).toBe(sceneCount); // switching replaces the preview instead of stacking models
+    } finally { vi.unstubAllGlobals(); }
+  });
   it('Play starts a match: HUD shown, render objects created, gold grows, animation states change', { timeout: 30000 }, async () => {
     button('Play').click(); await flush();
     expect(S.app.mode).toBe('play'); expect(document.getElementById('menu')).toBeNull(); expect(document.getElementById('hud')).toBeTruthy();

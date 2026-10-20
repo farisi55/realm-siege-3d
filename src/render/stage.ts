@@ -5,6 +5,7 @@ import { followSun } from './lighting';
 import { app } from '../game/state';
 import { HR } from '../game/config';
 import { CharacterVisual } from './character';
+import { heroModelSource } from './characterPack';
 import { modelHeight } from './heroes';
 import type { CharacterAnimationController } from './animation';
 import { fxMenu, fxOnReset, kit } from './vfx';
@@ -13,7 +14,7 @@ import type { StageCue } from './fx/stage';
 import { paletteOf } from './fx/style';
 import * as THREE from 'three';
 
-let PV: CharacterVisual | null = null, PVs = -1, PVt = 0, PVk = 0, PVc = -1;
+let PV: CharacterVisual | null = null, PVs = '', PVt = 0, PVk = 0, PVc = -1;
 export const PX = 80;
 export const PZ = -40;
 export const ped = new THREE.Mesh(GM.cyl, mat(0x2a3048));
@@ -40,12 +41,13 @@ const CUES: [number, (a: CharacterAnimationController) => void, StageCue][] = [
 const PERIOD = 9.4;
 
 export function pvShow(): void {
-  if (PVs === app.sel && PV) return;
-  PVs = app.sel;
+  const sig = `${app.sel}:${app.pack}`;
+  if (PVs === sig && PV) return;
+  PVs = sig;
   if (PV) PV.dispose();
   const h = HR[app.sel];
-  const key = slug(h.n);
-  PV = new CharacterVisual({ key, height: modelHeight(key), color: h.c, team: 0, radius: .9, hero: true });
+  const key = slug(h.n), height = modelHeight(key);
+  PV = new CharacterVisual({ key, height, color: h.c, team: 0, radius: .9, hero: true, glb: heroModelSource(key, height) });
   PV.root.position.set(PX, 0, PZ);
   PV.root.scale.setScalar(1.6);
   sn.add(PV.root);
@@ -80,4 +82,4 @@ export function hideStage(): void {
   ped.visible = pedL.visible = false;
   stageFx.hide();
 }
-export function resetStage(): void { PVs = -1; }
+export function resetStage(): void { PVs = ''; }

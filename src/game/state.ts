@@ -1,5 +1,8 @@
 import type { Unit, GameState } from './types';
 
+/** Character art set. Only 'procedural' is safe by default; 'v3' is opt-in from the hero menu. */
+export type CharacterPack = 'procedural' | 'v3';
+
 /** Single shared mutable state. The simulation owns the data; rendering and UI only read it. */
 export const app = {
   all: [] as Unit[],
@@ -7,6 +10,8 @@ export const app = {
   G: null as GameState,
   me: null as Unit,
   sel: 0,
+  /** Which character art is active. 'procedural' is always the safe default; 'v3' is an explicit menu opt-in. */
+  pack: 'procedural' as CharacterPack,
   mode: 'menu' as 'menu' | 'play',
   fps: 60,
   bloom: true,

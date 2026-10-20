@@ -2,6 +2,7 @@ import { slug } from '../assets/AssetManager';
 import { HR, K, TCOL } from '../game/config';
 import { mkBar, mkCore, mkSiege, mkTower } from './models';
 import { CharacterVisual } from './character';
+import { heroModelSource } from './characterPack';
 import { modelHeight } from './heroes';
 import type { SelectMode } from './selection';
 import { cm, sn } from './scene';
@@ -30,7 +31,10 @@ export function mkR(u: Unit): any {
   r.g.add(r.f);
   if (k === 'hero' || k === 'melee' || k === 'ranged' || k === 'neutral') {
     const c = characterOf(u);
-    r.cv = new CharacterVisual({ key: c.key, height: c.height, color: c.color, team: u.team, radius: u.r * K, hero: k === 'hero' });
+    r.cv = new CharacterVisual({
+      key: c.key, height: c.height, color: c.color, team: u.team, radius: u.r * K, hero: k === 'hero',
+      glb: k === 'hero' ? heroModelSource(c.key, c.height) : undefined,
+    });
     r.g.add(r.cv.root); // weapon trails are world-space ribbons drawn by the shared trail pool
     by = c.by; bw = c.bw;
   } else if (k === 'siege') {

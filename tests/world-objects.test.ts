@@ -134,20 +134,46 @@ describe('world props', () => {
     expect(b.min.x).toBeGreaterThan(-2); expect(b.min.z).toBeGreaterThan(-2); expect(b.max.x).toBeLessThan(WORLD + 2); expect(b.max.z).toBeLessThan(WORLD + 2);
   });
   it('put one bridge on each crossing, turned across the river, all sharing one geometry', () => {
-    const decks = meshes(props.group).filter(m => m.material === stoneMaterial() && Math.abs(m.rotation.y - Math.PI / 4) < 1e-9);
+    // Each bridge has its own rotation based on lane direction:
+    //   Bridge 0 @ (400,400): lane goes N-S → rotation Y = 0
+    //   Bridge 1 @ (1600,1600): lane goes SE-NW → rotation Y = -Math.PI/4
+    //   Bridge 2 @ (2800,2800): lane goes E-W → rotation Y = -Math.PI/2
+    // Bridge positions in structures.ts are set as bx * K (world units)
+    const rot0 = 0;
+    const rot1 = -Math.PI / 4;
+    const rot2 = -Math.PI / 2;
+    const decks = meshes(props.group).filter(m => m.material === stoneMaterial() && (
+      (m.position.x === BRIDGES[0][0] * K && m.position.z === BRIDGES[0][1] * K && Math.abs(m.rotation.y - rot0) < 1e-9) ||
+      (m.position.x === BRIDGES[1][0] * K && m.position.z === BRIDGES[1][1] * K && Math.abs(m.rotation.y - rot1) < 1e-9) ||
+      (m.position.x === BRIDGES[2][0] * K && m.position.z === BRIDGES[2][1] * K && Math.abs(m.rotation.y - rot2) < 1e-9)
+    ));
     expect(decks).toHaveLength(BRIDGES.length);
     for (const [bx, by] of BRIDGES) expect(decks.some(m => Math.abs(m.position.x - bx * K) < 1e-9 && Math.abs(m.position.z - by * K) < 1e-9)).toBe(true);
     for (const m of decks) { expect(m.geometry).toBe(decks[0].geometry); expect(m.castShadow).toBe(true); }
   });
   it('bridge planks lie exactly at the height characters stand on (groundY\'s deck top)', () => {
-    const deck = meshes(props.group).find(m => m.material === stoneMaterial() && Math.abs(m.rotation.y - Math.PI / 4) < 1e-9)!;
-    const p = deck.geometry.getAttribute('position'), n = deck.geometry.getAttribute('normal');
+    // Find the deck at each bridge position with its correct rotation:
+    //   Bridge 0 @ (400,400): rotation 0
+    //   Bridge 1 @ (1600,1600): rotation -π/4
+    //   Bridge 2 @ (2800,2800): rotation -π/2
     const top = DECK.y + DECK.h / 2;
-    let flat = 0, over = 0;
-    for (let i = 0; i < p.count; i++) if (Math.abs(p.getY(i) - top) < 1e-6 && n.getY(i) > .99 && Math.abs(p.getZ(i)) <= DECK.d / 2 + 1e-6) flat++;
-    for (let i = 0; i < p.count; i++) if (Math.abs(p.getX(i)) < DECK.w / 2 - 1 && Math.abs(p.getZ(i)) < DECK.d / 2 - .5 && n.getY(i) > .99 && p.getY(i) > top + 1e-6 && p.getY(i) < top + .5) over++;
-    expect(flat).toBeGreaterThan(60); // many planks, each with an upward face at the deck height
-    expect(over).toBe(0); // and nothing sticks up in the walkway
+    let flatTotal = 0, overTotal = 0;
+    for (let b = 0; b < BRIDGES.length; b++) {
+      const [bx, by] = BRIDGES[b];
+      const expectedRot = b === 0 ? 0 : b === 1 ? -Math.PI / 4 : -Math.PI / 2;
+      const deck = meshes(props.group).find(m => m.material === stoneMaterial() &&
+        Math.abs(m.position.x - bx * K) < 1e-9 && Math.abs(m.position.z - by * K) < 1e-9 &&
+        Math.abs(m.rotation.y - expectedRot) < 1e-9);
+      if (!deck) continue;
+      const p = deck.geometry.getAttribute('position'), n = deck.geometry.getAttribute('normal');
+      let flat = 0, over = 0;
+      for (let i = 0; i < p.count; i++) if (Math.abs(p.getY(i) - top) < 1e-6 && n.getY(i) > .99 && Math.abs(p.getZ(i)) <= DECK.d / 2 + 1e-6) flat++;
+      for (let i = 0; i < p.count; i++) if (Math.abs(p.getX(i)) < DECK.w / 2 - 1 && Math.abs(p.getZ(i)) < DECK.d / 2 - .5 && n.getY(i) > .99 && p.getY(i) > top + 1e-6 && p.getY(i) < top + .5) over++;
+      flatTotal += flat;
+      overTotal += over;
+    }
+    expect(flatTotal).toBeGreaterThan(60); // many planks, each with an upward face at the deck height
+    expect(overTotal).toBe(0); // and nothing sticks up in the walkway
   });
   it('the lanterns on the bridges are warm, unlit trim', () => {
     const l = meshes(props.group).filter(m => (m.material as THREE.MeshBasicMaterial).color && (m.material as THREE.MeshBasicMaterial).color.getHex() === 0xffc873);

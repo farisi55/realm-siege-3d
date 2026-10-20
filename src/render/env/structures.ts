@@ -226,7 +226,9 @@ function bridgeGeos(): Geos {
 }
 
 // ---------------------------------------------------------------------------------------------------------------- the world's props
-const LANTERN = 0xffc873;
+
+/** Lantern yellow for bridge trim. */
+export const LANTERN = 0xffc873;
 
 export class Props {
   readonly group = new THREE.Group();
@@ -236,12 +238,16 @@ export class Props {
 
   constructor() {
     this.group.name = 'props';
-    const stone = stoneMaterial(), rot = new THREE.Euler(0, Math.PI / 4, 0);
-    // bridges: the long side across the river, turned 45 degrees (the same box `groundY` stands characters on)
+    const stone = stoneMaterial();
     const bg = bridgeGeos();
-    for (const [bx, by] of BRIDGES) {
-      const m = new THREE.Mesh(bg.stone, stone); m.position.set(bx * K, 0, by * K); m.rotation.copy(rot); m.castShadow = m.receiveShadow = true;
-      const l = new THREE.Mesh(bg.trim, trimMaterial(LANTERN)); l.position.copy(m.position); l.rotation.copy(rot);
+    for (const b of BRIDGES) {
+      const m = new THREE.Mesh(bg.stone, stone);
+      m.position.set(b.x * K, 0, b.y * K);
+      m.rotation.set(0, b.rot, 0);
+      m.castShadow = m.receiveShadow = true;
+      const l = new THREE.Mesh(bg.trim, trimMaterial(LANTERN));
+      l.position.copy(m.position);
+      l.rotation.set(0, b.rot, 0);
       this.group.add(m, l);
     }
 

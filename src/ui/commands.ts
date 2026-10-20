@@ -46,7 +46,7 @@ export function setGraphics(value: string): void {
   ui.set({ quality: String(mode) });
 }
 export function resetSettings(): void {
-  ['zoom', 'fps', 'hero', 'bloom', 'quality', 'vol', 'vol_sfx', 'vol_music', 'vol_amb', 'vol_ui', 'mute'].forEach(k => { try { localStorage.removeItem('rs_' + k); } catch { /* storage unavailable */ } });
-  app.bloom = true; setQuality('auto'); resetAudio();
-  ui.set({ zoom: 1, showFps: false, bloom: true, quality: 'auto', audio: audioPrefs() });
+  ['zoom', 'fps', 'hero', 'pack', 'bloom', 'quality', 'vol', 'vol_sfx', 'vol_music', 'vol_amb', 'vol_ui', 'mute'].forEach(k => { try { localStorage.removeItem('rs_' + k); } catch { /* storage unavailable */ } });
+  app.bloom = true; app.pack = 'procedural'; setQuality('auto'); resetAudio();
+  ui.set({ zoom: 1, showFps: false, bloom: true, quality: 'auto', audio: audioPrefs(), pack: 'procedural', packLoading: false, packMissing: 0 });
 }

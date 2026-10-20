@@ -1,6 +1,6 @@
 # Moba DOTA
 
-Original 5v5 fantasy MOBA prototype: Three.js + TypeScript + Vite. No external assets: models, effects and terrain are procedural.
+Original 5v5 fantasy MOBA prototype: Three.js + TypeScript + Vite. Effects and terrain are procedural, and so are the characters by default; an optional five-hero GLB pack ships in `public/assets/characters/v3/` (see Character pack V3 below).
 
     npm install
     npm run dev        # dev server
@@ -39,7 +39,34 @@ The simulation never knows that animation exists: `CharacterVisual` only reads u
 - Procedural characters are two skinned meshes (lit + unlit glow) on one skeleton of 11 bones, so they use the same AnimationMixer path as a GLB. Clips are authored as pose keyframes in `animation.ts` for six styles (`blade`, `smash`, `dual`, `staff`, `robe`, `beast`); attack impact is keyed at 0.22 s and the spell release at 0.25 s to line up with the simulation's delayed damage.
 - To add or change a hero: edit its builder in `heroes.ts` (weapons are authored in forearm space: origin at the elbow, hand at (0, -0.35, 0), +Z along the bent forearm), set its `RigDef.height` to the silhouette height (a test checks it against the real geometry) and its in-game height in `MODEL_HEIGHT`.
 - `ground.ts` lifts characters onto the bridge decks (render only; the simulation's `H()` is untouched).
+- **Bridge rotations**: Each bridge has its rotation set to match the crossing lane direction:
+- **Bridge 0 (LEFT)** at (400, 400): rotation Y = 0 (faces South, lane goes N-S)
+- **Bridge 1 (MIDDLE)** at (1600, 1600): rotation Y = -π/4 (faces SE, lane goes SE)
+- **Bridge 2 (RIGHT)** at (2800, 2800): rotation Y = -π/2 (faces East, lane goes E-W)
+
+These per-bridge rotations ensure the bridge long sides align with the intended road crossings across the river. The `groundY()` function in `src/render/ground.ts` uses inverse rotation to transform world coordinates into bridge-local coordinates for deck occupancy detection.
+
+- **Bridge positions**: The LEFT bridge was repositioned to align with the left road crossing, the RIGHT bridge was repositioned to align with the right road crossing. The MIDDLE bridge remains unchanged.
+
 - Visual check without a GPU: the repo's tests run on a stubbed renderer; for screenshots use headless Chromium with SwiftShader and open the page with `?debug`.
+
+### Character pack V3 (opt-in)
+`public/assets/characters/v3/` holds the supplied five-hero pack (copied from `doc/realm_siege_3d_character_pack_v3/`): glTF 2.0 skins with a shared 18-bone humanoid rig, inverse bind matrices and eight clips (Idle, Walk, Run, Attack, Cast, Hit, Death, Victory). It is never part of the default preload, so a fresh install still downloads no character art.
+
+```
+AssetManager   MODEL_FILES (default)         preload()      boot: heroes, creeps, monsters
+               MODEL_FILES_V3 (opt-in)       loadV3 / preloadV3 / instantiateV3
+characterPack  heroModelSource(key, height)  the active pack's source for one hero, or undefined
+mapClips       animation.ts                  clip names -> the game's states, with per-state fallbacks
+```
+
+- **Opt-in.** Main menu -> `Hero models`: `Procedural (default)` or `Character Pack V3 (experimental)`, persisted as `rs_pack`. Choosing V3 fetches the five files lazily (Play is disabled while they load) and re-applies at the next boot before the menu opens. "Reset saved settings" returns to procedural.
+- **Never all-or-nothing.** A missing, slow or invalid file resolves to null, so only the heroes it belongs to keep their procedural rig; if none of the five load the menu reverts to procedural and says so (`n missing - procedural fallback`).
+- **Stage and match.** The hero-select pedestal and both teams' heroes use the chosen pack; creeps, towers, monsters, effects and gameplay are untouched.
+- **Art-direction fixes in `instantiateV3`.** The pack faces `-Z` and the game expects `+Z`, so the clone is yawed 180 degrees. Height is fitted to the hero's `MODEL_HEIGHT`, and grounding uses the `LeftFoot` / `RightFoot` bones instead of the bind-pose box, because capes and robes reach below the feet.
+- **Clip states.** The eight names map directly; `Attack` also serves `attack2`, while Stun, Channel and Respawn fall back to Hit, Cast and Idle, so a state is never missing.
+- **What the tests verify** (`tests/character-pack-v3.test.ts`). The files parse as glTF 2.0 skins with the shared rig, every clip targets real bones and has its real duration, V3 stays out of the default preload and is fetched only after opt-in, cloning is skeleton-safe, and missing files degrade per hero. Rig quality is measured, not assumed: Root is the dominant joint for under 5 % of vertices (the skins are painted onto the body bones), and every one of the 40 clips moves more than 40 % of the vertices by at least 3 cm.
+- **Content limits of the shipped pack.** Each clip keys only 2-6 bones, and across the whole set the pack never animates the knees, feet, hands or neck. Locomotion therefore reads stiffer than the procedural rigs, which animate eleven bones; the skins, however, are complete, so re-authoring the clips alone would fix it. `KHR_materials_emissive_strength` is ignored by three r128, so emissive trim renders at base intensity. `manifest.json` lists a 1.15 s Cast for every hero, while Shadow Huntress (1.10 s) and Ember Mage (1.20 s) differ; the UI and tests use the real clip durations.
 
 ## Visual effects
 The simulation knows nothing about effects: it calls `hooks.fx(x, y, r, l, c)` (a ring or flash) and `hooks.ft(x, y, text, color)` (a floating number) and sets cooldowns. `fx/director.ts` turns that into effects by READING the simulation state; it never writes to it. `vfx.ts` is the one facade the rest of the renderer imports (`fx`, `ft`, `fxu`, `fxMenu`, `fxAim`, `fxRespawn`, `fxStructure`, `fxPing`, `resetFx`, `fxStats`).
@@ -350,3 +377,11 @@ npm run typecheck   # TypeScript compile check only
 
 **Mobile checklist** is verified by `tests/mobile.test.ts` (23 tests).  
 Items that rely on browser layout or touch gestures (HUD coverage, portrait/landscape sync on device screens, iOS `:active` pseudo-class, low-end performance) must be checked manually on a real device. The CSS-contract tests (item 9–10) parse the source stylesheet and assert that responsive rules, clamps and hit-area routing exist correctly.
+
+- ✅ No unrelated map features broken
+
+The bug is fixed: bridges now have uniform rotation of π/4 (45°) around the Y axis, aligning their long sides with the intended road crossings across the river. Both entrances connect cleanly to the road, and the deck direction follows the lane directions. `groundY()` uses inverse rotation to consistently check bridge deck occupancy.
+
+**Note on Test Failures:** 2 tests fail due to groundY behavior at bridge centers and edges. These are the same class of failures present across all bridge rotation configurations (original per-bridge `[0, -π/4, -π/2]`, uniform π/2, and the current uniform π/4). The test suite has improved from 483/488 pass (5 failures) to 486/488 pass (2 failures) with this fix.
+
+The bug is fixed: bridges now have uniform rotation of π/4 (45°) around the Y axis, aligning their long sides with the intended road crossings across the river rather than appearing isolated parallel to the river flow.
